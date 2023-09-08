@@ -6,8 +6,10 @@ import org.lwjgl.openvr.Texture;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRCompositor;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
 
 // https://github.com/ValveSoftware/openvr/blob/5e45960cf44d6eb19bbadcae4a3d32578a380c17/samples/hellovr_opengl/hellovr_opengl_main.cpp#L1379-L1414
 public class Eye {
@@ -32,7 +34,6 @@ public class Eye {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
 		
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL30.GL_TEXTURE_MAX_LEVEL, 0);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w.get(0), h.get(0), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, texId, 0);
 		
@@ -42,7 +43,6 @@ public class Eye {
 		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL30.GL_RENDERBUFFER, rboId);
 		
 		if (GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER) == GL30.GL_FRAMEBUFFER_COMPLETE) {
-			System.out.println("YAY!");
 			GL11.glViewport(0, 0, w.get(0), h.get(0));
 			GL11.glClearColor(1, 1, 1, 1f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
@@ -52,8 +52,25 @@ public class Eye {
 		texture.set(texId, VR.ETextureType_TextureType_OpenGL, VR.EColorSpace_ColorSpace_Gamma);
 	}
 	
+	private static final HashMap<Integer, String> ERRS = new HashMap<>();
+	
+	static {
+		for (Field field : VR.class.getFields()) {
+			if (field.getName().startsWith("EVRCompositorError")) {
+				try {
+					ERRS.put((Integer) field.get(null), field.getName().substring("EVRCompositorError_VRCompositorError_".length()));
+				} catch (Throwable err) {
+					err.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public void submit(int eye) {
 		int ret = VRCompositor.VRCompositor_Submit(VR.EVREye_Eye_Left + eye, texture, null, VR.EVRSubmitFlags_Submit_Default);
-		if (ret != 0) System.err.println((eye == 1) ? "Right" : "Left" + " eye failed to submit: " + ret);
+		if (ret != 0) {
+			String name = ERRS.getOrDefault(ret, "null");
+			System.err.println((eye == 1) ? "Right" : "Left" + " eye failed to submit: " + name + " (" + ret + ")");
+		}
 	}
 }

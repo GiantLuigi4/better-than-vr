@@ -5,6 +5,7 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRCompositor;
+import org.lwjgl.system.Configuration;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;
 
@@ -14,12 +15,9 @@ public class BTVRSetup {
 	public static final int token;
 	
 	static {
-		Sys.initialize();
-
 		String pth = System.getProperty("org.lwjgl.librarypath");
 		Library.initialize();
 		VR.getLibrary(); // load the library, just to not mess up LWJGL2
-		GL.createCapabilities();
 		if (checkVR()) {
 			MemoryStack stack = MemoryStack.stackPush();
 			IntBuffer peError = stack.mallocInt(1);
@@ -27,12 +25,6 @@ public class BTVRSetup {
 			OpenVR.create(token);
 		} else {
 			token = 0;
-		}
-
-		if (VRCompositor.VRCompositor_CanRenderScene()) {
-			System.out.println("e");
-		} else {
-			System.out.println("b");
 		}
 
 		System.setProperty("org.lwjgl.librarypath", pth);

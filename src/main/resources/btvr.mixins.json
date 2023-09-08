@@ -4,9 +4,6 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ContextGLMixin",
-    "DisplayMixin",
-    "GameWindowMixin",
     "TessellatorMixin"
   ],
   "client": [
