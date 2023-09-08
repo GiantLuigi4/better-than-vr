@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "btvr",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Better Than VR",
+  "description": "VR for BTA.",
   "authors": [
-    "Turnip Labs"
+    "GiantLuigi4"
   ],
   "contact": {
     "homepage": "",
@@ -18,11 +18,11 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-        "turniplabs.examplemod.ExampleMod"
+      "tfc.btvr.BTVR"
     ]
   },
   "mixins": [
-      "examplemod.mixins.json"
+      "btvr.mixins.json"
   ],
 
   "depends": {
