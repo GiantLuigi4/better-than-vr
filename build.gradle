@@ -13,8 +13,8 @@ loom {
 	customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
 }
 
-project.ext.lwjglVersion = "3.3.2"
-project.ext.lwjglNatives = "natives-windows"
+//project.ext.lwjglVersion = "3.3.2"
+//project.ext.lwjglNatives = "natives-windows"
 
 repositories {
 	mavenCentral()
@@ -106,8 +106,8 @@ dependencies {
 	}
 
 
-	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
+//	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+//
 //	implementation "org.lwjgl:lwjgl"
 //	implementation "org.lwjgl:lwjgl-glfw"
 //	implementation "org.lwjgl:lwjgl-opengl"

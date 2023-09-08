@@ -133,6 +133,7 @@ public class VRCamera {
 			GL11.glRotatef(90, 1, 0, 0);
 			GL11.glScaled(-1, 1, 1);
 			
+			GL11.glScaled(0.5, 0.5, 0.5);
 			draw(mdl.bipedRightArm);
 			draw(mdl.bipedRightArmOverlay);
 			
@@ -159,6 +160,7 @@ public class VRCamera {
 			GL11.glRotatef(90, 1, 0, 0);
 			GL11.glScaled(-1, 1, 1);
 			
+			GL11.glScaled(0.5, 0.5, 0.5);
 			draw(mdl.bipedLeftArm);
 			draw(mdl.bipedLeftArmOverlay);
 			
