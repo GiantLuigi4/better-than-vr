@@ -3,12 +3,9 @@ package tfc.btvr.mixin;
 import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.option.GameSettings;
-import net.minecraft.client.option.enums.RenderScale;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.Renderer;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.shader.Shaders;
-import net.minecraft.client.render.shader.ShadersRenderer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.core.Timer;
 import org.lwjgl.opengl.*;
@@ -18,10 +15,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tfc.btvr.accessor.ShaderRendererAccessor;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
-import tfc.btvr.lwjgl3.openvr.Eye;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {

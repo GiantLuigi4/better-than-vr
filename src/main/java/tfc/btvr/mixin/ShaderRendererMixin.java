@@ -10,15 +10,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tfc.btvr.accessor.ShaderRendererAccessor;
 import tfc.btvr.lwjgl3.openvr.Eye;
 
 import java.io.PrintStream;
 
 @Mixin(value = ShadersRenderer.class, remap = false)
-public class ShaderRendererMixin implements ShaderRendererAccessor {
-	@Shadow @Final protected Shader finalShader;
-	
+public class ShaderRendererMixin {
 	@Inject(at = @At("HEAD"), method = "setupFramebuffer")
 	public void preSetupFBO(CallbackInfo ci) {
 		if (Eye.getActiveEye() != null) {
@@ -34,10 +31,5 @@ public class ShaderRendererMixin implements ShaderRendererAccessor {
 	
 	@Redirect(method = "setupFramebuffer", at = @At(value = "INVOKE", target = "Ljava/io/PrintStream;println(Ljava/lang/String;)V"))
 	public void doNotPrint(PrintStream instance, String x) {
-	}
-	
-	@Override
-	public Shader BTVR_getFinalShader() {
-		return finalShader;
 	}
 }
