@@ -2,6 +2,7 @@ package tfc.btvr.mixin;
 
 import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.Renderer;
@@ -57,6 +58,9 @@ public abstract class MinecraftMixin {
 	@Shadow
 	@Final
 	public GameResolution resolution;
+	
+	@Shadow
+	public EntityPlayerSP thePlayer;
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;endRenderGame(F)V", shift = At.Shift.AFTER), method = "run")
 	public void postRender(CallbackInfo ci) {
@@ -116,4 +120,11 @@ public abstract class MinecraftMixin {
 		resolution.width = rx;
 		resolution.height = ry;
 	}
+	
+//	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
+//	public void preTick(CallbackInfo ci) {
+//		if (thePlayer != null) {
+//			thePlayer.move(0.01, 0, 0);
+//		}
+//	}
 }

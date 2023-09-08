@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.RenderGlobal;
+import net.minecraft.client.render.camera.EntityCamera;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
@@ -71,6 +72,11 @@ public class VRCamera {
 		GL11.glLoadMatrix(buffer);
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
 		GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
+		GL11.glTranslated(
+				mc.activeCamera.getX(pct) - mc.thePlayer.x,
+				mc.activeCamera.getY(pct) - mc.thePlayer.y,
+				mc.activeCamera.getZ(pct) - mc.thePlayer.z
+		);
 	}
 	
 	protected static void draw(Cube cube) {
@@ -110,7 +116,9 @@ public class VRCamera {
 		
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glColorMask(true, true, true, true);
-		GL11.glColor4f(1, 1, 1, 1f);
+		float brightness = thePlayer.getBrightness(renderPartialTicks);
+		if (mc.fullbright) brightness = 1.0F;
+		GL11.glColor3f(brightness, brightness, brightness);
 		
 		{
 			GL11.glPushMatrix();
@@ -127,7 +135,7 @@ public class VRCamera {
 			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 			renderer.loadEntityTexture(thePlayer);
 			
-			GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
+			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			GL11.glMultMatrix(buffer);
 			GL11.glRotatef(90, 1, 0, 0);
@@ -154,7 +162,7 @@ public class VRCamera {
 			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 			renderer.loadEntityTexture(thePlayer);
 			
-			GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
+			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			GL11.glMultMatrix(buffer);
 			GL11.glRotatef(90, 1, 0, 0);

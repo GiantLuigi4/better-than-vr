@@ -1,9 +1,6 @@
 package tfc.btvr.lwjgl3.openvr;
 
-import org.lwjgl.openvr.HmdMatrix34;
-import org.lwjgl.openvr.HmdMatrix44;
-import org.lwjgl.openvr.TrackedDevicePose;
-import org.lwjgl.openvr.VRSystem;
+import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.VRManager;
 
 public class Device {
@@ -26,9 +23,16 @@ public class Device {
 		return pose.mDeviceToAbsoluteTracking();
 	}
 	
+	VRControllerState state = VRControllerState.calloc();
+	
 	@Override
 	protected void finalize() throws Throwable {
 		matr.free();
+		state.free();
 		super.finalize();
 	}
+	
+//	public boolean getInput() {
+//		VRSystem.VRSystem_GetControllerState(index, state);
+//	}
 }

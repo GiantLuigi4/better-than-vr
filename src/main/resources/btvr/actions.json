@@ -1,0 +1,52 @@
+{
+  "actions": [
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Move",
+      "type": "vector2"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Attack",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Use Item",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/OpenInventory",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Pause",
+      "type": "boolean"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/gameplay",
+      "usage": "leftright"
+    }
+  ],
+  "localization": [
+    {
+      "/actions/gameplay": "Gameplay",
+      "/actions/gameplay/in/Move": "Move",
+      "/actions/gameplay/in/Attack": "Attack",
+      "/actions/gameplay/in/Use Item": "Use Item",
+      "/actions/gameplay/in/OpenInventory": "Open Inventory",
+      "/actions/gameplay/in/Pause": "Pause Game",
+      "language_tag": "en_us"
+    }
+  ],
+  "default_bindings": [
+    {
+      "controller_type": "oculus_touch",
+      "binding_url": "bindings/oculus_touch.json"
+    }
+  ]
+}
