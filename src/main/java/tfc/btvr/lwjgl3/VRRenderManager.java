@@ -97,6 +97,7 @@ public class VRRenderManager {
 	}
 	
 	public static void blitUI() {
+		GL11.glEnable(GL11.GL_BLEND);
 		UITex.bind();
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -105,5 +106,6 @@ public class VRRenderManager {
 		tessellator.addVertexWithUV(1, 1, 0, 1.0, 1.0);
 		tessellator.addVertexWithUV(1, -1, 0, 1.0, 0.0);
 		tessellator.draw();
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 }

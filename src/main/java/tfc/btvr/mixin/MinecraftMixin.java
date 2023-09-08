@@ -102,7 +102,7 @@ public abstract class MinecraftMixin {
 		
 		VRRenderManager.frameFinished();
 		
-		// reset
-		VRRenderManager.start(2);
+		// reset to non-vr
+		VRRenderManager.start(-1);
 	}
 }
