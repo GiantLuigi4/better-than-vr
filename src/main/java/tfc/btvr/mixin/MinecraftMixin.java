@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
+import tfc.btvr.lwjgl3.openvr.Eye;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
@@ -68,8 +69,13 @@ public abstract class MinecraftMixin {
 		
 		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering);
 		
+		int rx = resolution.width;
+		int ry = resolution.height;
+		
 		// draw left
 		VRRenderManager.start(0);
+		resolution.width = Eye.getActiveEye().width;
+		resolution.height = Eye.getActiveEye().height;
 		
 		this.render.beginRenderGame(this.timer.partialTicks);
 		
@@ -86,6 +92,8 @@ public abstract class MinecraftMixin {
 		
 		// draw right
 		VRRenderManager.start(1);
+		resolution.width = Eye.getActiveEye().width;
+		resolution.height = Eye.getActiveEye().height;
 		
 		this.render.beginRenderGame(this.timer.partialTicks);
 		
@@ -104,5 +112,8 @@ public abstract class MinecraftMixin {
 		
 		// reset to non-vr
 		VRRenderManager.start(-1);
+		
+		resolution.width = rx;
+		resolution.height = ry;
 	}
 }

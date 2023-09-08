@@ -9,6 +9,8 @@
     "ShaderRendererMixin",
     "TessellatorMixin",
     "WorldRendererMixin",
+    "model.LivingRendererAccessor",
+    "model.WorldRendererMixin",
     "ui.WorldRendererMixin"
   ],
   "client": [

@@ -43,23 +43,28 @@ public class VRRenderManager {
 	private static final Framebuffer UIFbo = new Framebuffer();
 	private static final net.minecraft.client.render.Texture UITex = new Texture();
 	private static final net.minecraft.client.render.Texture UIDep = new Texture();
+	private static final Framebuffer overlayFbo = new Framebuffer();
+	private static final net.minecraft.client.render.Texture overlayTex = new Texture();
+	private static final net.minecraft.client.render.Texture overlayDep = new Texture();
 	
 	public static void startFrame(GameResolution resolution, double renderScale, boolean useLinearFiltering) {
-		int scaledWidth = (int)(renderScale * (double)resolution.width);
-		int scaledHeight = (int)(renderScale * (double)resolution.height);
+		int scaledWidth = (int) (renderScale * (double) resolution.width);
+		int scaledHeight = (int) (renderScale * (double) resolution.height);
 		if (fbWidth != resolution.width || fbHeight != resolution.height || renderWidth != scaledWidth || renderHeight != scaledHeight) {
 			if (!UITex.isGenerated()) UITex.generate();
 			if (!UIDep.isGenerated()) UIDep.generate();
+			if (!overlayTex.isGenerated()) overlayTex.generate();
+			if (!overlayDep.isGenerated()) overlayDep.generate();
 			
-			
-			UIFbo.generate();
 			fbWidth = resolution.width;
 			fbHeight = resolution.height;
 			renderWidth = scaledWidth;
 			renderHeight = scaledHeight;
+			int filterMode = useLinearFiltering ? 9729 : 9728;
+			
+			UIFbo.generate();
 			UIFbo.bind();
 			UITex.bind();
-			int filterMode = useLinearFiltering ? 9729 : 9728;
 			GL11.glTexImage2D(3553, 0, 6408, renderWidth, renderHeight, 0, 6408, 5121, (ByteBuffer) null);
 			GL11.glTexParameteri(3553, 10241, filterMode);
 			GL11.glTexParameteri(3553, 10240, filterMode);
@@ -73,23 +78,56 @@ public class VRRenderManager {
 			GL11.glTexParameteri(3553, 10242, 10496);
 			GL11.glTexParameteri(3553, 10243, 10496);
 			ARBFramebufferObject.glFramebufferTexture2D(36160, 36096, 3553, UIDep.id(), 0);
+			
+			overlayFbo.generate();
+			overlayFbo.bind();
+			overlayTex.bind();
+			GL11.glTexImage2D(3553, 0, 6408, renderWidth, renderHeight, 0, 6408, 5121, (ByteBuffer) null);
+			GL11.glTexParameteri(3553, 10241, filterMode);
+			GL11.glTexParameteri(3553, 10240, filterMode);
+			GL11.glTexParameteri(3553, 10242, 10496);
+			GL11.glTexParameteri(3553, 10243, 10496);
+			ARBFramebufferObject.glFramebufferTexture2D(36160, 36064, 3553, overlayTex.id(), 0);
+			overlayDep.bind();
+			GL11.glTexImage2D(3553, 0, 6402, renderWidth, renderHeight, 0, 6402, 5121, (ByteBuffer) null);
+			GL11.glTexParameteri(3553, 10241, filterMode);
+			GL11.glTexParameteri(3553, 10240, filterMode);
+			GL11.glTexParameteri(3553, 10242, 10496);
+			GL11.glTexParameteri(3553, 10243, 10496);
+			ARBFramebufferObject.glFramebufferTexture2D(36160, 36096, 3553, overlayDep.id(), 0);
 		}
 		
 		UIFbo.bind();
 		GL11.glClearColor(0, 0, 0, 0f);
 		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		overlayFbo.bind();
+		GL11.glClearColor(0, 0, 0, 0f);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	private static boolean grabbingUI = false;
+	private static boolean grabbingOverlay = false;
 	
 	public static void grabUI() {
+		if (grabbingOverlay)
+			overlayFbo.bind();
+		else UIFbo.bind();
+	}
+	
+	public static void grabUI(boolean overlay) {
+		GL11.glColorMask(true, true, true, true);
 		grabbingUI = true;
-		UIFbo.bind();
+		grabbingOverlay = overlay;
+		grabUI();
 	}
 	
 	public static void releaseUI() {
-		grabbingUI = false;
-		UIFbo.unbind();
+		if (grabbingUI) {
+			grabbingUI = false;
+			if (grabbingOverlay)
+				overlayFbo.unbind();
+			else UIFbo.unbind();
+		}
 	}
 	
 	public static boolean isGrabbingUI() {
@@ -98,8 +136,17 @@ public class VRRenderManager {
 	
 	public static void blitUI() {
 		GL11.glEnable(GL11.GL_BLEND);
-		UITex.bind();
 		Tessellator tessellator = Tessellator.instance;
+		
+		overlayTex.bind();
+		tessellator.startDrawingQuads();
+		tessellator.addVertexWithUV(-1, -1, 0, 0.0, 0.0);
+		tessellator.addVertexWithUV(-1, 1, 0, 0.0, 1.0);
+		tessellator.addVertexWithUV(1, 1, 0, 1.0, 1.0);
+		tessellator.addVertexWithUV(1, -1, 0, 1.0, 0.0);
+		tessellator.draw();
+		
+		UITex.bind();
 		tessellator.startDrawingQuads();
 		tessellator.addVertexWithUV(-1, -1, 0, 0.0, 0.0);
 		tessellator.addVertexWithUV(-1, 1, 0, 0.0, 1.0);
