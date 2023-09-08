@@ -2,9 +2,7 @@ package tfc.btvr.lwjgl3.openvr;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.openvr.Texture;
-import org.lwjgl.openvr.VR;
-import org.lwjgl.openvr.VRCompositor;
+import org.lwjgl.openvr.*;
 
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
@@ -13,10 +11,20 @@ import java.util.HashMap;
 
 // https://github.com/ValveSoftware/openvr/blob/5e45960cf44d6eb19bbadcae4a3d32578a380c17/samples/hellovr_opengl/hellovr_opengl_main.cpp#L1379-L1414
 public class Eye {
+	protected static Eye activeEye = null;
+	
+	public static Eye getActiveEye() {
+		return activeEye;
+	}
+	
 	Texture texture;
 	int fboId;
 	int rboId;
 	int texId;
+	
+	public final int width;
+	public final int height;
+	public final int id;
 	
 	public void close() {
 		GL11.glDeleteTextures(texId);
@@ -25,7 +33,11 @@ public class Eye {
 		texture.close();
 	}
 	
-	public Eye(IntBuffer w, IntBuffer h) {
+	public Eye(int id, IntBuffer w, IntBuffer h) {
+		this.id = id;
+		width = w.get(0);
+		height = h.get(0);
+		
 		fboId = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fboId);
 		
@@ -66,11 +78,29 @@ public class Eye {
 		}
 	}
 	
-	public void submit(int eye) {
-		int ret = VRCompositor.VRCompositor_Submit(VR.EVREye_Eye_Left + eye, texture, null, VR.EVRSubmitFlags_Submit_Default);
+	public void submit() {
+		int ret = VRCompositor.VRCompositor_Submit(VR.EVREye_Eye_Left + id, texture, null, VR.EVRSubmitFlags_Submit_Default);
 		if (ret != 0) {
 			String name = ERRS.getOrDefault(ret, "null");
-			System.err.println((eye == 1) ? "Right" : "Left" + " eye failed to submit: " + name + " (" + ret + ")");
+			System.err.println((id == 1) ? "Right" : "Left" + " eye failed to submit: " + name + " (" + ret + ")");
 		}
+	}
+	
+	public void activate() {
+		activeEye = this;
+	}
+	
+	public static void deactivate() {
+		activeEye = null;
+	}
+	
+	public int fboId() {
+		return fboId;
+	}
+	
+	private static final HmdMatrix44 projection = HmdMatrix44.calloc();
+	
+	public static HmdMatrix44 getProjectionMatrix(int eye, float zNear, float zFar) {
+		return VRSystem.VRSystem_GetProjectionMatrix(eye, zNear, zFar, projection);
 	}
 }

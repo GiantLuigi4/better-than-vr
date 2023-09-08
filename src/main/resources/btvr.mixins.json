@@ -4,7 +4,12 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "TessellatorMixin"
+    "GL30Mixin",
+    "MinecraftMixin",
+    "ShaderRendererMixin",
+    "TessellatorMixin",
+    "WorldRendererMixin",
+    "ui.WorldRendererMixin"
   ],
   "client": [
     "GLHelperMixin"
