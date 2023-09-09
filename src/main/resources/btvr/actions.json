@@ -12,7 +12,7 @@
     },
     {
       "requirement": "mandatory",
-      "name": "/actions/gameplay/in/Use Item",
+      "name": "/actions/gameplay/in/UseItem",
       "type": "boolean"
     },
     {
@@ -37,7 +37,7 @@
       "/actions/gameplay": "Gameplay",
       "/actions/gameplay/in/Move": "Move",
       "/actions/gameplay/in/Attack": "Attack",
-      "/actions/gameplay/in/Use Item": "Use Item",
+      "/actions/gameplay/in/UseItem": "Use Item",
       "/actions/gameplay/in/OpenInventory": "Open Inventory",
       "/actions/gameplay/in/Pause": "Pause Game",
       "language_tag": "en_us"

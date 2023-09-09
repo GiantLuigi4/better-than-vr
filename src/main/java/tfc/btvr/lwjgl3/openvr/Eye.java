@@ -99,8 +99,13 @@ public class Eye {
 	}
 	
 	private static final HmdMatrix44 projection = HmdMatrix44.calloc();
+	private static final HmdMatrix34 translation = HmdMatrix34.calloc();
 	
 	public static HmdMatrix44 getProjectionMatrix(int eye, float zNear, float zFar) {
 		return VRSystem.VRSystem_GetProjectionMatrix(eye, zNear, zFar, projection);
+	}
+	
+	public static HmdMatrix34 getTranslationMatrix(int eye) {
+		return VRSystem.VRSystem_GetEyeToHeadTransform(eye, translation);
 	}
 }

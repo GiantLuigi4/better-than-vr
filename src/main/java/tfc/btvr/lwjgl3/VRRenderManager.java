@@ -12,6 +12,7 @@ import tfc.btvr.lwjgl3.openvr.Eye;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Random;
 
 public class VRRenderManager {
 	private static Eye leftEye;
@@ -24,9 +25,11 @@ public class VRRenderManager {
 	}
 	
 	public static void frameFinished() {
-		leftEye.submit();
-		rightEye.submit();
-		VRCompositor.VRCompositor_PostPresentHandoff();
+		if (VRCompositor.VRCompositor_CanRenderScene()) {
+			leftEye.submit();
+			rightEye.submit();
+			VRCompositor.VRCompositor_PostPresentHandoff();
+		}
 	}
 	
 	public static void start(int eye) {

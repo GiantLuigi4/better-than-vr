@@ -61,12 +61,9 @@ public class BTVRSetup {
 		}
 		
 		int err = VRInput.VRInput_SetActionManifestPath(FabricLoader.getInstance().getGameDir().toAbsolutePath() + "/vr/actions.json");
-		System.out.println("Actions setup with error: " + err);
-		
-		LongBuffer longBuffer = BufferUtils.createLongBuffer(1);
-		int handleErrorCode = VRInput.VRInput_GetActionHandle("/actions/gameplay/OpenInventory", longBuffer);
-		long openInventoryHandle = longBuffer.get(0);
-		System.out.println(openInventoryHandle);
+		if (err != 0) {
+			System.out.println("Actions setup with error: " + err);
+		}
 		
 		System.setProperty("org.lwjgl.librarypath", pth);
 		

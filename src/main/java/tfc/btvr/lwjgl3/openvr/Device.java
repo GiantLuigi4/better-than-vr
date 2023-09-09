@@ -31,8 +31,4 @@ public class Device {
 		state.free();
 		super.finalize();
 	}
-	
-//	public boolean getInput() {
-//		VRSystem.VRSystem_GetControllerState(index, state);
-//	}
 }

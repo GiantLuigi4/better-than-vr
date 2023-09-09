@@ -1,0 +1,60 @@
+{
+  "action_manifest_version": 0,
+  "category": "steamvr_input",
+  "controller_type": "oculus_touch",
+  "description": "Default bindings for BTVR",
+  "name": "BTVR Defaults",
+  "options": {},
+  "simulated_actions": [],
+  "bindings": {
+    "/actions/gameplay": {
+      "sources": [
+        {
+          "inputs": {
+            "position": {
+              "output": "/actions/gameplay/in/Move"
+            }
+          },
+          "mode": "joystick",
+          "path": "/user/hand/left/input/joystick"
+        },
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/gameplay/in/Attack"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/left/input/trigger"
+        },
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/gameplay/in/UseItem"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/right/input/trigger"
+        },
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/gameplay/in/OpenInventory"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/left/input/x"
+        },
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/gameplay/in/Pause"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/left/input/y"
+        }
+      ]
+    }
+  }
+}

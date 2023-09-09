@@ -10,6 +10,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.core.Timer;
 import org.lwjgl.opengl.*;
+import org.lwjgl.openvr.VRSystem;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.lwjgl3.openvr.Input;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
@@ -67,6 +69,8 @@ public abstract class MinecraftMixin {
 		VRRenderManager.blitUI();
 	}
 	
+	boolean alt = false;
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;beginRenderGame(F)V", shift = At.Shift.BEFORE), method = "run")
 	public void preRender(CallbackInfo ci) {
 		VRManager.tick();
@@ -76,43 +80,52 @@ public abstract class MinecraftMixin {
 		int rx = resolution.width;
 		int ry = resolution.height;
 		
+		boolean rrw = VRSystem.VRSystem_ShouldApplicationReduceRenderingWork();
+		if (rrw) {
+			System.out.println("Reduced Work");
+		}
+		
 		// draw left
-		VRRenderManager.start(0);
-		resolution.width = Eye.getActiveEye().width;
-		resolution.height = Eye.getActiveEye().height;
-		
-		this.render.beginRenderGame(this.timer.partialTicks);
-		
-		GL11.glEnable(3008);
-		if (!this.skipRenderWorld) {
-			if (this.playerController != null) {
-				this.playerController.setPartialTime(this.timer.partialTicks);
+		if (!rrw || alt) {
+			VRRenderManager.start(0);
+			resolution.width = Eye.getActiveEye().width;
+			resolution.height = Eye.getActiveEye().height;
+			
+			this.render.beginRenderGame(this.timer.partialTicks);
+			
+			GL11.glEnable(3008);
+			if (!this.skipRenderWorld) {
+				if (this.playerController != null) {
+					this.playerController.setPartialTime(this.timer.partialTicks);
+				}
+				
+				this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
 			}
 			
-			this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
+			this.render.endRenderGame(this.timer.partialTicks);
+			
+			// draw right
+			VRRenderManager.start(1);
+			resolution.width = Eye.getActiveEye().width;
+			resolution.height = Eye.getActiveEye().height;
+			
 		}
 		
-		this.render.endRenderGame(this.timer.partialTicks);
-		
-		// draw right
-		VRRenderManager.start(1);
-		resolution.width = Eye.getActiveEye().width;
-		resolution.height = Eye.getActiveEye().height;
-		
-		this.render.beginRenderGame(this.timer.partialTicks);
-		
-		GL11.glEnable(3008);
-		if (!this.skipRenderWorld) {
-			if (this.playerController != null) {
-				this.playerController.setPartialTime(this.timer.partialTicks);
+		if (!rrw || !alt) {
+			this.render.beginRenderGame(this.timer.partialTicks);
+			GL11.glEnable(3008);
+			if (!this.skipRenderWorld) {
+				if (this.playerController != null) {
+					this.playerController.setPartialTime(this.timer.partialTicks);
+				}
+				
+				this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
 			}
 			
-			this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
+			this.render.endRenderGame(this.timer.partialTicks);
 		}
-		
-		this.render.endRenderGame(this.timer.partialTicks);
-		
 		VRRenderManager.frameFinished();
+		alt = !alt;
 		
 		// reset to non-vr
 		VRRenderManager.start(-1);
@@ -120,7 +133,7 @@ public abstract class MinecraftMixin {
 		resolution.width = rx;
 		resolution.height = ry;
 	}
-	
+
 //	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
 //	public void preTick(CallbackInfo ci) {
 //		if (thePlayer != null) {
