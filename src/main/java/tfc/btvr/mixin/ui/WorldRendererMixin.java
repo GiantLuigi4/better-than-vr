@@ -1,10 +1,8 @@
 package tfc.btvr.mixin.ui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiPhotoMode;
 import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.render.camera.EntityCamera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,8 +53,6 @@ public class WorldRendererMixin {
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "setupPlayerCamera")
 	public void conditionallyRenderItem(ItemRenderer instance, float r) {
 		// don't draw this in VR
-		if (Eye.getActiveEye() == null) {
-			instance.renderItemInFirstPerson(r);
-		}
+//		instance.renderItemInFirstPerson(r);
 	}
 }

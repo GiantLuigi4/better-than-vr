@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.RenderGlobal;
-import net.minecraft.client.render.camera.EntityCamera;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
@@ -43,7 +42,7 @@ public class VRCamera {
 			id = active.id;
 		
 		float[] data;
-		{
+		if (active != null) {
 			GL11.glMatrixMode(GL11.GL_PROJECTION_MATRIX);
 			
 			HmdMatrix44 matr = Eye.getProjectionMatrix(id, 0.1f, farDist);
@@ -63,13 +62,30 @@ public class VRCamera {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW_MATRIX);
 		
 		Device head = Device.HEAD;
+		
+		GL11.glLoadIdentity();
+		if (active != null) {
+			HmdMatrix34 matr32 = Eye.getTranslationMatrix(id);
+			
+			float mul = -1;
+			data = new float[]{
+					matr32.m(0), matr32.m(4), matr32.m(8), 0,
+					matr32.m(1), matr32.m(5), matr32.m(9), 0,
+					matr32.m(2), matr32.m(6), matr32.m(10), 0,
+					matr32.m(3) * mul, matr32.m(7) * mul, matr32.m(11) * mul, 1,
+			};
+			buffer.put(data);
+			buffer.flip();
+			GL11.glMultMatrix(buffer);
+		}
+		
 		HmdMatrix34 matr = head.getMatrix();
 		
 		data = toArray(matr);
 		buffer.put(data);
 		buffer.flip();
 		
-		GL11.glLoadMatrix(buffer);
+		GL11.glMultMatrix(buffer);
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
 		GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
 		GL11.glTranslated(

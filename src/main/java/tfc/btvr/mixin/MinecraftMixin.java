@@ -9,7 +9,7 @@ import net.minecraft.client.render.Renderer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.core.Timer;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRSystem;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Eye;
-import tfc.btvr.lwjgl3.openvr.Input;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
@@ -134,10 +133,8 @@ public abstract class MinecraftMixin {
 		resolution.height = ry;
 	}
 
-//	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
-//	public void preTick(CallbackInfo ci) {
-//		if (thePlayer != null) {
-//			thePlayer.move(0.01, 0, 0);
-//		}
-//	}
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
+	public void preTick(CallbackInfo ci) {
+		VRManager.tickGame((Minecraft) (Object) this);
+	}
 }

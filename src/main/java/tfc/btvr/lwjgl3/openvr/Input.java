@@ -1,7 +1,10 @@
 package tfc.btvr.lwjgl3.openvr;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openvr.*;
+import org.lwjgl.openvr.InputAnalogActionData;
+import org.lwjgl.openvr.InputDigitalActionData;
+import org.lwjgl.openvr.VRActiveActionSet;
+import org.lwjgl.openvr.VRInput;
 
 import java.nio.LongBuffer;
 import java.util.HashMap;
@@ -14,6 +17,7 @@ public class Input {
 	private static final HashMap<String, Long> inputs = new HashMap<>();
 	
 	private static final InputDigitalActionData actionData = InputDigitalActionData.create();
+	private static final InputAnalogActionData actionDataAnalog = InputAnalogActionData.create();
 	private static final VRActiveActionSet.Buffer activeActionSet;
 	
 	static {
@@ -60,6 +64,24 @@ public class Input {
 				0
 		));
 		return actionData.bState();
+	}
+	
+	public static float[] getJoystick(String type, String name) {
+		if (activeActionSet != null) {
+			int res = VRInput.VRInput_UpdateActionState(activeActionSet, activeActionSet.sizeof());
+			checkErr(res);
+		}
+		
+		checkErr(VRInput.VRInput_GetAnalogActionData(
+				calcHandle(type, name),
+				actionDataAnalog,
+				actionData.sizeof(),
+				0
+		));
+		return new float[]{
+				actionDataAnalog.x(),
+				actionDataAnalog.y()
+		};
 	}
 	
 	private static void checkErr(int handleErrorCode) {
