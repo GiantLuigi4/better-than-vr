@@ -4,17 +4,19 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "motion.EntityMixin"
+  ],
+  "client": [
     "GL30Mixin",
+    "GLHelperMixin",
     "MinecraftMixin",
     "ShaderRendererMixin",
     "TessellatorMixin",
     "WorldRendererMixin",
     "model.LivingRendererAccessor",
     "model.WorldRendererMixin",
+    "selection.WorldRendererMixin",
     "ui.WorldRendererMixin"
-  ],
-  "client": [
-    "GLHelperMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -95,6 +95,16 @@ public class VRCamera {
 		);
 	}
 	
+	private static Cube leftArm = new Cube(40, 16, 64, 64);
+	private static Cube rightArm = new Cube(32, 48, 64, 64);
+	
+	static {
+		leftArm.mirror = true;
+		leftArm.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0, true);
+		
+		rightArm.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0, true);
+	}
+	
 	protected static void draw(Cube cube) {
 		float rpX = cube.rotationPointX;
 		float rpY = cube.rotationPointY;
@@ -103,12 +113,12 @@ public class VRCamera {
 		float rY = cube.rotateAngleY;
 		float rZ = cube.rotateAngleZ;
 		
-		cube.setRotationPoint(0, 2, 0);
+		cube.setRotationPoint(0, -6, 0);
 		cube.setRotationAngle(0, 0, 0);
 		boolean show = cube.showModel;
 		
 		cube.showModel = true;
-		cube.render(0.0625F);
+		cube.render(1);
 		
 		cube.showModel = show;
 		cube.setRotationPoint(rpX, rpY, rpZ);
@@ -118,7 +128,6 @@ public class VRCamera {
 	public static void renderPlayer(EntityPlayerSP thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		Device rightHand = Device.getDeviceForRole(DeviceType.RIGHT_HAND);
 		Device leftHand = Device.getDeviceForRole(DeviceType.LEFT_HAND);
-		
 		
 		EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
 		if (dispatcher.renderEngine == null) return;
@@ -135,6 +144,8 @@ public class VRCamera {
 		float brightness = thePlayer.getBrightness(renderPartialTicks);
 		if (mc.fullbright) brightness = 1.0F;
 		GL11.glColor3f(brightness, brightness, brightness);
+		
+		double scl = 1 / 32d;
 		
 		{
 			GL11.glPushMatrix();
@@ -154,12 +165,15 @@ public class VRCamera {
 			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			GL11.glMultMatrix(buffer);
+			GL11.glScaled(-1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
-			GL11.glScaled(-1, 1, 1);
+			GL11.glRotatef(180, 0, 1, 0);
+
+//			GL11.glTranslated(0, -2/8d, 0);
 			
-			GL11.glScaled(0.5, 0.5, 0.5);
-			draw(mdl.bipedRightArm);
-			draw(mdl.bipedRightArmOverlay);
+			GL11.glScaled(scl, scl, scl);
+			draw(rightArm);
+//			draw(mdl.bipedRightArmOverlay);
 			
 			GL11.glPopMatrix();
 		}
@@ -181,12 +195,15 @@ public class VRCamera {
 			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			GL11.glMultMatrix(buffer);
+			GL11.glScaled(1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
-			GL11.glScaled(-1, 1, 1);
+			GL11.glRotatef(180, 0, 1, 0);
+
+//			GL11.glTranslated(0, -2/8d, 0);
 			
-			GL11.glScaled(0.5, 0.5, 0.5);
-			draw(mdl.bipedLeftArm);
-			draw(mdl.bipedLeftArmOverlay);
+			GL11.glScaled(scl, scl, scl);
+			draw(leftArm);
+//			draw(mdl.bipedLeftArmOverlay);
 			
 			GL11.glPopMatrix();
 		}
