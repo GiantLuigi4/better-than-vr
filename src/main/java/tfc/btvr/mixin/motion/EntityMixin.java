@@ -9,10 +9,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.VRManager;
-import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.math.VecMath;
 
 @Mixin(value = Entity.class, remap = false)
@@ -34,17 +32,17 @@ public class EntityMixin {
 		if (isSinglePlayer) {
 			
 			float[] m = new float[]{-f, -f1};
+			float[] m1 = VRManager.getVRMotion();
 			
 			if (m[0] != 0 || m[1] != 0) {
 				
-				double len = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
+				double len =
+						Math.max(
+								Math.sqrt(m[0] * m[0] + m[1] * m[1]),
+								Math.sqrt(m1[0] * m1[0] + m1[1] * m1[1])
+						);
 				
-				double[] res = new double[]{m[0], 0, m[1]};
-				VRHelper.orientVector(
-						VRManager.VRInput ? Config.MOTION_HAND.get() : new Device(0),
-						res
-				);
-				res[1] = 0;
+				double[] res = VRHelper.mergeMot(m, m1);
 				VecMath.normalize(res);
 				for (int i = 0; i < res.length; i++) {
 					res[i] *= len;

@@ -1,18 +1,16 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.GameResolution;
-import net.minecraft.client.option.enums.RenderScale;
 import net.minecraft.client.render.Framebuffer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.Texture;
-import net.minecraft.client.render.shader.Shaders;
-import org.lwjgl.opengl.*;
-import org.lwjgl.openvr.*;
+import org.lwjgl.opengl.ARBFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.openvr.VRCompositor;
 import tfc.btvr.lwjgl3.openvr.Eye;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Random;
 
 public class VRRenderManager {
 	private static Eye leftEye;
@@ -24,10 +22,12 @@ public class VRRenderManager {
 		rightEye = new Eye(1, w, h);
 	}
 	
-	public static void frameFinished() {
+	public static void frameFinished(boolean reducedWork, boolean left) {
 		if (VRCompositor.VRCompositor_CanRenderScene()) {
-			leftEye.submit();
-			rightEye.submit();
+			if (!reducedWork || left)
+				leftEye.submit();
+			if (!reducedWork || !left)
+				rightEye.submit();
 			VRCompositor.VRCompositor_PostPresentHandoff();
 		}
 	}

@@ -1,6 +1,7 @@
 package tfc.btvr.lwjgl3;
 
 import org.lwjgl.openvr.HmdMatrix34;
+import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.math.MatrixHelper;
 import tfc.btvr.math.VecMath;
@@ -42,5 +43,27 @@ public class VRHelper {
 				device.getMatrix().m(7) - 0.235,
 				device.getMatrix().m(11),
 		};
+	}
+	
+	public static double[] mergeMot(float[] computer, float[] vr) {
+		double[] res = new double[]{computer[0], 0, computer[1]};
+		VRHelper.orientVector(
+				new Device(0),
+				res
+		);
+		res[1] = 0;
+		
+		double[] res1 = new double[]{vr[0], 0, vr[1]};
+		VRHelper.orientVector(
+				Config.MOTION_HAND.get(),
+				res1
+		);
+		res1[1] = 0;
+		
+		res[0] += res1[0];
+		res[1] += res1[1];
+		res[2] += res1[2];
+		
+		return res;
 	}
 }

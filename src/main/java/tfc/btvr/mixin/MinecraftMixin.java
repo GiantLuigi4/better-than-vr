@@ -102,15 +102,14 @@ public abstract class MinecraftMixin {
 			}
 			
 			this.render.endRenderGame(this.timer.partialTicks);
-			
+		}
+		
+		if (!rrw || !alt) {
 			// draw right
 			VRRenderManager.start(1);
 			resolution.width = Eye.getActiveEye().width;
 			resolution.height = Eye.getActiveEye().height;
 			
-		}
-		
-		if (!rrw || !alt) {
 			this.render.beginRenderGame(this.timer.partialTicks);
 			GL11.glEnable(3008);
 			if (!this.skipRenderWorld) {
@@ -123,7 +122,8 @@ public abstract class MinecraftMixin {
 			
 			this.render.endRenderGame(this.timer.partialTicks);
 		}
-		VRRenderManager.frameFinished();
+		
+		VRRenderManager.frameFinished(rrw, alt);
 		alt = !alt;
 		
 		// reset to non-vr
