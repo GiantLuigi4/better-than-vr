@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.motion;
+package tfc.btvr.mixin.client.motion;
 
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;

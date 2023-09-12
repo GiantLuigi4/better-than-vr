@@ -3,21 +3,30 @@ package tfc.btvr;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.EntityRenderDispatcher;
+import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderGlobal;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.client.render.model.ModelBase;
 import net.minecraft.client.render.model.ModelPlayer;
+import net.minecraft.core.HitResult;
+import net.minecraft.core.util.phys.AABB;
+import net.minecraft.core.util.phys.Vec3d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.openvr.HmdMatrix44;
+import tfc.btvr.itf.VRScreenData;
+import tfc.btvr.lwjgl3.VRHelper;
+import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.DeviceType;
 import tfc.btvr.lwjgl3.openvr.Eye;
-import tfc.btvr.mixin.model.LivingRendererAccessor;
+import tfc.btvr.math.VecMath;
+import tfc.btvr.mixin.client.model.LivingRendererAccessor;
 
 import java.nio.FloatBuffer;
 
@@ -209,5 +218,124 @@ public class VRCamera {
 		}
 		
 		GL11.glEnable(GL11.GL_CULL_FACE);
+	}
+	
+	private static Vec3d a(double[] coord) {
+		return Vec3d.createVector(coord[0], coord[1], coord[2]);
+	}
+	
+	private static Vec3d a(double[] coord0, double[] coord) {
+		return Vec3d.createVector(coord0[0] + coord[0], coord0[1] + coord[1], coord0[2] + coord[2]);
+	}
+	
+	public static void drawUI(Minecraft mc, float renderPartialTicks) {
+		VRScreenData data = (VRScreenData) mc.currentScreen;
+		
+		Lighting.disable();
+		GL11.glPushMatrix();
+		
+		GL11.glTranslated(
+				-mc.activeCamera.getX(renderPartialTicks),
+				-mc.activeCamera.getY(renderPartialTicks),
+				-mc.activeCamera.getZ(renderPartialTicks)
+		);
+		
+		GL11.glEnable(GL11.GL_TEXTURE);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		
+		double angle = Math.toDegrees(data.better_than_vr$horizontalAngle()) - 180;
+		Vec3d UIPos = a(data.better_than_vr$getPosition());
+		double offset = data.better_than_vr$getOffset();
+		AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
+	
+		GL11.glTranslated(UIPos.xCoord, UIPos.yCoord, UIPos.zCoord);
+		
+		GL11.glRotated(angle, 0, 1, 0);
+		GL11.glTranslated(0, 0, 3);
+		
+		GL11.glColor4f(1, 1, 1, 1);
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		
+		VRRenderManager.bindGUI();
+		Tessellator.instance.startDrawingQuads();
+		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.minY, 0, 1, 0);
+		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.minY, 0, 0, 0);
+		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.maxY, 0, 0, 1);
+		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.maxY, 0, 1, 1);
+		Tessellator.instance.draw();
+		
+		
+		
+		Vec3d pos = a(
+				new double[]{mc.thePlayer.x, mc.thePlayer.bb.minY, mc.thePlayer.z},
+				VRHelper.playerRelative(Config.TRACE_HAND.get())
+		);
+		Vec3d look = a(VRHelper.getTraceVector(Config.TRACE_HAND.get()));
+		
+		pos = pos.subtract(UIPos);
+		
+		double[] rot = VecMath.rotate(new double[]{pos.xCoord, pos.zCoord}, Math.toRadians(angle + 180));
+		pos = Vec3d.createVector(rot[0], pos.yCoord, rot[1]);
+		pos = pos.addVector(0, 0, -offset);
+		
+		rot = VecMath.rotate(new double[]{look.xCoord, look.zCoord}, Math.toRadians(angle + 180));
+		look = Vec3d.createVector(rot[0], look.yCoord, rot[1]);
+		
+		data.better_than_vr$mouseOverride()[0] = Double.NaN;
+		data.better_than_vr$mouseOverride()[1] = Double.NaN;
+		
+		HitResult res = UIQuad.func_1169_a(pos, pos.addVector(look.xCoord * -10, look.yCoord * -10, look.zCoord * -10));
+		if (res != null) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			
+			GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
+			double x = res.location.xCoord;
+			double y = -res.location.yCoord;
+
+			GL11.glColor4f(1, 1, 1, 1);
+			
+			double rad = 0.01;
+			
+			int qual = 64;
+			double d = 360d / qual;
+			Tessellator.instance.startDrawing(GL11.GL_TRIANGLES);
+			for (int i = 0; i < qual; i++) {
+				double s = Math.sin(Math.toRadians(i * d)) * rad;
+				double c = Math.cos(Math.toRadians(i * d)) * rad;
+				
+				Tessellator.instance.addVertexWithUV(x + s, y + c, 0, 0, 0);
+				Tessellator.instance.addVertexWithUV(x, y, 0, 1, 0);
+				
+				s = Math.sin(Math.toRadians((i + 1) * d)) * rad;
+				c = Math.cos(Math.toRadians((i + 1) * d)) * rad;
+				Tessellator.instance.addVertexWithUV(x + s, y + c, 0, 0, 0);
+			}
+			Tessellator.instance.draw();
+			
+			// TODO: I'd like to draw a line between the hand and the crosshair
+//			GL11.glLineWidth(1);
+//			Tessellator.instance.startDrawing(GL11.GL_LINES);
+//			Tessellator.instance.addVertexWithUV(x, y, 0, 1, 0);
+//			double[] hand = VRHelper.playerRelative(Config.TRACE_HAND.get());
+//			double[] oset = new double[]{0, offset};
+//			oset = VecMath.rotate(oset, Math.toRadians(angle + 27));
+//			Tessellator.instance.addVertexWithUV(
+//					-UIPos.xCoord + mc.thePlayer.x - hand[0] + oset[0],
+//					-UIPos.yCoord + mc.thePlayer.bb.minY + hand[1],
+//					-UIPos.zCoord + mc.thePlayer.z - hand[2] + oset[1],
+//					1, 0
+//			);
+//			Tessellator.instance.draw();
+			
+			x = -res.location.xCoord;
+			data.better_than_vr$mouseOverride()[0] = (x - UIQuad.minX) / (UIQuad.maxX - UIQuad.minX);
+			data.better_than_vr$mouseOverride()[1] = (y - UIQuad.minY) / (UIQuad.maxY - UIQuad.minY);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		}
+		
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glPopMatrix();
+		Lighting.enableLight();
 	}
 }

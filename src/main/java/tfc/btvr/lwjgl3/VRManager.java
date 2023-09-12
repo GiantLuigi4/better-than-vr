@@ -1,6 +1,11 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiContainer;
+import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiInventory;
+import net.minecraft.client.gui.GuiInventoryCreative;
+import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 
@@ -28,24 +33,54 @@ public class VRManager {
 		return map;
 	}
 	
+	public static boolean inStandby = true;
+	
+	private static boolean inventory = false;
+	private static boolean pauseToggled = false;
+	private static boolean invToggled = false;
+	
 	public static void tick() {
 		VRCompositor.VRCompositor_WaitGetPoses(buffer, null);
 		
 		while (true) {
 			VREvent ev = VREvent.calloc();
 			boolean v = VRSystem.VRSystem_PollNextEvent(ev);
-			String type = EV_TYPES.get(ev.eventType());
-			if (type != null && !type.equals("None"))
-				System.out.println(EV_TYPES.get(ev.eventType()));
+			if (ev.eventType() == 107) inStandby = false;
+			else if (ev.eventType() == 106) inStandby = true;
+			
+//			String type = EV_TYPES.get(ev.eventType());
+//			if (type != null && !type.equals("None")) {
+//				System.out.println(EV_TYPES.get(ev.eventType()));
+//			}
 			
 			if (!v)
 				break;
 		}
+		
+		if (VRControllerInput.getInput("gameplay", "Pause")) {
+			if (!pauseToggled) {
+				Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+				if (mc.currentScreen == null) mc.displayGuiScreen(new GuiIngameMenu());
+				else mc.displayGuiScreen(null);
+			}
+			
+			pauseToggled = true;
+		} else pauseToggled = false;
+		
+		inventory = VRControllerInput.getInput("gameplay", "OpenInventory");
 	}
 	
-	public static boolean VRInput = false;
-	
 	public static void tickGame(Minecraft mc) {
+		if (inventory && !invToggled) {
+		
+			if (mc.currentScreen == null) {
+				if (mc.thePlayer.gamemode == Gamemode.creative)
+					mc.displayGuiScreen(new GuiInventoryCreative(mc.thePlayer));
+				else mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
+			} else if (mc.currentScreen instanceof GuiContainer) mc.displayGuiScreen(null);
+		}
+		
+		invToggled = inventory;
 	}
 	
 	public static float[] getVRMotion() {

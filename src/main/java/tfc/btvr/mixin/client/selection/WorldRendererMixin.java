@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.selection;
+package tfc.btvr.mixin.client.selection;
 
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.WorldRenderer;

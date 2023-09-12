@@ -4,20 +4,22 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "motion.EntityMixin",
-    "motion.KeyboardInputMixin"
   ],
   "client": [
-    "GL30Mixin",
-    "GLHelperMixin",
-    "MinecraftMixin",
-    "ShaderRendererMixin",
-    "TessellatorMixin",
-    "WorldRendererMixin",
-    "model.LivingRendererAccessor",
-    "model.WorldRendererMixin",
-    "selection.WorldRendererMixin",
-    "ui.WorldRendererMixin"
+    "client.core.GLHelperMixin",
+    "client.core.MinecraftMixin",
+    "client.core.ShaderRendererMixin",
+    "client.core.WorldRendererMixin",
+    "client.display.GL30Mixin",
+    "client.model.LivingRendererAccessor",
+    "client.model.WorldRendererMixin",
+    "client.motion.EntityMixin",
+    "client.motion.KeyboardInputMixin",
+    "client.selection.WorldRendererMixin",
+    "client.ui.MinecraftMixin",
+    "client.ui.MouseMixin",
+    "client.ui.ScreenMixin",
+    "client.ui.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

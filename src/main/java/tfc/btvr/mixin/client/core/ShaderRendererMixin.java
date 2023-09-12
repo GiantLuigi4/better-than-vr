@@ -1,11 +1,8 @@
-package tfc.btvr.mixin;
+package tfc.btvr.mixin.client.core;
 
-import net.minecraft.client.render.shader.Shader;
 import net.minecraft.client.render.shader.ShadersRenderer;
 import org.lwjgl.opengl.Display;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;

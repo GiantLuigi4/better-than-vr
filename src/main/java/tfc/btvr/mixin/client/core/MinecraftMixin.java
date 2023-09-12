@@ -1,13 +1,11 @@
-package tfc.btvr.mixin;
+package tfc.btvr.mixin.client.core;
 
 import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.Renderer;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.sound.SoundManager;
 import net.minecraft.core.Timer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRSystem;
@@ -42,26 +40,8 @@ public abstract class MinecraftMixin {
 	public GameSettings gameSettings;
 	
 	@Shadow
-	public abstract void displayInGameMenu();
-	
-	@Shadow
-	private long lastFocusTime;
-	
-	@Shadow
-	public SoundManager sndManager;
-	
-	@Shadow
-	protected abstract void drawFrameTimeGraph(long frameTime);
-	
-	@Shadow
-	private long prevFrameTime;
-	
-	@Shadow
 	@Final
 	public GameResolution resolution;
-	
-	@Shadow
-	public EntityPlayerSP thePlayer;
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;endRenderGame(F)V", shift = At.Shift.AFTER), method = "run")
 	public void postRender(CallbackInfo ci) {
@@ -76,13 +56,15 @@ public abstract class MinecraftMixin {
 		
 		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering);
 		
+		if (VRManager.inStandby) return; // no reason to render VR if the player's not in VR yet
+		
 		int rx = resolution.width;
 		int ry = resolution.height;
 		
 		boolean rrw = VRSystem.VRSystem_ShouldApplicationReduceRenderingWork();
-		if (rrw) {
-			System.out.println("Reduced Work");
-		}
+//		if (rrw) {
+//			System.out.println("Reduced Work");
+//		}
 		
 		// draw left
 		if (!rrw || alt) {
@@ -132,7 +114,7 @@ public abstract class MinecraftMixin {
 		resolution.width = rx;
 		resolution.height = ry;
 	}
-
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
 	public void preTick(CallbackInfo ci) {
 		VRManager.tickGame((Minecraft) (Object) this);

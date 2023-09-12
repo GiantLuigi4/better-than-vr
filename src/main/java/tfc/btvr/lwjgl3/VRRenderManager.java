@@ -25,9 +25,9 @@ public class VRRenderManager {
 	public static void frameFinished(boolean reducedWork, boolean left) {
 		if (VRCompositor.VRCompositor_CanRenderScene()) {
 //			if (!reducedWork || left)
-				leftEye.submit();
+			leftEye.submit();
 //			if (!reducedWork || !left)
-				rightEye.submit();
+			rightEye.submit();
 			VRCompositor.VRCompositor_PostPresentHandoff();
 		}
 	}
@@ -100,12 +100,12 @@ public class VRRenderManager {
 			ARBFramebufferObject.glFramebufferTexture2D(36160, 36096, 3553, overlayDep.id(), 0);
 		}
 		
-		UIFbo.bind();
-		GL11.glClearColor(0, 0, 0, 0f);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-		overlayFbo.bind();
-		GL11.glClearColor(0, 0, 0, 0f);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+//		UIFbo.bind();
+//		GL11.glClearColor(0, 0, 0, 0f);
+//		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+//		overlayFbo.bind();
+//		GL11.glClearColor(0, 0, 0, 0f);
+//		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	private static boolean grabbingUI = false;
@@ -115,6 +115,9 @@ public class VRRenderManager {
 		if (grabbingOverlay)
 			overlayFbo.bind();
 		else UIFbo.bind();
+		
+		GL11.glClearColor(0, 0, 0, 0f);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	public static void grabUI(boolean overlay) {
@@ -137,8 +140,14 @@ public class VRRenderManager {
 		return grabbingUI;
 	}
 	
+	public static void bindGUI() {
+		UITex.bind();
+	}
+	
 	public static void blitUI() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		Tessellator tessellator = Tessellator.instance;
 		
 		overlayTex.bind();

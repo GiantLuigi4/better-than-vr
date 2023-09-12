@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.model;
+package tfc.btvr.mixin.client.model;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.WorldRenderer;

@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.motion;
+package tfc.btvr.mixin.client.motion;
 
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.core.entity.Entity;

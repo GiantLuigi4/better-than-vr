@@ -1,12 +1,8 @@
-package tfc.btvr.mixin;
+package tfc.btvr.mixin.client.core;
 
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.camera.ICamera;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.openvr.HmdMatrix34;
-import org.lwjgl.openvr.HmdMatrix44;
-import org.lwjgl.util.glu.GLU;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,9 +10,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
-import tfc.btvr.lwjgl3.openvr.Device;
-import tfc.btvr.lwjgl3.openvr.DeviceType;
-import tfc.btvr.lwjgl3.openvr.Eye;
 
 import java.nio.FloatBuffer;
 

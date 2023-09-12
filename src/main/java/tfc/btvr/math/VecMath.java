@@ -7,4 +7,13 @@ public class VecMath {
 		total = Math.sqrt(total);
 		for (int i = 0; i < values.length; i++) values[i] /= total;
 	}
+	
+	public static double[] rotate(double[] src, double angle) {
+		double c = Math.cos(angle);
+		double s = Math.sin(angle);
+		return new double[]{
+				src[0] * c - src[1] * s,
+				src[0] * s + src[1] * c,
+		};
+	}
 }

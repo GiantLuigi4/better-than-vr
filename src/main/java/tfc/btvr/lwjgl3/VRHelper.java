@@ -40,7 +40,7 @@ public class VRHelper {
 	public static double[] playerRelative(Device device) {
 		return new double[]{
 				device.getMatrix().m(3),
-				device.getMatrix().m(7) - 0.235,
+				device.getMatrix().m(7) + 0.12f,
 				device.getMatrix().m(11),
 		};
 	}
