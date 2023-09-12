@@ -12,6 +12,12 @@ loom {
 	gluedMinecraftJar()
 	noIntermediateMappings()
 	customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
+
+	runs {
+		client {
+			vmArgs "-Dfabric.gameVersion"
+		}
+	}
 }
 
 //project.ext.lwjglVersion = "3.3.2"

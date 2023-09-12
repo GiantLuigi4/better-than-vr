@@ -13,12 +13,28 @@ public class SteamBindingsGen {
 	private static JsonArray actions = new JsonArray();
 	private static HashMap<String, JsonObject> actionSets = new HashMap<>();
 	private static JsonObject locale = new JsonObject();
-	private static HashMap<String, ArrayList<Pair<String, Binding>>> defaults = new HashMap<>();
+	private static HashMap<String, HashMap<Binding, bindingset>> defaults = new HashMap<>();
+	
+	static class bindingset {
+		Binding key;
+		ArrayList<Pair<String, String>> acts = new ArrayList<>();
+		
+		public bindingset(Binding key) {
+			this.key = key;
+		}
+		
+		public void addAction(String output, String type) {
+			acts.add(Pair.of(output, type));
+		}
+	}
 	
 	enum Binding {
 		LEFT_JOYSTICK("vector2"),
-		LEFT_X("boolean"),
-		LEFT_Y("boolean"),
+		RIGHT_JOYSTICK("vector2"),
+		LEFT_B("boolean"), // X on oculus touch
+		LEFT_A("boolean"), // Y on oculus touch
+		RIGHT_B("boolean"),
+		RIGHT_A("boolean"),
 		LEFT_TRIGGER("boolean"),
 		RIGHT_TRIGGER("boolean"),
 		;
@@ -31,11 +47,14 @@ public class SteamBindingsGen {
 	
 	public static void main(String[] args) {
 		setupSet("gameplay", "Gameplay");
-		addAction(Binding.LEFT_JOYSTICK, "Move", false, "Move");
-		addAction(Binding.LEFT_TRIGGER, "Attack", false, "Attack");
-		addAction(Binding.RIGHT_TRIGGER, "UseItem", false, "Use Item");
-		addAction(Binding.LEFT_X, "OpenInventory", false, "Open Inventory");
-		addAction(Binding.LEFT_Y, "Pause", false, "Pause Game");
+		addAction(Binding.LEFT_JOYSTICK, "position", "Move", false, "Move");
+		addAction(Binding.RIGHT_JOYSTICK, "position", "Rotate", false, "Rotate");
+		addAction(Binding.LEFT_JOYSTICK, "click", "Jump", false, "Jump");
+		addAction(Binding.LEFT_A, "click", "Crouch", false, "Sneak");
+		addAction(Binding.LEFT_TRIGGER, "click", "Attack", false, "Attack");
+		addAction(Binding.RIGHT_TRIGGER, "click", "UseItem", false, "Use Item");
+		addAction(Binding.RIGHT_B, "click", "OpenInventory", false, "Open Inventory");
+		addAction(Binding.RIGHT_A, "click", "Pause", false, "Pause Game");
 		
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -88,38 +107,48 @@ public class SteamBindingsGen {
 				JsonObject setObj = new JsonObject();
 				JsonArray sources = new JsonArray();
 				
-				for (Pair<String, Binding> stringBindingPair : defaults.get(set)) {
+				HashMap<Binding, bindingset> map = defaults.get(set);
+				for (Binding binding : map.keySet()) {
+					bindingset stringBindingPair = map.get(binding);
+					
 					JsonObject source = new JsonObject();
 					
 					String type;
-					String input;
-					switch (stringBindingPair.getRight()) {
-						case LEFT_X:
-						case LEFT_Y:
+					switch (stringBindingPair.key) {
+						case LEFT_B:
+						case LEFT_A:
+						case RIGHT_B:
+						case RIGHT_A:
 						case LEFT_TRIGGER:
 						case RIGHT_TRIGGER:
 							type = "button";
-							input = "click";
 							break;
 						case LEFT_JOYSTICK:
+						case RIGHT_JOYSTICK:
 							type = "joystick";
-							input = "position";
 							break;
 						default:
-							throw new RuntimeException("" + stringBindingPair.getRight());
+							throw new RuntimeException("" + stringBindingPair.key);
 					}
 					
-					String pth = "/user/hand/" + (stringBindingPair.getRight().name().contains("LEFT") ? "left" : "right") +
+					String pth = "/user/hand/" + (stringBindingPair.key.name().contains("LEFT") ? "left" : "right") +
 							"/input/";
-					switch (stringBindingPair.getRight()) {
+					switch (stringBindingPair.key) {
 						case LEFT_JOYSTICK:
+						case RIGHT_JOYSTICK:
 							pth += "joystick";
 							break;
-						case LEFT_X:
+						case LEFT_B:
 							pth += "x";
 							break;
-						case LEFT_Y:
+						case LEFT_A:
 							pth += "y";
+							break;
+						case RIGHT_B:
+							pth += "b";
+							break;
+						case RIGHT_A:
+							pth += "a";
 							break;
 						case LEFT_TRIGGER:
 						case RIGHT_TRIGGER:
@@ -129,8 +158,10 @@ public class SteamBindingsGen {
 					
 					JsonObject inputs = new JsonObject();
 					JsonObject aaaa = new JsonObject();
-					aaaa.addProperty("output", stringBindingPair.getLeft());
-					inputs.add(input, aaaa);
+					for (Pair<String, String> act : stringBindingPair.acts) {
+						aaaa.addProperty("output", act.getLeft());
+						inputs.add(act.getRight(), aaaa);
+					}
 					source.add("inputs", inputs);
 					
 					source.addProperty("mode", type);
@@ -169,6 +200,7 @@ public class SteamBindingsGen {
 	
 	public static void addAction(
 			Binding binding,
+			String type,
 			String name,
 			boolean optional,
 			String english
@@ -181,7 +213,8 @@ public class SteamBindingsGen {
 		action.addProperty("type", binding.type);
 		actions.add(action);
 		
-		ArrayList<Pair<String, Binding>> defa = defaults.computeIfAbsent("/actions/" + activeSet, (key) -> new ArrayList<>());
-		defa.add(Pair.of("/actions/" + activeSet + "/in/" + name, binding));
+		HashMap<Binding, bindingset> defa = defaults.computeIfAbsent("/actions/" + activeSet, (key) -> new HashMap<>());
+		bindingset set = defa.computeIfAbsent(binding, (k) -> new bindingset(binding));
+		set.addAction("/actions/" + activeSet + "/in/" + name, type);
 	}
 }

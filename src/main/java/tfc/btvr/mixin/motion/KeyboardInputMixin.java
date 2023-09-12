@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 
-@Mixin(KeyboardInput.class)
+@Mixin(value = KeyboardInput.class, remap = false)
 public class KeyboardInputMixin {
 	@Inject(at = @At("TAIL"), method = "tick")
 	public void postTick(EntityPlayer entityplayer, CallbackInfo ci) {
 		Input self = ((Input) (Object) this);
-		self.jump = self.jump || VRControllerInput.getInput("gameplay", "jump");
+		self.jump = self.jump || VRControllerInput.getInput("gameplay", "Jump");
 	}
 }

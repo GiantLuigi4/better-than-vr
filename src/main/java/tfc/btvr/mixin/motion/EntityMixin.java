@@ -34,7 +34,7 @@ public class EntityMixin {
 			float[] m = new float[]{-f, -f1};
 			float[] m1 = VRManager.getVRMotion();
 			
-			if (m[0] != 0 || m[1] != 0) {
+			if (m[0] != 0 || m[1] != 0 || m1[0] != 0 || m1[1] != 0) {
 				
 				double len =
 						Math.max(

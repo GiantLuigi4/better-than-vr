@@ -26,9 +26,16 @@ public class VRControllerInput {
 		} catch (Throwable ignored) {
 		}
 		
-		calcHandle("gameplay", "Pause");
+		// motion
 		calcHandle("gameplay", "Move");
+		calcHandle("gameplay", "Rotate");
+		calcHandle("gameplay", "Jump");
+		calcHandle("gameplay", "Crouch");
+		// interaction
+		calcHandle("gameplay", "Attack");
 		calcHandle("gameplay", "UseItem");
+		// ui
+		calcHandle("gameplay", "Pause");
 		calcHandle("gameplay", "OpenInventory");
 		
 		LongBuffer longBuffer = BufferUtils.createLongBuffer(1);

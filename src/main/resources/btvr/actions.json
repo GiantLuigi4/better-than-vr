@@ -7,6 +7,21 @@
     },
     {
       "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Rotate",
+      "type": "vector2"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Jump",
+      "type": "vector2"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/Crouch",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
       "name": "/actions/gameplay/in/Attack",
       "type": "boolean"
     },
@@ -36,6 +51,9 @@
     {
       "/actions/gameplay": "Gameplay",
       "/actions/gameplay/in/Move": "Move",
+      "/actions/gameplay/in/Rotate": "Rotate",
+      "/actions/gameplay/in/Jump": "Jump",
+      "/actions/gameplay/in/Crouch": "Sneak",
       "/actions/gameplay/in/Attack": "Attack",
       "/actions/gameplay/in/UseItem": "Use Item",
       "/actions/gameplay/in/OpenInventory": "Open Inventory",

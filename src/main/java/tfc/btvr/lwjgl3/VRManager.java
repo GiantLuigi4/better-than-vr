@@ -71,7 +71,7 @@ public class VRManager {
 	
 	public static float[] getVRMotion() {
 		float[] m = VRControllerInput.getJoystick("gameplay", "Move");
-		m[0] = -m[0];
+		m[1] = -m[1];
 		return m;
 	}
 	

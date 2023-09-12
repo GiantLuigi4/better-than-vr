@@ -4,7 +4,8 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "motion.EntityMixin"
+    "motion.EntityMixin",
+    "motion.KeyboardInputMixin"
   ],
   "client": [
     "GL30Mixin",
