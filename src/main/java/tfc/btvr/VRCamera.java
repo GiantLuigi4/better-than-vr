@@ -51,8 +51,9 @@ public class VRCamera {
 			id = active.id;
 		
 		float[] data;
-		if (active != null) {
-			GL11.glMatrixMode(GL11.GL_PROJECTION_MATRIX);
+		if (active != null || mc.theWorld == null) {
+			GL11.glMatrixMode(5889);
+			GL11.glLoadIdentity();
 			
 			HmdMatrix44 matr = Eye.getProjectionMatrix(id, 0.1f, farDist);
 			
@@ -65,14 +66,14 @@ public class VRCamera {
 			buffer.put(data);
 			buffer.flip();
 			GL11.glLoadMatrix(buffer);
-			GL11.glScaled(1, 1, -1);
+//			GL11.glScaled(1, 1, -1);
 		}
 		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW_MATRIX);
+		GL11.glMatrixMode(5888);
+		GL11.glLoadIdentity();
 		
 		Device head = Device.HEAD;
 		
-		GL11.glLoadIdentity();
 		if (active != null) {
 			HmdMatrix34 matr32 = Eye.getTranslationMatrix(id);
 			
@@ -96,12 +97,14 @@ public class VRCamera {
 		
 		GL11.glMultMatrix(buffer);
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
-		GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
-		GL11.glTranslated(
-				mc.activeCamera.getX(pct) - mc.thePlayer.x,
-				mc.activeCamera.getY(pct) - mc.thePlayer.y,
-				mc.activeCamera.getZ(pct) - mc.thePlayer.z
-		);
+		if (instance != null && mc.thePlayer != null) {
+			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
+			GL11.glTranslated(
+					instance.getX(pct) - mc.thePlayer.x,
+					instance.getY(pct) - mc.thePlayer.y,
+					instance.getZ(pct) - mc.thePlayer.z
+			);
+		}
 	}
 	
 	private static Cube leftArm = new Cube(40, 16, 64, 64);
@@ -230,34 +233,38 @@ public class VRCamera {
 	
 	public static void drawUI(Minecraft mc, float renderPartialTicks) {
 		VRScreenData data = (VRScreenData) mc.currentScreen;
+		if (data == null) return;
 		
 		Lighting.disable();
 		GL11.glPushMatrix();
 		
-		GL11.glTranslated(
-				-mc.activeCamera.getX(renderPartialTicks),
-				-mc.activeCamera.getY(renderPartialTicks),
-				-mc.activeCamera.getZ(renderPartialTicks)
-		);
+		if (mc.thePlayer != null && mc.activeCamera != null) {
+			GL11.glTranslated(
+					-mc.activeCamera.getX(renderPartialTicks),
+					-mc.activeCamera.getY(renderPartialTicks),
+					-mc.activeCamera.getZ(renderPartialTicks)
+			);
+		}
 		
-		GL11.glEnable(GL11.GL_TEXTURE);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		
 		double angle = Math.toDegrees(data.better_than_vr$horizontalAngle()) - 180;
 		Vec3d UIPos = a(data.better_than_vr$getPosition());
 		double offset = data.better_than_vr$getOffset();
 		AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
-	
+
 		GL11.glTranslated(UIPos.xCoord, UIPos.yCoord, UIPos.zCoord);
-		
+
 		GL11.glRotated(angle, 0, 1, 0);
-		GL11.glTranslated(0, 0, 3);
+		GL11.glTranslated(0, 0, offset);
 		
 		GL11.glColor4f(1, 1, 1, 1);
 		
 		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		VRRenderManager.bindGUI();
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		Tessellator.instance.startDrawingQuads();
 		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.minY, 0, 1, 0);
 		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.minY, 0, 0, 0);
@@ -266,11 +273,15 @@ public class VRCamera {
 		Tessellator.instance.draw();
 		
 		
-		
-		Vec3d pos = a(
-				new double[]{mc.thePlayer.x, mc.thePlayer.bb.minY, mc.thePlayer.z},
-				VRHelper.playerRelative(Config.TRACE_HAND.get())
-		);
+		Vec3d pos;
+		if (mc.thePlayer != null) {
+			pos = a(
+					new double[]{mc.thePlayer.x, mc.thePlayer.bb.minY, mc.thePlayer.z},
+					VRHelper.playerRelative(Config.TRACE_HAND.get())
+			);
+		} else {
+			pos = a(VRHelper.playerRelative(Config.TRACE_HAND.get()));
+		}
 		Vec3d look = a(VRHelper.getTraceVector(Config.TRACE_HAND.get()));
 		
 		pos = pos.subtract(UIPos);
@@ -292,8 +303,6 @@ public class VRCamera {
 			GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
 			double x = res.location.xCoord;
 			double y = -res.location.yCoord;
-
-			GL11.glColor4f(1, 1, 1, 1);
 			
 			double rad = 0.01;
 			
@@ -304,12 +313,12 @@ public class VRCamera {
 				double s = Math.sin(Math.toRadians(i * d)) * rad;
 				double c = Math.cos(Math.toRadians(i * d)) * rad;
 				
-				Tessellator.instance.addVertexWithUV(x + s, y + c, 0, 0, 0);
-				Tessellator.instance.addVertexWithUV(x, y, 0, 1, 0);
+				Tessellator.instance.addVertex(x + s, y + c, 0);
+				Tessellator.instance.addVertex(x, y, 0);
 				
 				s = Math.sin(Math.toRadians((i + 1) * d)) * rad;
 				c = Math.cos(Math.toRadians((i + 1) * d)) * rad;
-				Tessellator.instance.addVertexWithUV(x + s, y + c, 0, 0, 0);
+				Tessellator.instance.addVertex(x + s, y + c, 0);
 			}
 			Tessellator.instance.draw();
 			

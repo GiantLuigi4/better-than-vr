@@ -25,7 +25,12 @@ public class ScreenMixin implements VRScreenData {
 	@Inject(at = @At("TAIL"), method = "<init>")
 	public void postInit(CallbackInfo ci) {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		if (mc == null) return;
+		if (mc == null) {
+			myPos = new double[]{0, 2, 0};
+			rotation = 0;
+			offset = 3;
+			return;
+		}
 		
 		Device HEAD = new Device(0);
 		
@@ -36,14 +41,15 @@ public class ScreenMixin implements VRScreenData {
 		rotation = angle;
 		
 		double[] crd = VRHelper.playerRelative(HEAD);
-		if (mc != null && mc.thePlayer != null) {
+		if (mc.thePlayer != null) {
 			myPos = new double[]{
 					crd[0] + mc.thePlayer.x,
 					crd[1] + mc.thePlayer.bb.minY,
 					crd[2] + mc.thePlayer.z
 			};
 		} else {
-			myPos = new double[]{crd[0], crd[1], crd[2]};
+			myPos = new double[]{0, 2, 0};
+			rotation = 0;
 		}
 		
 		offset = 3;

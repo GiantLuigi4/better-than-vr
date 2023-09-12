@@ -3,6 +3,7 @@ package tfc.btvr.mixin.client.ui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.WorldRenderer;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -65,6 +66,10 @@ public abstract class WorldRendererMixin {
 //		VRRenderManager.releaseUI();
 //	}
 	
+	@Shadow private float farPlaneDistance;
+	
+	@Shadow private long prevFrameTime;
+	
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
 		// UIs are drawn specially for VR
@@ -103,8 +108,16 @@ public abstract class WorldRendererMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderGlobal;renderEntities(Lnet/minecraft/client/render/camera/ICamera;F)V", shift = At.Shift.AFTER), method = "renderWorld")
 	public void postRenderEnts(float renderPartialTicks, long updateRenderersUntil, CallbackInfo ci) {
+		GL11.glDisable(GL11.GL_CULL_FACE);
 		if (mc.currentScreen == null) return;
-		
+		VRCamera.drawUI(mc, renderPartialTicks);
+	}
+	
+	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
+	public void preRender(float renderPartialTicks, CallbackInfo ci) {
+		if (mc.currentScreen == null) return;
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		VRCamera.apply(renderPartialTicks, null, 128);
 		VRCamera.drawUI(mc, renderPartialTicks);
 	}
 }

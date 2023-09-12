@@ -7,6 +7,7 @@ import net.minecraft.client.render.Texture;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRCompositor;
+import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.Eye;
 
 import java.nio.ByteBuffer;
@@ -115,9 +116,6 @@ public class VRRenderManager {
 		if (grabbingOverlay)
 			overlayFbo.bind();
 		else UIFbo.bind();
-		
-		GL11.glClearColor(0, 0, 0, 0f);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	public static void grabUI(boolean overlay) {
@@ -125,6 +123,9 @@ public class VRRenderManager {
 		grabbingUI = true;
 		grabbingOverlay = overlay;
 		grabUI();
+		
+		GL11.glClearColor(0, 0, 0, 0f);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 	}
 	
 	public static void releaseUI() {
@@ -145,6 +146,9 @@ public class VRRenderManager {
 	}
 	
 	public static void blitUI() {
+		if (!Config.HYBRID_MODE.get())
+			return;
+		
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
