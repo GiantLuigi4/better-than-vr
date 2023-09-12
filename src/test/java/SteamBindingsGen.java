@@ -48,8 +48,8 @@ public class SteamBindingsGen {
 	public static void main(String[] args) {
 		setupSet("gameplay", "Gameplay");
 		addAction(Binding.LEFT_JOYSTICK, "position", "Move", false, "Move");
-		addAction(Binding.RIGHT_JOYSTICK, "position", "Rotate", false, "Rotate");
 		addAction(Binding.LEFT_JOYSTICK, "click", "Jump", false, "Jump");
+		addAction(Binding.RIGHT_JOYSTICK, "position", "Rotate", false, "Rotate");
 		addAction(Binding.LEFT_A, "click", "Crouch", false, "Sneak");
 		addAction(Binding.LEFT_TRIGGER, "click", "Attack", false, "Attack");
 		addAction(Binding.RIGHT_TRIGGER, "click", "UseItem", false, "Use Item");
@@ -157,8 +157,8 @@ public class SteamBindingsGen {
 					}
 					
 					JsonObject inputs = new JsonObject();
-					JsonObject aaaa = new JsonObject();
 					for (Pair<String, String> act : stringBindingPair.acts) {
+						JsonObject aaaa = new JsonObject();
 						aaaa.addProperty("output", act.getLeft());
 						inputs.add(act.getRight(), aaaa);
 					}

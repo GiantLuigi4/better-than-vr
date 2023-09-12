@@ -46,27 +46,6 @@ public class VRManager {
 	public static boolean VRInput = false;
 	
 	public static void tickGame(Minecraft mc) {
-//		VRInput = true;
-//
-//		if (mc.thePlayer != null) {
-//			float[] m = Input.getJoystick("gameplay", "Move");
-//			m[0] = -m[0];
-//			mc.thePlayer.moveEntityWithHeading(m[0], m[1]);
-//
-////			double len = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
-////
-////			double[] res = new double[]{m[0], 0, m[1]};
-////			VRHelper.orientVector(Config.MOTION_HAND.get(), res);
-////			res[1] = 0;
-////			VecMath.normalize(res);
-////
-////			if (m[0] != 0 || m[1] != 0) {
-////				mc.thePlayer.xd += res[0] * 0.2f * len;
-////				mc.thePlayer.zd += res[2] * 0.2f * len;
-////			}
-//		}
-//
-//		VRInput = false;
 	}
 	
 	public static float[] getVRMotion() {
