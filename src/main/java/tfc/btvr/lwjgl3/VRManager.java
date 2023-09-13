@@ -45,8 +45,10 @@ public class VRManager {
 		while (true) {
 			VREvent ev = VREvent.calloc();
 			boolean v = VRSystem.VRSystem_PollNextEvent(ev);
-			if (ev.eventType() == 107) inStandby = false;
-			else if (ev.eventType() == 106) inStandby = true;
+			if (ev.eventType() == 107)
+				inStandby = false;
+			else if (ev.eventType() == 106)
+				inStandby = true;
 			
 //			String type = EV_TYPES.get(ev.eventType());
 //			if (type != null && !type.equals("None")) {

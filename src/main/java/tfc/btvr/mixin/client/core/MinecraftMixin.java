@@ -62,9 +62,6 @@ public abstract class MinecraftMixin {
 		int ry = resolution.height;
 		
 		boolean rrw = VRSystem.VRSystem_ShouldApplicationReduceRenderingWork();
-//		if (rrw) {
-//			System.out.println("Reduced Work");
-//		}
 		
 		// draw left
 		if (!rrw || alt) {

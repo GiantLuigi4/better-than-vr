@@ -1,7 +1,6 @@
 package tfc.btvr;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderGlobal;
@@ -11,6 +10,7 @@ import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.HitResult;
+import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import org.lwjgl.BufferUtils;
@@ -134,7 +134,11 @@ public class VRCamera {
 		cube.setRotationAngle(rX, rY, rZ);
 	}
 	
-	public static void renderPlayer(EntityPlayerSP thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
+	public static void renderPlayer(EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
+		renderPlayer(false, thePlayer, renderPartialTicks, renderGlobal);
+	}
+	
+	public static void renderPlayer(boolean menu, EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		Device rightHand = Device.getDeviceForRole(DeviceType.RIGHT_HAND);
 		Device leftHand = Device.getDeviceForRole(DeviceType.LEFT_HAND);
 		
@@ -143,18 +147,20 @@ public class VRCamera {
 		
 		if (thePlayer != null) {
 			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
-			if (dispatcher.renderEngine == null) return;
+			if (dispatcher.renderEngine == null) dispatcher.renderEngine = mc.renderEngine;
 			
 			PlayerRenderer renderer = (PlayerRenderer) (LivingRenderer) dispatcher.getRenderer(thePlayer);
 			renderer.loadEntityTexture(thePlayer);
 		} else {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			
+			menu = true;
 		}
 		
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glColorMask(true, true, true, true);
 		float brightness = 1.0f;
-		if (!mc.fullbright && thePlayer != null)
+		if (!mc.fullbright && !menu)
 			brightness = thePlayer.getBrightness(renderPartialTicks);
 		GL11.glColor3f(brightness, brightness, brightness);
 		
@@ -172,7 +178,7 @@ public class VRCamera {
 			buffer.put(data);
 			buffer.flip();
 			
-			if (camera != null && thePlayer != null) {
+			if (!menu && camera != null) {
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
 				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
@@ -203,7 +209,7 @@ public class VRCamera {
 			buffer.put(data);
 			buffer.flip();
 			
-			if (camera != null && thePlayer != null) {
+			if (!menu && camera != null) {
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
 				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
@@ -311,6 +317,7 @@ public class VRCamera {
 			
 			int qual = 64;
 			double d = 360d / qual;
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
 			Tessellator.instance.startDrawing(GL11.GL_TRIANGLES);
 			for (int i = 0; i < qual; i++) {
 				double s = Math.sin(Math.toRadians(i * d)) * rad;
@@ -324,6 +331,7 @@ public class VRCamera {
 				Tessellator.instance.addVertex(x + s, y + c, 0);
 			}
 			Tessellator.instance.draw();
+			GL11.glDepthFunc(GL11.GL_LESS);
 			
 			// TODO: I'd like to draw a line between the hand and the crosshair
 //			GL11.glLineWidth(1);

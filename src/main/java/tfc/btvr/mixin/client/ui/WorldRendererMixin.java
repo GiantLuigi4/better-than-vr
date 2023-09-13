@@ -119,7 +119,7 @@ public abstract class WorldRendererMixin {
 		VRCamera.drawUI(mc, renderPartialTicks);
 	}
 	
-	MenuWorld menuWorld = MenuWorld.select();
+	MenuWorld menuWorld;
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
 	public void preRender(float renderPartialTicks, CallbackInfo ci) {
@@ -135,9 +135,11 @@ public abstract class WorldRendererMixin {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		VRCamera.apply(renderPartialTicks, null, 128);
 		
+		if (menuWorld == null) menuWorld = MenuWorld.select(mc);
+		
 		menuWorld.draw(renderPartialTicks, mc);
 		
-		VRCamera.renderPlayer(null, renderPartialTicks, mc.renderGlobal);
+		VRCamera.renderPlayer(true, menuWorld.myPlayer, renderPartialTicks, mc.renderGlobal);
 		VRCamera.drawUI(mc, renderPartialTicks);
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
