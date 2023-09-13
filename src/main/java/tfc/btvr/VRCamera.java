@@ -10,8 +10,6 @@ import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.model.Cube;
-import net.minecraft.client.render.model.ModelBase;
-import net.minecraft.client.render.model.ModelPlayer;
 import net.minecraft.core.HitResult;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
@@ -26,7 +24,6 @@ import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.DeviceType;
 import tfc.btvr.lwjgl3.openvr.Eye;
 import tfc.btvr.math.VecMath;
-import tfc.btvr.mixin.client.model.LivingRendererAccessor;
 
 import java.nio.FloatBuffer;
 
@@ -141,20 +138,24 @@ public class VRCamera {
 		Device rightHand = Device.getDeviceForRole(DeviceType.RIGHT_HAND);
 		Device leftHand = Device.getDeviceForRole(DeviceType.LEFT_HAND);
 		
-		EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
-		if (dispatcher.renderEngine == null) return;
-		
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		ICamera camera = mc.activeCamera;
 		
-		PlayerRenderer renderer = (PlayerRenderer) (LivingRenderer) dispatcher.getRenderer(thePlayer);
-		ModelBase modelBase = ((LivingRendererAccessor) renderer).getMainModel();
-		ModelPlayer mdl = (ModelPlayer) modelBase;
+		if (thePlayer != null) {
+			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
+			if (dispatcher.renderEngine == null) return;
+			
+			PlayerRenderer renderer = (PlayerRenderer) (LivingRenderer) dispatcher.getRenderer(thePlayer);
+			renderer.loadEntityTexture(thePlayer);
+		} else {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		}
 		
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glColorMask(true, true, true, true);
-		float brightness = thePlayer.getBrightness(renderPartialTicks);
-		if (mc.fullbright) brightness = 1.0F;
+		float brightness = 1.0f;
+		if (!mc.fullbright && thePlayer != null)
+			brightness = thePlayer.getBrightness(renderPartialTicks);
 		GL11.glColor3f(brightness, brightness, brightness);
 		
 		double scl = 1 / 32d;
@@ -171,11 +172,12 @@ public class VRCamera {
 			buffer.put(data);
 			buffer.flip();
 			
-			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
-			renderer.loadEntityTexture(thePlayer);
-			
-			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
-			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
+			if (camera != null && thePlayer != null) {
+				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
+				
+				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
+				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
+			}
 			GL11.glMultMatrix(buffer);
 			GL11.glScaled(-1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
@@ -201,11 +203,12 @@ public class VRCamera {
 			buffer.put(data);
 			buffer.flip();
 			
-			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
-			renderer.loadEntityTexture(thePlayer);
-			
-			GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
-			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
+			if (camera != null && thePlayer != null) {
+				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
+				
+				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
+				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
+			}
 			GL11.glMultMatrix(buffer);
 			GL11.glScaled(1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
@@ -252,9 +255,9 @@ public class VRCamera {
 		Vec3d UIPos = a(data.better_than_vr$getPosition());
 		double offset = data.better_than_vr$getOffset();
 		AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
-
+		
 		GL11.glTranslated(UIPos.xCoord, UIPos.yCoord, UIPos.zCoord);
-
+		
 		GL11.glRotated(angle, 0, 1, 0);
 		GL11.glTranslated(0, 0, offset);
 		

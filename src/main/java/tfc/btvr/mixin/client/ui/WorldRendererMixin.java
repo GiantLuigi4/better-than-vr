@@ -10,9 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.Config;
 import tfc.btvr.VRCamera;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.menu.MenuWorld;
 
 @Mixin(value = WorldRenderer.class, remap = false)
 public abstract class WorldRendererMixin {
@@ -22,10 +24,12 @@ public abstract class WorldRendererMixin {
 	@Shadow
 	public ItemRenderer itemRenderer;
 	
-	@Shadow private long systemTime;
+	@Shadow
+	private long systemTime;
 	
-	@Shadow public abstract void setupScaledResolution();
-	
+	@Shadow
+	public abstract void setupScaledResolution();
+
 //	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;skipRenderWorld:Z"), method = "updateCameraAndRender", cancellable = true)
 //	public void preRender(float renderPartialTicks, CallbackInfo ci) {
 //		VRRenderManager.grabUI(false);
@@ -66,9 +70,11 @@ public abstract class WorldRendererMixin {
 //		VRRenderManager.releaseUI();
 //	}
 	
-	@Shadow private float farPlaneDistance;
+	@Shadow
+	private float farPlaneDistance;
 	
-	@Shadow private long prevFrameTime;
+	@Shadow
+	private long prevFrameTime;
 	
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
@@ -113,11 +119,27 @@ public abstract class WorldRendererMixin {
 		VRCamera.drawUI(mc, renderPartialTicks);
 	}
 	
+	MenuWorld menuWorld = MenuWorld.select();
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
 	public void preRender(float renderPartialTicks, CallbackInfo ci) {
 		if (mc.currentScreen == null) return;
+		Eye eye = Eye.getActiveEye();
+		// no point in drawing it if it won't be seen
+		if (Config.HYBRID_MODE.get() && eye == null) return;
+		
+		GL11.glDepthMask(true);
+		GL11.glDepthFunc(GL11.GL_LESS);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		VRCamera.apply(renderPartialTicks, null, 128);
+		
+		menuWorld.draw(renderPartialTicks, mc);
+		
+		VRCamera.renderPlayer(null, renderPartialTicks, mc.renderGlobal);
 		VRCamera.drawUI(mc, renderPartialTicks);
+		
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 }
