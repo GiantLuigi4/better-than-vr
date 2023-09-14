@@ -19,19 +19,21 @@ public class Device {
 	
 	private final HmdMatrix34 matr = HmdMatrix34.calloc();
 	
+	// TODO: maybe use https://gery.casiez.net/1euro/ ?
+	// https://gery.casiez.net/1euro/InteractiveDemo/
 	public HmdMatrix34 getMatrix() {
 		TrackedDevicePose pose = VRManager.getPose(index);
 		
 		TrackedDevicePose p0 = TrackedDevicePose.calloc();
+		// TODO: 4 frame window?
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
-
-//		return pose.mDeviceToAbsoluteTracking();
 		
 		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(),  p0.mDeviceToAbsoluteTracking(), 0.5);
 		HmdMatrix34 cursed = HmdMatrix34.calloc();
 		for (int i = 0; i < cursedMatr.length; i++)
 			cursed.m(i, (float) cursedMatr[i]);
 		return cursed;
+//		return pose.mDeviceToAbsoluteTracking();
 	}
 	
 	VRControllerState state = VRControllerState.calloc();

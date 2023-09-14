@@ -135,6 +135,8 @@ public class MatrixHelper {
 ////				smoothedPos.x, smoothedPos.y, smoothedPos.z
 //		};
 	
+		// TODO: https://docs.google.com/viewer?url=http://www.cs.wisc.edu/graphics/Courses/838-s2002/Papers/polar-decomp.pdf ?
+		// https://github.com/WebKit/webkit/blob/main/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp
 		double[] d = new double[4 * 3];
 		for (int i = 0; i < d.length; i++) {
 			d[i] = src.m(i) * (1 - delta) + dst.m(i) * delta;
