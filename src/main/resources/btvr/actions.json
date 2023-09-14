@@ -7,13 +7,13 @@
     },
     {
       "requirement": "mandatory",
-      "name": "/actions/gameplay/in/Rotate",
+      "name": "/actions/gameplay/in/Jump",
       "type": "vector2"
     },
     {
       "requirement": "mandatory",
-      "name": "/actions/gameplay/in/Jump",
-      "type": "boolean"
+      "name": "/actions/gameplay/in/Rotate",
+      "type": "vector2"
     },
     {
       "requirement": "mandatory",
@@ -39,9 +39,23 @@
       "requirement": "mandatory",
       "name": "/actions/gameplay/in/Pause",
       "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/ui/in/LeftClick",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/ui/in/RightClick",
+      "type": "boolean"
     }
   ],
   "action_sets": [
+    {
+      "name": "/actions/ui",
+      "usage": "leftright"
+    },
     {
       "name": "/actions/gameplay",
       "usage": "leftright"
@@ -51,13 +65,16 @@
     {
       "/actions/gameplay": "Gameplay",
       "/actions/gameplay/in/Move": "Move",
-      "/actions/gameplay/in/Rotate": "Rotate",
       "/actions/gameplay/in/Jump": "Jump",
+      "/actions/gameplay/in/Rotate": "Rotate",
       "/actions/gameplay/in/Crouch": "Sneak",
       "/actions/gameplay/in/Attack": "Attack",
       "/actions/gameplay/in/UseItem": "Use Item",
       "/actions/gameplay/in/OpenInventory": "Open Inventory",
       "/actions/gameplay/in/Pause": "Pause Game",
+      "/actions/ui": "UI",
+      "/actions/ui/in/LeftClick": "Left Click",
+      "/actions/ui/in/RightClick": "Right Click",
       "language_tag": "en_us"
     }
   ],

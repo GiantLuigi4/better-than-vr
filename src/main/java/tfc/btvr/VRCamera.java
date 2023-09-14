@@ -331,7 +331,7 @@ public class VRCamera {
 				Tessellator.instance.addVertex(x + s, y + c, 0);
 			}
 			Tessellator.instance.draw();
-			GL11.glDepthFunc(GL11.GL_LESS);
+			GL11.glDepthFunc(515);
 			
 			// TODO: I'd like to draw a line between the hand and the crosshair
 //			GL11.glLineWidth(1);

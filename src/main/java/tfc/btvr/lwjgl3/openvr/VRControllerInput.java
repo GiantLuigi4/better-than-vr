@@ -7,6 +7,7 @@ import org.lwjgl.openvr.VRActiveActionSet;
 import org.lwjgl.openvr.VRInput;
 
 import java.nio.LongBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static tfc.btvr.lwjgl3.VRManager.genErrorMap;
@@ -18,7 +19,16 @@ public class VRControllerInput {
 	
 	private static final InputDigitalActionData actionData = InputDigitalActionData.create();
 	private static final InputAnalogActionData actionDataAnalog = InputAnalogActionData.create();
-	private static final VRActiveActionSet.Buffer activeActionSet;
+	private static final ArrayList<VRActiveActionSet.Buffer> activeActionSet = new ArrayList<>();
+	
+	public static void tick() {
+		for (VRActiveActionSet.Buffer vrActiveActionSets : activeActionSet) {
+			if (vrActiveActionSets != null) {
+				int res = VRInput.VRInput_UpdateActionState(vrActiveActionSets, vrActiveActionSets.sizeof());
+				checkErr(res);
+			}
+		}
+	}
 	
 	static {
 		try {
@@ -38,15 +48,25 @@ public class VRControllerInput {
 		calcHandle("gameplay", "Pause");
 		calcHandle("gameplay", "OpenInventory");
 		
+		// mouse emulation
+//		calcHandle("ui", "LeftClick");
+//		calcHandle("ui", "RightClick");
+		
+		createSet("gameplay");
+//		createSet("ui");
+	}
+	
+	private static void createSet(String name) {
 		LongBuffer longBuffer = BufferUtils.createLongBuffer(1);
-		int handleErrorCode = VRInput.VRInput_GetActionSetHandle("/actions/gameplay", longBuffer);
+		int handleErrorCode = VRInput.VRInput_GetActionSetHandle("/actions/" + name, longBuffer);
 		checkErr(handleErrorCode);
 		long actionSetHandle = longBuffer.get(0);
 		
-		activeActionSet = VRActiveActionSet.create(1);
-		activeActionSet.ulActionSet(actionSetHandle);
-		activeActionSet.ulRestrictedToDevice(0); // both hands
-		activeActionSet.nPriority(0);
+		VRActiveActionSet.Buffer vrActiveActionSets = VRActiveActionSet.create(1);
+		vrActiveActionSets.ulActionSet(actionSetHandle);
+		vrActiveActionSets.ulRestrictedToDevice(0); // both hands
+		vrActiveActionSets.nPriority(0);
+		activeActionSet.add(vrActiveActionSets);
 	}
 	
 	private static long calcHandle(String type, String name) {
@@ -59,11 +79,6 @@ public class VRControllerInput {
 	}
 	
 	public static boolean getInput(String type, String name) {
-		if (activeActionSet != null) {
-			int res = VRInput.VRInput_UpdateActionState(activeActionSet, activeActionSet.sizeof());
-			checkErr(res);
-		}
-		
 		checkErr(VRInput.VRInput_GetDigitalActionData(
 				calcHandle(type, name),
 				actionData,
@@ -74,11 +89,6 @@ public class VRControllerInput {
 	}
 	
 	public static float[] getJoystick(String type, String name) {
-		if (activeActionSet != null) {
-			int res = VRInput.VRInput_UpdateActionState(activeActionSet, activeActionSet.sizeof());
-			checkErr(res);
-		}
-		
 		checkErr(VRInput.VRInput_GetAnalogActionData(
 				calcHandle(type, name),
 				actionDataAnalog,

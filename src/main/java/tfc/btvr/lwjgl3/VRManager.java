@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.gui.GuiInventoryCreative;
 import net.minecraft.core.player.gamemode.Gamemode;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 
@@ -42,6 +43,8 @@ public class VRManager {
 	public static void tick() {
 		VRCompositor.VRCompositor_WaitGetPoses(buffer, null);
 		
+		VRControllerInput.tick();
+		
 		while (true) {
 			VREvent ev = VREvent.calloc();
 			boolean v = VRSystem.VRSystem_PollNextEvent(ev);
@@ -49,7 +52,7 @@ public class VRManager {
 				inStandby = false;
 			else if (ev.eventType() == 106)
 				inStandby = true;
-			
+
 //			String type = EV_TYPES.get(ev.eventType());
 //			if (type != null && !type.equals("None")) {
 //				System.out.println(EV_TYPES.get(ev.eventType()));
@@ -59,9 +62,10 @@ public class VRManager {
 				break;
 		}
 		
+		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		
 		if (VRControllerInput.getInput("gameplay", "Pause")) {
 			if (!pauseToggled) {
-				Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 				if (mc.currentScreen == null) mc.displayGuiScreen(new GuiIngameMenu());
 				else mc.displayGuiScreen(null);
 			}
@@ -70,11 +74,19 @@ public class VRManager {
 		} else pauseToggled = false;
 		
 		inventory = VRControllerInput.getInput("gameplay", "OpenInventory");
+		
+		if (mc.currentScreen != null) {
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, true, VRControllerInput.getInput("gameplay", "UseItem"));
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, false, VRControllerInput.getInput("gameplay", "Attack"));
+		} else {
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, true, false);
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, false, false);
+		}
 	}
 	
 	public static void tickGame(Minecraft mc) {
 		if (inventory && !invToggled) {
-		
+			
 			if (mc.currentScreen == null) {
 				if (mc.thePlayer.gamemode == Gamemode.creative)
 					mc.displayGuiScreen(new GuiInventoryCreative(mc.thePlayer));

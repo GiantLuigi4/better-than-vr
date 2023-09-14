@@ -56,6 +56,10 @@ public class SteamBindingsGen {
 		addAction(Binding.RIGHT_B, "click", "OpenInventory", false, "Open Inventory");
 		addAction(Binding.RIGHT_A, "click", "Pause", false, "Pause Game");
 		
+		setupSet("ui", "UI");
+		addAction(Binding.LEFT_TRIGGER, "click", "LeftClick", false, "Left Click");
+		addAction(Binding.RIGHT_TRIGGER, "click", "RightClick", false, "Right Click");
+		
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		{

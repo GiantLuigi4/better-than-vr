@@ -84,6 +84,7 @@ public abstract class WorldRendererMixin {
 		} else {
 			VRRenderManager.grabUI(false);
 		}
+		GL11.glDepthMask(true);
 	}
 	
 	@Inject(at = @At("RETURN"), method = "updateCameraAndRender")
@@ -99,6 +100,7 @@ public abstract class WorldRendererMixin {
 		} else {
 			VRRenderManager.grabUI(true);
 		}
+		GL11.glDepthMask(true);
 	}
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
@@ -115,6 +117,7 @@ public abstract class WorldRendererMixin {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderGlobal;renderEntities(Lnet/minecraft/client/render/camera/ICamera;F)V", shift = At.Shift.AFTER), method = "renderWorld")
 	public void postRenderEnts(float renderPartialTicks, long updateRenderersUntil, CallbackInfo ci) {
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDepthMask(true);
 		if (mc.currentScreen == null) return;
 		VRCamera.drawUI(mc, renderPartialTicks);
 	}
@@ -129,7 +132,7 @@ public abstract class WorldRendererMixin {
 		if (Config.HYBRID_MODE.get() && eye == null) return;
 		
 		GL11.glDepthMask(true);
-		GL11.glDepthFunc(GL11.GL_LESS);
+		GL11.glDepthFunc(515);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
