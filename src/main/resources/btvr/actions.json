@@ -8,7 +8,7 @@
     {
       "requirement": "mandatory",
       "name": "/actions/gameplay/in/Jump",
-      "type": "vector2"
+      "type": "boolean"
     },
     {
       "requirement": "mandatory",

@@ -9,6 +9,7 @@ import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.mixin.client.selection.MinecraftAccessor;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -82,6 +83,13 @@ public class VRManager {
 		} else {
 			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, true, false);
 			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, false, false);
+			
+			if (VRControllerInput.getInput("gameplay", "Attack")) {
+				((MinecraftAccessor) mc).invokeClickMouse(0, true, false);
+			}
+			if (VRControllerInput.getInput("gameplay", "UseItem")) {
+				((MinecraftAccessor) mc).invokeClickMouse(1, true, false);
+			}
 		}
 	}
 	

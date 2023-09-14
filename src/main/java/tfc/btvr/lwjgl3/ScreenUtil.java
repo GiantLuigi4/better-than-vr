@@ -15,7 +15,7 @@ public class ScreenUtil {
 		}
 	}
 	
-	public static Button left = new Button(0), right = new Button(2);
+	public static Button left = new Button(0), right = new Button(1);
 	
 	public static void click(int x, int y, GuiScreen screen, boolean leftPressed, boolean pressed) {
 		Button update = leftPressed ? left : right;

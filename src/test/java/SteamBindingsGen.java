@@ -30,7 +30,9 @@ public class SteamBindingsGen {
 	
 	enum Binding {
 		LEFT_JOYSTICK("vector2"),
+		LEFT_JOYSTICK_BOOL("boolean"),
 		RIGHT_JOYSTICK("vector2"),
+		RIGHT_JOYSTICK_BOOL("boolean"),
 		LEFT_B("boolean"), // X on oculus touch
 		LEFT_A("boolean"), // Y on oculus touch
 		RIGHT_B("boolean"),
@@ -48,7 +50,7 @@ public class SteamBindingsGen {
 	public static void main(String[] args) {
 		setupSet("gameplay", "Gameplay");
 		addAction(Binding.LEFT_JOYSTICK, "position", "Move", false, "Move");
-		addAction(Binding.LEFT_JOYSTICK, "click", "Jump", false, "Jump");
+		addAction(Binding.LEFT_JOYSTICK_BOOL, "click", "Jump", false, "Jump");
 		addAction(Binding.RIGHT_JOYSTICK, "position", "Rotate", false, "Rotate");
 		addAction(Binding.LEFT_A, "click", "Crouch", false, "Sneak");
 		addAction(Binding.LEFT_TRIGGER, "click", "Attack", false, "Attack");
@@ -128,7 +130,9 @@ public class SteamBindingsGen {
 							type = "button";
 							break;
 						case LEFT_JOYSTICK:
+						case LEFT_JOYSTICK_BOOL:
 						case RIGHT_JOYSTICK:
+						case RIGHT_JOYSTICK_BOOL:
 							type = "joystick";
 							break;
 						default:
@@ -139,7 +143,9 @@ public class SteamBindingsGen {
 							"/input/";
 					switch (stringBindingPair.key) {
 						case LEFT_JOYSTICK:
+						case LEFT_JOYSTICK_BOOL:
 						case RIGHT_JOYSTICK:
+						case RIGHT_JOYSTICK_BOOL:
 							pth += "joystick";
 							break;
 						case LEFT_B:
