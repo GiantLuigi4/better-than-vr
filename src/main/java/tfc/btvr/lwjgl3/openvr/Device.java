@@ -2,6 +2,7 @@ package tfc.btvr.lwjgl3.openvr;
 
 import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.VRManager;
+import tfc.btvr.math.MatrixHelper;
 
 public class Device {
 	int index;
@@ -20,7 +21,17 @@ public class Device {
 	
 	public HmdMatrix34 getMatrix() {
 		TrackedDevicePose pose = VRManager.getPose(index);
-		return pose.mDeviceToAbsoluteTracking();
+		
+		TrackedDevicePose p0 = TrackedDevicePose.calloc();
+		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
+
+//		return pose.mDeviceToAbsoluteTracking();
+		
+		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(),  p0.mDeviceToAbsoluteTracking(), 0.5);
+		HmdMatrix34 cursed = HmdMatrix34.calloc();
+		for (int i = 0; i < cursedMatr.length; i++)
+			cursed.m(i, (float) cursedMatr[i]);
+		return cursed;
 	}
 	
 	VRControllerState state = VRControllerState.calloc();

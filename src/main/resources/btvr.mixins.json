@@ -4,6 +4,7 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "client.safety.WorldSelectionMixin"
   ],
   "client": [
     "client.core.GLHelperMixin",

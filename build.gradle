@@ -108,6 +108,8 @@ dependencies {
 	implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
 	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
 
+//	implementation "org.joml:joml:1.10.5"
+
 	for (File fl : new File("lib").listFiles()) {
 		implementation files(fl)
 	}

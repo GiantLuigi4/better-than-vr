@@ -34,7 +34,8 @@ public class VRManager {
 		return map;
 	}
 	
-	public static boolean inStandby = true;
+	// steamvr defaults to not being in standby
+	public static boolean inStandby = false;
 	
 	private static boolean inventory = false;
 	private static boolean pauseToggled = false;
