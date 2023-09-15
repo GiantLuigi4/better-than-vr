@@ -96,11 +96,7 @@ public class VRCamera {
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
 		if (instance != null && mc.thePlayer != null) {
 			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
-			GL11.glTranslated(
-					instance.getX(pct) - mc.thePlayer.x,
-					instance.getY(pct) - mc.thePlayer.y,
-					instance.getZ(pct) - mc.thePlayer.z
-			);
+			GL11.glTranslated(0, -mc.thePlayer.getHeadHeight(), 0);
 		}
 	}
 	
@@ -181,7 +177,7 @@ public class VRCamera {
 			if (!menu && camera != null) {
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
-				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
+				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
 				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			}
 			GL11.glMultMatrix(buffer);
@@ -212,7 +208,7 @@ public class VRCamera {
 			if (!menu && camera != null) {
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
-				GL11.glTranslated(-camera.getX(renderPartialTicks), -camera.getY(renderPartialTicks), -camera.getZ(renderPartialTicks));
+				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
 				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 			}
 			GL11.glMultMatrix(buffer);
