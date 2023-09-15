@@ -1,4 +1,4 @@
-package tfc.btvr.lwjgl3;
+package tfc.btvr.util;
 
 import net.minecraft.client.gui.GuiScreen;
 

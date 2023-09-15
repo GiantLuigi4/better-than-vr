@@ -302,9 +302,6 @@ public class VRCamera {
 		rot = VecMath.rotate(new double[]{look.xCoord, look.zCoord}, Math.toRadians(angle + 180));
 		look = Vec3d.createVector(rot[0], look.yCoord, rot[1]);
 		
-		data.better_than_vr$mouseOverride()[0] = Double.NaN;
-		data.better_than_vr$mouseOverride()[1] = Double.NaN;
-		
 		HitResult res = UIQuad.func_1169_a(pos, pos.addVector(look.xCoord * -10, look.yCoord * -10, look.zCoord * -10));
 		if (res != null) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -312,6 +309,24 @@ public class VRCamera {
 			GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ZERO);
 			double x = res.location.xCoord;
 			double y = -res.location.yCoord;
+			
+			x = -res.location.xCoord;
+			if (Double.isNaN(data.better_than_vr$mouseOverride()[0])) {
+				data.better_than_vr$mouseOverride()[0] = (x - UIQuad.minX) / (UIQuad.maxX - UIQuad.minX);
+				data.better_than_vr$mouseOverride()[1] = (y - UIQuad.minY) / (UIQuad.maxY - UIQuad.minY);
+			} else {
+				double pct = 0.125;
+				
+				data.better_than_vr$mouseOverride()[0] =
+						data.better_than_vr$mouseOverride()[0] * (1 - pct) +
+								((x - UIQuad.minX) / (UIQuad.maxX - UIQuad.minX)) * pct;
+				data.better_than_vr$mouseOverride()[1] =
+						data.better_than_vr$mouseOverride()[1] * (1 - pct) +
+								((y - UIQuad.minY) / (UIQuad.maxY - UIQuad.minY)) * pct;
+			}
+			
+			x = -data.better_than_vr$mouseOverride()[0] * (UIQuad.maxX - UIQuad.minX) - UIQuad.minX;
+			y = data.better_than_vr$mouseOverride()[1] * (UIQuad.maxY - UIQuad.minY) + UIQuad.minY;
 			
 			double rad = 0.01;
 			
@@ -348,10 +363,10 @@ public class VRCamera {
 //			);
 //			Tessellator.instance.draw();
 			
-			x = -res.location.xCoord;
-			data.better_than_vr$mouseOverride()[0] = (x - UIQuad.minX) / (UIQuad.maxX - UIQuad.minX);
-			data.better_than_vr$mouseOverride()[1] = (y - UIQuad.minY) / (UIQuad.maxY - UIQuad.minY);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		} else {
+			data.better_than_vr$mouseOverride()[0] = Double.NaN;
+			data.better_than_vr$mouseOverride()[1] = Double.NaN;
 		}
 		
 		GL11.glDisable(GL11.GL_BLEND);

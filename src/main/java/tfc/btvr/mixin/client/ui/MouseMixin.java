@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tfc.btvr.itf.VRScreenData;
-import tfc.btvr.lwjgl3.ScreenUtil;
 import tfc.btvr.lwjgl3.VRManager;
+import tfc.btvr.util.ScreenUtil;
 
 import java.nio.ByteBuffer;
 
@@ -113,7 +113,8 @@ public abstract class MouseMixin {
 				VRScreenData data = (VRScreenData) scrn;
 				
 				double d = data.better_than_vr$mouseOverride()[0];
-				if (!Double.isNaN(d)) cir.setReturnValue((int) (d * mc.resolution.width));
+				if (!Double.isNaN(d))
+					cir.setReturnValue((int) (d * mc.resolution.width));
 				return;
 			}
 			cir.setReturnValue(-1);
@@ -129,7 +130,8 @@ public abstract class MouseMixin {
 				VRScreenData data = (VRScreenData) scrn;
 				
 				double d = data.better_than_vr$mouseOverride()[1];
-				if (!Double.isNaN(d)) cir.setReturnValue((int) (d * mc.resolution.height));
+				if (!Double.isNaN(d))
+					cir.setReturnValue((int) (d * mc.resolution.height));
 				return;
 			}
 			cir.setReturnValue(-1);

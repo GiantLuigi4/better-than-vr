@@ -25,9 +25,7 @@ public class VRRenderManager {
 	
 	public static void frameFinished(boolean reducedWork, boolean left) {
 		if (VRCompositor.VRCompositor_CanRenderScene()) {
-//			if (!reducedWork || left)
 			leftEye.submit();
-//			if (!reducedWork || !left)
 			rightEye.submit();
 			VRCompositor.VRCompositor_PostPresentHandoff();
 		}

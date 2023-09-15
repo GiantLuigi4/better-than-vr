@@ -43,9 +43,9 @@ public class MenuWorld {
 			}
 		}
 		
-		for (int x = -30; x <= 30; x++) {
-			for (int y = -30; y <= 30; y++) {
-				for (int z = -30; z <= 30; z++) {
+		for (int x = -32; x <= 32; x++) {
+			for (int y = -32; y <= 32; y++) {
+				for (int z = -32; z <= 32; z++) {
 					int id = wrld.dummy.getBlockId(x, y + 30, z);
 					if (id == 0) {
 						wrld.dummy.setLightValue(LightLayer.Block, x, y, z, 15);
