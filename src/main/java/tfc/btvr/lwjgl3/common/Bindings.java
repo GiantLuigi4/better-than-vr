@@ -50,17 +50,16 @@ public class Bindings {
 	
 	private static boolean rotateActive = false;
 	// motion controls
-	public static final VRBinding ROTATE = new PositionBinding("gameplay", "Rotate", (x, y) -> {
+	private static final VRBinding ROTATE = new PositionBinding("gameplay", "Rotate", (x, y) -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
 		if (Config.SMOOTH_ROTATION.get()) {
-			mc.thePlayer.xRot += (float) ((Config.ROTATION_SPEED.get() / 360.0) * x);
+			mc.thePlayer.yRot += (float) ((Config.ROTATION_SPEED.get() / 4) * x);
 		} else {
 			boolean rotating = x != 0;
-			if (rotating && !rotateActive) {
-				rotateActive = true;
-				mc.thePlayer.xRot += (float) (Config.ROTATION_SPEED.get() * Math.signum(x));
-			}
+			if (rotating && !rotateActive)
+				mc.thePlayer.yRot += (float) (Config.ROTATION_SPEED.get() * Math.signum(x));
+			rotateActive = rotating;
 		}
 	});
 	
@@ -74,6 +73,10 @@ public class Bindings {
 		}
 		
 		PAUSE_GAME.tick();
+	}
+	
+	public static void postTick(Minecraft mc) {
+		ROTATE.tick();
 	}
 	
 	public static void primaryTick(Minecraft mc) {
@@ -94,8 +97,8 @@ public class Bindings {
 	static {
 		addBinding("btvr.gameplay.attack", LEFT_CLICK);
 		addBinding("btvr.gameplay.use_item", RIGHT_CLICK);
-		addBinding("btvr.gameplay.rotate", ROTATE);
 		
+		addSpecial("btvr.gameplay.rotate", ROTATE);
 		addSpecial("btvr.gameplay.open_inv", OPEN_INV);
 		addSpecial("btvr.gameplay.pause", PAUSE_GAME);
 	}

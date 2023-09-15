@@ -49,7 +49,15 @@ public class VRRenderManager {
 	private static final net.minecraft.client.render.Texture overlayTex = new Texture();
 	private static final net.minecraft.client.render.Texture overlayDep = new Texture();
 	
-	public static void startFrame(GameResolution resolution, double renderScale, boolean useLinearFiltering) {
+	private static double pct;
+	
+	public static double getPct() {
+		return pct;
+	}
+	
+	public static void startFrame(GameResolution resolution, double renderScale, boolean useLinearFiltering, double pct) {
+		VRRenderManager.pct = pct;
+		
 		int scaledWidth = (int) (renderScale * (double) resolution.width);
 		int scaledHeight = (int) (renderScale * (double) resolution.height);
 		if (fbWidth != resolution.width || fbHeight != resolution.height || renderWidth != scaledWidth || renderHeight != scaledHeight) {

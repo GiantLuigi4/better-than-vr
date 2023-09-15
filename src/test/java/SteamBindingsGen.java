@@ -49,15 +49,19 @@ public class SteamBindingsGen {
 	
 	public static void main(String[] args) {
 		setupSet("gameplay", "Gameplay");
+		// motion
 		addAction(Binding.LEFT_JOYSTICK, "position", "Move", false, "Move");
 		addAction(Binding.LEFT_JOYSTICK_BOOL, "click", "Jump", false, "Jump");
 		addAction(Binding.RIGHT_JOYSTICK, "position", "Rotate", false, "Rotate");
-		addAction(Binding.LEFT_A, "click", "Crouch", false, "Sneak");
+		addAction(Binding.RIGHT_JOYSTICK_BOOL, "click", "Crouch", false, "Sneak");
+		// interaction
 		addAction(Binding.LEFT_TRIGGER, "click", "Attack", false, "Attack");
 		addAction(Binding.RIGHT_TRIGGER, "click", "UseItem", false, "Use Item");
+		// UIs
 		addAction(Binding.RIGHT_B, "click", "OpenInventory", false, "Open Inventory");
 		addAction(Binding.RIGHT_A, "click", "Pause", false, "Pause Game");
 		
+		// UI
 		setupSet("ui", "UI");
 		addAction(Binding.LEFT_TRIGGER, "click", "LeftClick", false, "Left Click");
 		addAction(Binding.RIGHT_TRIGGER, "click", "RightClick", false, "Right Click");

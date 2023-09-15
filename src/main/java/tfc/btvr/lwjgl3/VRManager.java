@@ -3,12 +3,16 @@ package tfc.btvr.lwjgl3;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.common.Bindings;
+import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.math.VecMath;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
 public class VRManager {
+	public static double ox, oz;
+	
 	private static TrackedDevicePose.Buffer buffer = TrackedDevicePose.calloc(VR.k_unMaxTrackedDeviceCount);
 	
 	private static final HashMap<Integer, String> EV_TYPES = genErrorMap("EVREventType_VREvent_");
@@ -61,6 +65,41 @@ public class VRManager {
 	
 	public static void tickGame(Minecraft mc) {
 		Bindings.primaryTick(mc);
+	}
+	
+	public static void postTick(Minecraft mc) {
+		Bindings.postTick(mc);
+		
+		// lol I should clean this up
+		Device head = Device.HEAD;
+		HmdMatrix34 matr34 = head.getTrueMatrix();
+		
+		double[] pos = VRHelper.getPosition(matr34);
+		double[] look = VRHelper.getTraceVector(matr34);
+		
+		double tx = pos[0] - look[0] / 4;
+		double tz = pos[2] - look[2] / 4;
+		
+		double x = mc.thePlayer.x;
+		double z = mc.thePlayer.z;
+		
+		double y = mc.thePlayer.y;
+		
+		double dx = (tx - ox);
+		double dz = (tz - oz);
+		
+		double[] res = VecMath.rotate(new double[]{dx, dz}, Math.toRadians(mc.thePlayer.yRot));
+		dx = res[0];
+		dz = res[1];
+		
+		mc.thePlayer.move(dx, mc.thePlayer.yd, dz);
+		mc.thePlayer.y = y;
+		
+		mc.thePlayer.xo = mc.thePlayer.xOld -= (x - mc.thePlayer.x);
+		mc.thePlayer.zo = mc.thePlayer.zOld -= (z - mc.thePlayer.z);
+
+		ox = tx;
+		oz = tz;
 	}
 	
 	public static float[] getVRMotion() {

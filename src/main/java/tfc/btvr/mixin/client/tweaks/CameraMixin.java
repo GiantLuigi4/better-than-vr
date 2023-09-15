@@ -12,12 +12,14 @@ import tfc.btvr.math.MathHelper;
 
 @Mixin(value = EntityCamera.class, remap = false)
 public class CameraMixin {
-	@Shadow @Final public EntityLiving entity;
+	@Shadow
+	@Final
+	public EntityLiving entity;
 	
 	@Unique
-	double xr;
+	double oxr, xr;
 	@Unique
-	double yr;
+	double oyr, yr;
 	
 	@Inject(at = @At("TAIL"), method = "tick")
 	public void postTick(CallbackInfo ci) {
@@ -27,6 +29,8 @@ public class CameraMixin {
 		double d2 = pTarget[2];
 		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 		
+		oxr = xr;
+		oyr = yr;
 		this.xr = (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
 		this.yr = (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
 	}
@@ -37,7 +41,7 @@ public class CameraMixin {
 	 */
 	@Overwrite
 	public double getXRot(float renderPartialTicks) {
-		return xr;
+		return xr * renderPartialTicks + oxr * (1 - renderPartialTicks);
 	}
 	
 	/**
@@ -46,6 +50,6 @@ public class CameraMixin {
 	 */
 	@Overwrite
 	public double getYRot(float renderPartialTicks) {
-		return yr;
+		return yr * renderPartialTicks + oyr * (1 - renderPartialTicks);
 	}
 }

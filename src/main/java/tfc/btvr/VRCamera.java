@@ -19,6 +19,7 @@ import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.openvr.HmdMatrix44;
 import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.VRHelper;
+import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.DeviceType;
@@ -86,14 +87,18 @@ public class VRCamera {
 			GL11.glMultMatrix(buffer);
 		}
 		
-		HmdMatrix34 matr = head.getMatrix();
+		HmdMatrix34 matr = head.getTrueMatrix();
 		
 		data = toArray(matr);
 		buffer.put(data);
 		buffer.flip();
 		
 		GL11.glMultMatrix(buffer);
+		
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
+		GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
+		GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+		
 		if (instance != null && mc.thePlayer != null) {
 			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
 			GL11.glTranslated(0, -mc.thePlayer.getHeadHeight(), 0);
@@ -175,6 +180,10 @@ public class VRCamera {
 			buffer.flip();
 			
 			if (!menu && camera != null) {
+				GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
+				GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
+				GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+				
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
 				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
@@ -206,6 +215,10 @@ public class VRCamera {
 			buffer.flip();
 			
 			if (!menu && camera != null) {
+				GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
+				GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
+				GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+				
 				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 				
 				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());

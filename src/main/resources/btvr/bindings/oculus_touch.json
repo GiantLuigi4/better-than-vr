@@ -11,12 +11,12 @@
       "sources": [
         {
           "inputs": {
-            "position": {
-              "output": "/actions/gameplay/in/Rotate"
+            "click": {
+              "output": "/actions/gameplay/in/UseItem"
             }
           },
-          "mode": "joystick",
-          "path": "/user/hand/right/input/joystick"
+          "mode": "button",
+          "path": "/user/hand/right/input/trigger"
         },
         {
           "inputs": {
@@ -24,17 +24,17 @@
               "output": "/actions/gameplay/in/Crouch"
             }
           },
-          "mode": "button",
-          "path": "/user/hand/left/input/y"
+          "mode": "joystick",
+          "path": "/user/hand/right/input/joystick"
         },
         {
           "inputs": {
-            "click": {
-              "output": "/actions/gameplay/in/UseItem"
+            "position": {
+              "output": "/actions/gameplay/in/Move"
             }
           },
-          "mode": "button",
-          "path": "/user/hand/right/input/trigger"
+          "mode": "joystick",
+          "path": "/user/hand/left/input/joystick"
         },
         {
           "inputs": {
@@ -56,6 +56,15 @@
         },
         {
           "inputs": {
+            "position": {
+              "output": "/actions/gameplay/in/Rotate"
+            }
+          },
+          "mode": "joystick",
+          "path": "/user/hand/right/input/joystick"
+        },
+        {
+          "inputs": {
             "click": {
               "output": "/actions/gameplay/in/Attack"
             }
@@ -65,9 +74,6 @@
         },
         {
           "inputs": {
-            "position": {
-              "output": "/actions/gameplay/in/Move"
-            },
             "click": {
               "output": "/actions/gameplay/in/Jump"
             }

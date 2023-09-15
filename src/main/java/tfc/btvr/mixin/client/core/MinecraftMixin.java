@@ -54,7 +54,7 @@ public abstract class MinecraftMixin {
 	public void preRender(CallbackInfo ci) {
 		VRManager.tick();
 		
-		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering);
+		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering, this.timer.partialTicks);
 		
 		if (VRManager.inStandby) return; // no reason to render VR if the player's not in VR yet
 		
@@ -115,5 +115,10 @@ public abstract class MinecraftMixin {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
 	public void preTick(CallbackInfo ci) {
 		VRManager.tickGame((Minecraft) (Object) this);
+	}
+	
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V", shift = At.Shift.AFTER), method = "runTick")
+	public void postTick(CallbackInfo ci) {
+		VRManager.postTick((Minecraft) (Object) this);
 	}
 }

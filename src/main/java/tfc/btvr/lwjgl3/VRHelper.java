@@ -1,5 +1,6 @@
 package tfc.btvr.lwjgl3;
 
+import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.Device;
@@ -7,9 +8,8 @@ import tfc.btvr.math.MatrixHelper;
 import tfc.btvr.math.VecMath;
 
 public class VRHelper {
-	public static double[] getTraceVector(Device device) {
+	public static double[] getTraceVector(HmdMatrix34 matr) {
 		double[] res = new double[3];
-		HmdMatrix34 matr = device.getMatrix();
 		MatrixHelper.mulMatr(
 				0, 0, -1,
 				
@@ -22,6 +22,11 @@ public class VRHelper {
 		
 		VecMath.normalize(res);
 		return res;
+	}
+	
+	public static double[] getTraceVector(Device device) {
+		HmdMatrix34 matr = device.getMatrix();
+		return getTraceVector(matr);
 	}
 	
 	public static void orientVector(Device device, double[] vector) {
@@ -38,10 +43,32 @@ public class VRHelper {
 	}
 	
 	public static double[] playerRelative(Device device) {
+		double[] cursedMatr = MatrixHelper.convert(device.getTrueMatrix());
+		
+		cursedMatr[3] -= VRManager.ox;
+		cursedMatr[11] -= VRManager.oz;
+		
+		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		if (mc.thePlayer != null) {
+			double pct = VRRenderManager.getPct();
+			if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
+			
+			double delt = mc.thePlayer.yRot * pct + (1 - pct) * mc.thePlayer.yRotO;
+			
+			cursedMatr = MatrixHelper.mul(
+					cursedMatr, MatrixHelper.quatToMat(
+							MatrixHelper.axisQuat(
+									Math.toRadians(-delt),
+									0, 1, 0
+							)
+					)
+			);
+		}
+		
 		return new double[]{
-				device.getMatrix().m(3),
-				device.getMatrix().m(7) + 0.12f,
-				device.getMatrix().m(11),
+				cursedMatr[3],
+				cursedMatr[7] + 0.12f,
+				cursedMatr[11],
 		};
 	}
 	
@@ -65,5 +92,13 @@ public class VRHelper {
 		res[2] += res1[2];
 		
 		return res;
+	}
+	
+	public static double[] getPosition(HmdMatrix34 matr34) {
+		return new double[]{
+				matr34.m(3),
+				matr34.m(7),
+				matr34.m(11),
+		};
 	}
 }
