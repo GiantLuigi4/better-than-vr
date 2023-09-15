@@ -96,10 +96,11 @@ public class VRCamera {
 		GL11.glMultMatrix(buffer);
 		
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
-		GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
-		GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
 		
 		if (instance != null && mc.thePlayer != null) {
+			GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
+			GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+			
 			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
 			GL11.glTranslated(0, -mc.thePlayer.getHeadHeight(), 0);
 		}
@@ -115,6 +116,8 @@ public class VRCamera {
 		rightArm.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0, true);
 	}
 	
+	private static double armScl = 1 / 32d;
+	
 	protected static void draw(Cube cube) {
 		float rpX = cube.rotationPointX;
 		float rpY = cube.rotationPointY;
@@ -122,13 +125,14 @@ public class VRCamera {
 		float rX = cube.rotateAngleX;
 		float rY = cube.rotateAngleY;
 		float rZ = cube.rotateAngleZ;
-		
-		cube.setRotationPoint(0, -6, 0);
+
+//		cube.setRotationPoint(0, -6, 0);
+		cube.setRotationPoint(0, 0, 0);
 		cube.setRotationAngle(0, 0, 0);
 		boolean show = cube.showModel;
 		
 		cube.showModel = true;
-		cube.render(1);
+		cube.render((float) armScl);
 		
 		cube.showModel = show;
 		cube.setRotationPoint(rpX, rpY, rpZ);
@@ -165,8 +169,6 @@ public class VRCamera {
 			brightness = thePlayer.getBrightness(renderPartialTicks);
 		GL11.glColor3f(brightness, brightness, brightness);
 		
-		double scl = 1 / 32d;
-		
 		{
 			GL11.glPushMatrix();
 			HmdMatrix34 matr = rightHand.getMatrix();
@@ -193,10 +195,8 @@ public class VRCamera {
 			GL11.glScaled(-1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
 			GL11.glRotatef(180, 0, 1, 0);
-
-//			GL11.glTranslated(0, -2/8d, 0);
 			
-			GL11.glScaled(scl, scl, scl);
+			GL11.glTranslated(0, -6 * armScl, 0);
 			draw(rightArm);
 //			draw(mdl.bipedRightArmOverlay);
 			
@@ -228,10 +228,8 @@ public class VRCamera {
 			GL11.glScaled(1, -1, -1);
 			GL11.glRotatef(90, 1, 0, 0);
 			GL11.glRotatef(180, 0, 1, 0);
-
-//			GL11.glTranslated(0, -2/8d, 0);
 			
-			GL11.glScaled(scl, scl, scl);
+			GL11.glTranslated(0, -6 * armScl, 0);
 			draw(leftArm);
 //			draw(mdl.bipedLeftArmOverlay);
 			
