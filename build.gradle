@@ -15,7 +15,7 @@ loom {
 
 	runs {
 		client {
-			vmArgs "-Dfabric.gameVersion"
+			vmArgs "-Dfabric.gameVersion=1.7.7.0"
 		}
 	}
 }
