@@ -4,8 +4,7 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "client.safety.WorldSelectionMixin",
-    "client.selection.MinecraftAccessor"
+    "client.safety.EntityMixin"
   ],
   "client": [
     "client.core.GLHelperMixin",
@@ -17,6 +16,9 @@
     "client.model.WorldRendererMixin",
     "client.motion.EntityMixin",
     "client.motion.KeyboardInputMixin",
+    "client.safety.CameraMixin",
+    "client.safety.WorldSelectionMixin",
+    "client.selection.MinecraftAccessor",
     "client.selection.WorldRendererMixin",
     "client.ui.MinecraftMixin",
     "client.ui.MouseMixin",
