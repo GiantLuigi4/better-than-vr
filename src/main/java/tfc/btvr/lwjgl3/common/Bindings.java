@@ -7,8 +7,11 @@ import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.gui.GuiInventoryCreative;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
+import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 import tfc.btvr.mixin.client.selection.MinecraftAccessor;
+import tfc.btvr.util.ButtonBinding;
+import tfc.btvr.util.PositionBinding;
 import tfc.btvr.util.ScreenUtil;
 import tfc.btvr.util.VRBinding;
 
@@ -19,23 +22,23 @@ public class Bindings {
 	private static final ArrayList<VRBinding> typicalBindings = new ArrayList<>();
 	
 	// interaction controls
-	private static final VRBinding LEFT_CLICK = new VRBinding("gameplay", "Attack", () -> {
+	private static final VRBinding LEFT_CLICK = new ButtonBinding("gameplay", "Attack", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		((MinecraftAccessor) mc).invokeClickMouse(0, true, false);
 	}, null, null);
-	private static final VRBinding RIGHT_CLICK = new VRBinding("gameplay", "UseItem", () -> {
+	private static final VRBinding RIGHT_CLICK = new ButtonBinding("gameplay", "UseItem", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		((MinecraftAccessor) mc).invokeClickMouse(1, true, false);
 	}, null, null);
 	
 	// gui controls
-	private static final VRBinding PAUSE_GAME = new VRBinding("gameplay", "Pause", () -> {
+	private static final VRBinding PAUSE_GAME = new ButtonBinding("gameplay", "Pause", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
 		if (mc.currentScreen == null) mc.displayGuiScreen(new GuiIngameMenu());
 		else mc.displayGuiScreen(null);
 	}, null, null);
-	private static final VRBinding OPEN_INV = new VRBinding("gameplay", "OpenInventory", () -> {
+	private static final VRBinding OPEN_INV = new ButtonBinding("gameplay", "OpenInventory", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
 		if (mc.currentScreen == null) {
@@ -44,6 +47,22 @@ public class Bindings {
 			else mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
 		} else if (mc.currentScreen instanceof GuiContainer) mc.displayGuiScreen(null);
 	}, null, null);
+	
+	private static boolean rotateActive = false;
+	// motion controls
+	public static final VRBinding ROTATE = new PositionBinding("gameplay", "Rotate", (x, y) -> {
+		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		
+		if (Config.SMOOTH_ROTATION.get()) {
+			mc.thePlayer.xRot += (float) ((Config.ROTATION_SPEED.get() / 360.0) * x);
+		} else {
+			boolean rotating = x != 0;
+			if (rotating && !rotateActive) {
+				rotateActive = true;
+				mc.thePlayer.xRot += (float) (Config.ROTATION_SPEED.get() * Math.signum(x));
+			}
+		}
+	});
 	
 	public static void renderTick(Minecraft mc) {
 		if (mc.currentScreen != null) {
@@ -75,6 +94,7 @@ public class Bindings {
 	static {
 		addBinding("btvr.gameplay.attack", LEFT_CLICK);
 		addBinding("btvr.gameplay.use_item", RIGHT_CLICK);
+		addBinding("btvr.gameplay.rotate", ROTATE);
 		
 		addSpecial("btvr.gameplay.open_inv", OPEN_INV);
 		addSpecial("btvr.gameplay.pause", PAUSE_GAME);
