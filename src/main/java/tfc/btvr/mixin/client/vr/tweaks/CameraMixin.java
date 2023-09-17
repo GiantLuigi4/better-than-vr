@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.tweaks;
+package tfc.btvr.mixin.client.vr.tweaks;
 
 import net.minecraft.client.render.camera.EntityCamera;
 import net.minecraft.core.entity.EntityLiving;

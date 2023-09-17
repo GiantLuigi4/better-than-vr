@@ -39,6 +39,8 @@ public class SteamBindingsGen {
 		RIGHT_A("boolean"),
 		LEFT_TRIGGER("boolean"),
 		RIGHT_TRIGGER("boolean"),
+		LEFT_GRIP("boolean"),
+		RIGHT_GRIP("boolean"),
 		;
 		String type;
 		
@@ -60,6 +62,9 @@ public class SteamBindingsGen {
 		// UIs
 		addAction(Binding.RIGHT_B, "click", "OpenInventory", false, "Open Inventory");
 		addAction(Binding.RIGHT_A, "click", "Pause", false, "Pause Game");
+		// Hotbar
+		addAction(Binding.LEFT_GRIP, "click", "HotbarLeft", false, "Previous Slot");
+		addAction(Binding.RIGHT_GRIP, "click", "HotbarRight", false, "Next Slot");
 		
 		// UI
 		setupSet("ui", "UI");
@@ -131,6 +136,8 @@ public class SteamBindingsGen {
 						case RIGHT_A:
 						case LEFT_TRIGGER:
 						case RIGHT_TRIGGER:
+						case LEFT_GRIP:
+						case RIGHT_GRIP:
 							type = "button";
 							break;
 						case LEFT_JOYSTICK:
@@ -163,6 +170,10 @@ public class SteamBindingsGen {
 							break;
 						case RIGHT_A:
 							pth += "a";
+							break;
+						case LEFT_GRIP:
+						case RIGHT_GRIP:
+							pth += "grip";
 							break;
 						case LEFT_TRIGGER:
 						case RIGHT_TRIGGER:

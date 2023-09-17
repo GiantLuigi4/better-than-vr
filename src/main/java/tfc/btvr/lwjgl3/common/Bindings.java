@@ -9,7 +9,7 @@ import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
-import tfc.btvr.mixin.client.selection.MinecraftAccessor;
+import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
 import tfc.btvr.util.ButtonBinding;
 import tfc.btvr.util.PositionBinding;
 import tfc.btvr.util.ScreenUtil;
@@ -29,6 +29,16 @@ public class Bindings {
 	private static final VRBinding RIGHT_CLICK = new ButtonBinding("gameplay", "UseItem", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		((MinecraftAccessor) mc).invokeClickMouse(1, true, false);
+	}, null, null);
+	
+	// hotbar controls
+	private static final VRBinding NEXT_SLOT = new ButtonBinding("gameplay", "HotbarRight", () -> {
+		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		mc.thePlayer.inventory.changeCurrentItem(-1);
+	}, null, null);
+	private static final VRBinding PREV_SLOT = new ButtonBinding("gameplay", "HotbarLeft", () -> {
+		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
+		mc.thePlayer.inventory.changeCurrentItem(1);
 	}, null, null);
 	
 	// gui controls
@@ -97,6 +107,9 @@ public class Bindings {
 	static {
 		addBinding("btvr.gameplay.attack", LEFT_CLICK);
 		addBinding("btvr.gameplay.use_item", RIGHT_CLICK);
+		
+		addBinding("btvr.gameplay.hotbar_right", NEXT_SLOT);
+		addBinding("btvr.gameplay.hotbar_left", PREV_SLOT);
 		
 		addSpecial("btvr.gameplay.rotate", ROTATE);
 		addSpecial("btvr.gameplay.open_inv", OPEN_INV);

@@ -21,6 +21,15 @@
         {
           "inputs": {
             "click": {
+              "output": "/actions/gameplay/in/HotbarLeft"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/left/input/grip"
+        },
+        {
+          "inputs": {
+            "click": {
               "output": "/actions/gameplay/in/Crouch"
             }
           },
@@ -44,6 +53,15 @@
           },
           "mode": "button",
           "path": "/user/hand/right/input/a"
+        },
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/gameplay/in/HotbarRight"
+            }
+          },
+          "mode": "button",
+          "path": "/user/hand/right/input/grip"
         },
         {
           "inputs": {

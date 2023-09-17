@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.core;
+package tfc.btvr.mixin.client.vr.core;
 
 import net.minecraft.client.render.shader.ShadersRenderer;
 import org.lwjgl.opengl.Display;

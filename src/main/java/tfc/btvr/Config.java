@@ -92,6 +92,8 @@ public class Config {
 	
 	public static final BooleanOption HYBRID_MODE = new BooleanOption("flat_ui", true);
 	
+	public static final BooleanOption LEFT_HANDED = new BooleanOption("left_handed", false);
+	
 	public static final BooleanOption SMOOTH_ROTATION = new BooleanOption("smooth_rotation", false);
 	public static final BooleanOption EXTRA_SMOOTH_ROTATION = new BooleanOption("extra_smooth_rotation", false);
 	public static final DecimalOption ROTATION_SPEED = new DecimalOption("rotation_speed", 22.5);
@@ -109,6 +111,8 @@ public class Config {
 		// donno if it's just me, but this option makes VR feel a lot worse
 		EXTRA_SMOOTH_ROTATION.write(properties);
 		ROTATION_SPEED.write(properties);
+		
+		LEFT_HANDED.write(properties);
 		
 		ConfigHandler hndlr = new ConfigHandler("btvr", properties);
 		hndlr.loadConfig();

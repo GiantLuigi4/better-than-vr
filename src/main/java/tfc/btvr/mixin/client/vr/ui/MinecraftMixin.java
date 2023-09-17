@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.ui;
+package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;

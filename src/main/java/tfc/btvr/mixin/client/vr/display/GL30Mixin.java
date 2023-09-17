@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.display;
+package tfc.btvr.mixin.client.vr.display;
 
 import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;

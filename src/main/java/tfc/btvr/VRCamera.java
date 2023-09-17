@@ -5,12 +5,18 @@ import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.block.model.BlockModel;
+import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.HitResult;
+import net.minecraft.core.block.Block;
+import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import org.lwjgl.BufferUtils;
@@ -143,6 +149,75 @@ public class VRCamera {
 		renderPlayer(false, thePlayer, renderPartialTicks, renderGlobal);
 	}
 	
+	public static void handMatrix(EntityPlayer player, double pct, boolean left, Device hand) {
+		HmdMatrix34 matr = hand.getMatrix();
+		float[] data = new float[]{
+				matr.m(0), matr.m(4), matr.m(8), 0,
+				matr.m(1), matr.m(5), matr.m(9), 0,
+				matr.m(2), matr.m(6), matr.m(10), 0,
+				matr.m(3), matr.m(7), matr.m(11), 1,
+		};
+		buffer.put(data);
+		buffer.flip();
+		
+		GL11.glMultMatrix(buffer);
+		GL11.glScaled(left ? 1 : -1, -1, -1);
+		GL11.glRotatef(90, 1, 0, 0);
+		GL11.glRotatef(180, 0, 1, 0);
+		
+		GL11.glTranslated(0, -6 * armScl, 0);
+		if (player != null && left == Config.LEFT_HANDED.get()) {
+			double prog = player.swingProgress;
+			if (prog == 0 && player.prevSwingProgress != 0) prog = 1;
+			double interp = prog * pct + player.prevSwingProgress * (1 - pct);
+			GL11.glRotatef(
+					(float) Math.cos(interp * Math.PI * 2) * 18,
+					1, 0, 0
+			);
+		}
+	}
+	
+	protected static void drawItem(EntityLiving entity, Minecraft mc, boolean leftHanded) {
+		ItemStack itemstack = entity.getHeldItem();
+		if (itemstack != null) {
+			GL11.glPushMatrix();
+			
+			GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
+			float f2;
+			if (itemstack.itemID < Block.blocksList.length && ((BlockModel) BlockModelDispatcher.getInstance().getDispatch(Block.blocksList[itemstack.itemID])).shouldItemRender3d()) {
+				f2 = 0.5F;
+				GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
+				f2 *= 0.5F;
+				GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glScalef(f2, -f2, f2);
+			} else if (itemstack.itemID == Item.toolBow.id) {
+				f2 = 0.625F;
+				GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
+				GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glScalef(f2, -f2, f2);
+				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			} else if (Item.itemsList[itemstack.itemID].isFull3D()) {
+				f2 = 0.625F;
+				GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
+				GL11.glScalef(f2, -f2, f2);
+				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			} else {
+				f2 = 0.375F;
+				GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
+				GL11.glScalef(f2, f2, f2);
+				GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
+			}
+			
+			EntityRenderDispatcher.instance.itemRenderer.renderItem(entity, itemstack);
+			GL11.glPopMatrix();
+		}
+	}
+	
 	public static void renderPlayer(boolean menu, EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		Device rightHand = Device.getDeviceForRole(DeviceType.RIGHT_HAND);
 		Device leftHand = Device.getDeviceForRole(DeviceType.LEFT_HAND);
@@ -169,72 +244,59 @@ public class VRCamera {
 			brightness = thePlayer.getBrightness(renderPartialTicks);
 		GL11.glColor3f(brightness, brightness, brightness);
 		
-		{
+		GL11.glPushMatrix();
+		if (!menu && camera != null) {
+			GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
+			GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
+			GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+			
+			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
+			
+			GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
+			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
+		}
+		
+		
+		
+		// right hand
+		GL11.glPushMatrix();
+		handMatrix(thePlayer, renderPartialTicks, false, rightHand);
+		draw(rightArm);
+//		draw(mdl.bipedRightArmOverlay);
+		GL11.glPopMatrix();
+		
+		// left hand
+		GL11.glPushMatrix();
+		handMatrix(thePlayer, renderPartialTicks, true, leftHand);
+		draw(leftArm);
+//		draw(mdl.bipedLeftArmOverlay);
+		GL11.glPopMatrix();
+		
+		
+		
+		if (thePlayer != null) {
 			GL11.glPushMatrix();
-			HmdMatrix34 matr = rightHand.getMatrix();
-			float[] data = new float[]{
-					matr.m(0), matr.m(4), matr.m(8), 0,
-					matr.m(1), matr.m(5), matr.m(9), 0,
-					matr.m(2), matr.m(6), matr.m(10), 0,
-					matr.m(3), matr.m(7), matr.m(11), 1,
-			};
-			buffer.put(data);
-			buffer.flip();
+			boolean leftHanded = false;
 			
-			if (!menu && camera != null) {
-				GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
-				GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
-				GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
-				
-				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
-				
-				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
-				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
-			}
-			GL11.glMultMatrix(buffer);
-			GL11.glScaled(-1, -1, -1);
-			GL11.glRotatef(90, 1, 0, 0);
-			GL11.glRotatef(180, 0, 1, 0);
+			handMatrix(thePlayer, renderPartialTicks, leftHanded, leftHanded ? leftHand : rightHand);
 			
-			GL11.glTranslated(0, -6 * armScl, 0);
-			draw(rightArm);
-//			draw(mdl.bipedRightArmOverlay);
+//			if (leftHanded) GL11.glScaled(-1, 1, -1);
+			GL11.glScaled(1, 1, -1);
 			
+			GL11.glRotated(-90, 0, 0, 1);
+			GL11.glRotated(-90, 0, 1, 0);
+			GL11.glRotated(90, 1, 0, 0);
+			GL11.glRotated(-90, 0, 1, 0);
+			GL11.glRotated(-4.5, 0, 0, 1);
+			GL11.glTranslated(0.04, -0.15, -0.025);
+			GL11.glScaled(armScl * 16, armScl * 16, armScl * 16);
+			
+			drawItem(thePlayer, mc, leftHanded);
 			GL11.glPopMatrix();
 		}
-		{
-			GL11.glPushMatrix();
-			HmdMatrix34 matr = leftHand.getMatrix();
-			float[] data = new float[]{
-					matr.m(0), matr.m(4), matr.m(8), 0,
-					matr.m(1), matr.m(5), matr.m(9), 0,
-					matr.m(2), matr.m(6), matr.m(10), 0,
-					matr.m(3), matr.m(7), matr.m(11), 1,
-			};
-			buffer.put(data);
-			buffer.flip();
-			
-			if (!menu && camera != null) {
-				GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
-				GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
-				GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
-				
-				GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
-				
-				GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
-				GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
-			}
-			GL11.glMultMatrix(buffer);
-			GL11.glScaled(1, -1, -1);
-			GL11.glRotatef(90, 1, 0, 0);
-			GL11.glRotatef(180, 0, 1, 0);
-			
-			GL11.glTranslated(0, -6 * armScl, 0);
-			draw(leftArm);
-//			draw(mdl.bipedLeftArmOverlay);
-			
-			GL11.glPopMatrix();
-		}
+		
+		
+		GL11.glPopMatrix();
 		
 		GL11.glEnable(GL11.GL_CULL_FACE);
 	}

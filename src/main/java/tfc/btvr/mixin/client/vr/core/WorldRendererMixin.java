@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.core;
+package tfc.btvr.mixin.client.vr.core;
 
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.camera.ICamera;

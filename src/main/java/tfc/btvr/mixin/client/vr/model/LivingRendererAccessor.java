@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.model;
+package tfc.btvr.mixin.client.vr.model;
 
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.model.ModelBase;

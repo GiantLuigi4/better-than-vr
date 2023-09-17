@@ -42,6 +42,16 @@
     },
     {
       "requirement": "mandatory",
+      "name": "/actions/gameplay/in/HotbarLeft",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
+      "name": "/actions/gameplay/in/HotbarRight",
+      "type": "boolean"
+    },
+    {
+      "requirement": "mandatory",
       "name": "/actions/ui/in/LeftClick",
       "type": "boolean"
     },
@@ -72,6 +82,8 @@
       "/actions/gameplay/in/UseItem": "Use Item",
       "/actions/gameplay/in/OpenInventory": "Open Inventory",
       "/actions/gameplay/in/Pause": "Pause Game",
+      "/actions/gameplay/in/HotbarLeft": "Previous Slot",
+      "/actions/gameplay/in/HotbarRight": "Next Slot",
       "/actions/ui": "UI",
       "/actions/ui/in/LeftClick": "Left Click",
       "/actions/ui/in/RightClick": "Right Click",

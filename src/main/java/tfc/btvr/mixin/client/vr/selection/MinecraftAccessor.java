@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.selection;
+package tfc.btvr.mixin.client.vr.selection;
 
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;

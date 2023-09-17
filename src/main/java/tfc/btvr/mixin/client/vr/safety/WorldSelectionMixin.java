@@ -1,4 +1,4 @@
-package tfc.btvr.mixin.client.safety;
+package tfc.btvr.mixin.client.vr.safety;
 
 import net.minecraft.client.gui.GuiSelectWorld;
 import org.lwjgl.openvr.VRCompositor;
