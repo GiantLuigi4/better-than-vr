@@ -21,6 +21,7 @@
     "client.vr.selection.MinecraftAccessor",
     "client.vr.selection.WorldRendererMixin",
     "client.vr.tweaks.CameraMixin",
+    "client.vr.ui.GUIIngameMixin",
     "client.vr.ui.MinecraftMixin",
     "client.vr.ui.MouseMixin",
     "client.vr.ui.ScreenMixin",

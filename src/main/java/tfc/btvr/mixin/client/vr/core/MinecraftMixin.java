@@ -14,10 +14,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
@@ -120,5 +122,10 @@ public abstract class MinecraftMixin {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V", shift = At.Shift.AFTER), method = "runTick")
 	public void postTick(CallbackInfo ci) {
 		VRManager.postTick((Minecraft) (Object) this);
+	}
+	
+	@ModifyVariable(argsOnly = true, ordinal = 0, at = @At("HEAD"), method = "mineBlocks")
+	public boolean isOn(boolean value) {
+		return value || VRControllerInput.getInput("gameplay", "Attack");
 	}
 }

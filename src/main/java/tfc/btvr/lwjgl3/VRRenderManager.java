@@ -92,14 +92,15 @@ public class VRRenderManager {
 			overlayFbo.generate();
 			overlayFbo.bind();
 			overlayTex.bind();
-			GL11.glTexImage2D(3553, 0, 6408, renderWidth, renderHeight, 0, 6408, 5121, (ByteBuffer) null);
-			GL11.glTexParameteri(3553, 10241, filterMode);
-			GL11.glTexParameteri(3553, 10240, filterMode);
+			int overlayWidth = 960;
+			GL11.glTexImage2D(3553, 0, 6408, overlayWidth, overlayWidth / 2, 0, 6408, 5121, (ByteBuffer) null);
+			GL11.glTexParameteri(3553, 10241, GL11.GL_NEAREST);
+			GL11.glTexParameteri(3553, 10240, GL11.GL_NEAREST);
 			GL11.glTexParameteri(3553, 10242, 10496);
 			GL11.glTexParameteri(3553, 10243, 10496);
 			ARBFramebufferObject.glFramebufferTexture2D(36160, 36064, 3553, overlayTex.id(), 0);
 			overlayDep.bind();
-			GL11.glTexImage2D(3553, 0, 6402, renderWidth, renderHeight, 0, 6402, 5121, (ByteBuffer) null);
+			GL11.glTexImage2D(3553, 0, 6402, overlayWidth, overlayWidth / 2, 0, 6402, 5121, (ByteBuffer) null);
 			GL11.glTexParameteri(3553, 10241, filterMode);
 			GL11.glTexParameteri(3553, 10240, filterMode);
 			GL11.glTexParameteri(3553, 10242, 10496);
@@ -151,6 +152,10 @@ public class VRRenderManager {
 		UITex.bind();
 	}
 	
+	public static void bindUI() {
+		overlayTex.bind();
+	}
+	
 	public static void blitUI() {
 		if (!Config.HYBRID_MODE.get())
 			return;
@@ -160,13 +165,13 @@ public class VRRenderManager {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		Tessellator tessellator = Tessellator.instance;
 		
-		overlayTex.bind();
-		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(-1, -1, 0, 0.0, 0.0);
-		tessellator.addVertexWithUV(-1, 1, 0, 0.0, 1.0);
-		tessellator.addVertexWithUV(1, 1, 0, 1.0, 1.0);
-		tessellator.addVertexWithUV(1, -1, 0, 1.0, 0.0);
-		tessellator.draw();
+//		overlayTex.bind();
+//		tessellator.startDrawingQuads();
+//		tessellator.addVertexWithUV(-1, -1, 0, 0.0, 0.0);
+//		tessellator.addVertexWithUV(-1, 1, 0, 0.0, 1.0);
+//		tessellator.addVertexWithUV(1, 1, 0, 1.0, 1.0);
+//		tessellator.addVertexWithUV(1, -1, 0, 1.0, 0.0);
+//		tessellator.draw();
 		
 		UITex.bind();
 		tessellator.startDrawingQuads();

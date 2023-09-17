@@ -17,6 +17,8 @@ import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.tool.ItemTool;
+import net.minecraft.core.item.tool.ItemToolSword;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import org.lwjgl.BufferUtils;
@@ -131,8 +133,7 @@ public class VRCamera {
 		float rX = cube.rotateAngleX;
 		float rY = cube.rotateAngleY;
 		float rZ = cube.rotateAngleZ;
-
-//		cube.setRotationPoint(0, -6, 0);
+		
 		cube.setRotationPoint(0, 0, 0);
 		cube.setRotationAngle(0, 0, 0);
 		boolean show = cube.showModel;
@@ -204,6 +205,15 @@ public class VRCamera {
 				GL11.glScalef(f2, -f2, f2);
 				GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+				if (
+						Item.itemsList[itemstack.itemID] instanceof ItemTool ||
+								Item.itemsList[itemstack.itemID] instanceof ItemToolSword
+				) {
+					GL11.glRotatef(-45.0F, 1.0F, 0.0F, 0.0F);
+					GL11.glRotatef(-30.0F, 0.0F, 0.0F, 1.0F);
+					GL11.glRotatef(5.0F, 0.0F, 1.0F, 0.0F);
+					GL11.glTranslated(0.025, 0, 0);
+				}
 			} else {
 				f2 = 0.375F;
 				GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
@@ -257,7 +267,6 @@ public class VRCamera {
 		}
 		
 		
-		
 		// right hand
 		GL11.glPushMatrix();
 		handMatrix(thePlayer, renderPartialTicks, false, rightHand);
@@ -273,14 +282,45 @@ public class VRCamera {
 		GL11.glPopMatrix();
 		
 		
-		
 		if (thePlayer != null) {
+			boolean leftHanded = Config.LEFT_HANDED.get();
+			
+			// UI rendering
 			GL11.glPushMatrix();
-			boolean leftHanded = false;
+			handMatrix(thePlayer, renderPartialTicks, !leftHanded, leftHanded ? rightHand : leftHand);
+			
+			AABB UIQuad = new AABB(-2, -1, 0, 2, 1, 0);
+			GL11.glColor4f(1, 1, 1, 1);
+			
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			
+			VRRenderManager.bindUI();
+			GL11.glRotated(-90, 0, 0, 1);
+			GL11.glScaled(armScl, armScl, armScl);
+			GL11.glTranslated(0, 0, -2.001);
+			GL11.glScaled(14, 14, 1);
+			GL11.glTranslated(0, 0.857, 0);
+			if (leftHanded) GL11.glScaled(-1, 1, 1);
+			Tessellator.instance.startDrawingQuads();
+			
+			Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.minY, 0, 1, 0);
+			Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.minY, 0, 0, 0);
+			Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.maxY, 0, 0, 1);
+			Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.maxY, 0, 1, 1);
+			Tessellator.instance.draw();
+			
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopMatrix();
+			
+			
+			// held item rendering
+			GL11.glPushMatrix();
 			
 			handMatrix(thePlayer, renderPartialTicks, leftHanded, leftHanded ? leftHand : rightHand);
 			
-//			if (leftHanded) GL11.glScaled(-1, 1, -1);
+			// TODO: fix lighting
 			GL11.glScaled(1, 1, -1);
 			
 			GL11.glRotated(-90, 0, 0, 1);

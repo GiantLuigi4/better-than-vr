@@ -97,16 +97,17 @@ public abstract class WorldRendererMixin {
 		// UIs are drawn specially for VR
 		if (Eye.getActiveEye() != null) {
 			ci.cancel();
-		} else {
-			VRRenderManager.grabUI(true);
 		}
-		GL11.glDepthMask(true);
+//		else {
+//			VRRenderManager.grabUI(true);
+//		}
+//		GL11.glDepthMask(true);
 	}
 	
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
-	public void postRenderOverlay(float renderPartialTicks, CallbackInfo ci) {
-		VRRenderManager.releaseUI();
-	}
+//	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
+//	public void postRenderOverlay(float renderPartialTicks, CallbackInfo ci) {
+//		VRRenderManager.releaseUI();
+//	}
 	
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "setupPlayerCamera")
 	public void conditionallyRenderItem(ItemRenderer instance, float r) {
