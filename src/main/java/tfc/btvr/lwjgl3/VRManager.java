@@ -2,10 +2,10 @@ package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
-import tfc.btvr.lwjgl3.common.Bindings;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 import tfc.btvr.math.VecMath;
+import tfc.btvr.util.Bindings;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
