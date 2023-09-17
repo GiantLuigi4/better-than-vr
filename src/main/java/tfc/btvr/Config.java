@@ -9,35 +9,68 @@ import java.util.Properties;
 
 public class Config {
 	private static final ArrayList<Option> ALL_OPTIONS = new ArrayList<>();
-	
 	private static abstract class Option {
+		
 		protected abstract void write(Properties properties);
 		
 		protected abstract void read(ConfigHandler properties);
 	}
 	
+	enum Hand {
+		LEFT, RIGHT, MAIN
+	}
+	
 	public static class HandOption extends Option {
 		String name;
-		boolean right;
+		Hand value;
 		
-		public HandOption(String name, boolean right) {
+		public HandOption(String name, Hand defaultV) {
 			this.name = name;
-			this.right = right;
+			this.value = defaultV;
 			ALL_OPTIONS.add(this);
 		}
 		
 		protected void write(Properties properties) {
-			properties.put(name, right ? "right" : "left");
+			properties.put(name, value.name().toLowerCase());
 		}
 		
 		protected void read(ConfigHandler properties) {
-			right = properties.getString(name).equals("right");
+			switch (properties.getString(name)) {
+				case "left":
+					value = Hand.LEFT;
+					break;
+				case "right":
+					value = Hand.RIGHT;
+					break;
+//				case "main":
+//					value = Hand.MAIN;
+//					break;
+				default:
+					value = Hand.MAIN;
+					break;
+			}
 		}
 		
 		public Device get() {
-			return Device.getDeviceForRole(
-					right ? DeviceType.RIGHT_HAND : DeviceType.LEFT_HAND
-			);
+			switch (value) {
+				case LEFT:
+					return Device.getDeviceForRole(DeviceType.LEFT_HAND);
+				case RIGHT:
+					return Device.getDeviceForRole(DeviceType.RIGHT_HAND);
+				default:
+					return Device.getDeviceForRole(Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND);
+			}
+		}
+		
+		public DeviceType getType() {
+			switch (value) {
+				case LEFT:
+					return DeviceType.LEFT_HAND;
+				case RIGHT:
+					return DeviceType.RIGHT_HAND;
+				default:
+					return Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND;
+			}
 		}
 	}
 	
@@ -87,8 +120,9 @@ public class Config {
 		}
 	}
 	
-	public static final HandOption MOTION_HAND = new HandOption("motion_hand", false);
-	public static final HandOption TRACE_HAND = new HandOption("trace_hand", true);
+	public static final HandOption MOTION_HAND = new HandOption("motion_hand", Hand.RIGHT);
+	public static final HandOption TRACE_HAND = new HandOption("trace_hand", Hand.LEFT);
+	public static final HandOption INTERACTION_HAND = new HandOption("interaction_hand", Hand.MAIN);
 	
 	public static final BooleanOption HYBRID_MODE = new BooleanOption("flat_ui", true);
 	
@@ -103,6 +137,7 @@ public class Config {
 		
 		MOTION_HAND.write(properties);
 		TRACE_HAND.write(properties);
+		INTERACTION_HAND.write(properties);
 		
 		HYBRID_MODE.write(properties);
 		

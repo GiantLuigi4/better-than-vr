@@ -5,7 +5,8 @@ import org.lwjgl.openvr.*;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 import tfc.btvr.math.VecMath;
-import tfc.btvr.util.Bindings;
+import tfc.btvr.util.controls.Bindings;
+import tfc.btvr.util.gestures.GestureControllers;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -65,6 +66,12 @@ public class VRManager {
 	
 	public static void tickGame(Minecraft mc) {
 		Bindings.primaryTick(mc);
+		
+		if (mc.thePlayer != null) {
+			GestureControllers.getHeadController().tick(mc);
+			GestureControllers.getMainHandController().tick(mc);
+			GestureControllers.getOffHandController().tick(mc);
+		}
 	}
 	
 	public static void postTick(Minecraft mc) {

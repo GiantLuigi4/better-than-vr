@@ -1,4 +1,4 @@
-package tfc.btvr.util;
+package tfc.btvr.util.controls;
 
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 

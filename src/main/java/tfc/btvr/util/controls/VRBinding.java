@@ -1,4 +1,4 @@
-package tfc.btvr.util;
+package tfc.btvr.util.controls;
 
 public abstract class VRBinding {
 	String group, name;

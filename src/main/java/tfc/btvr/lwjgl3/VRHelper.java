@@ -42,8 +42,8 @@ public class VRHelper {
 		);
 	}
 	
-	public static double[] playerRelative(Device device) {
-		double[] cursedMatr = MatrixHelper.convert(device.getTrueMatrix());
+	public static double[] playerRelative(HmdMatrix34 matr) {
+		double[] cursedMatr = MatrixHelper.convert(matr);
 		
 		cursedMatr[3] -= VRManager.ox;
 		cursedMatr[11] -= VRManager.oz;
@@ -70,6 +70,10 @@ public class VRHelper {
 				cursedMatr[7] + 0.12f,
 				cursedMatr[11],
 		};
+	}
+	
+	public static double[] playerRelative(Device device) {
+		return playerRelative(device.getTrueMatrix());
 	}
 	
 	public static double[] mergeMot(float[] computer, float[] vr) {

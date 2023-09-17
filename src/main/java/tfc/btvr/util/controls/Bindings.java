@@ -1,4 +1,4 @@
-package tfc.btvr.util;
+package tfc.btvr.util.controls;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiContainer;
@@ -10,6 +10,7 @@ import org.lwjgl.input.Mouse;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.VRControllerInput;
 import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
+import tfc.btvr.util.ScreenUtil;
 
 import java.util.ArrayList;
 

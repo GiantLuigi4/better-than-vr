@@ -17,6 +17,8 @@ public class Device {
 	}
 	
 	public static Device getDeviceForRole(DeviceType role) {
+		if (role.getID() == Integer.MAX_VALUE) return HEAD;
+		
 		return new Device(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(role.getID()));
 	}
 	
