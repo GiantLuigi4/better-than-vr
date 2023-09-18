@@ -84,6 +84,10 @@ repositories {
 	}
 }
 
+configurations {
+	extraLibs
+}
+
 dependencies {
 	minecraft "bta-download-repo:bta:${project.bta_version}"
 	mappings loom.layered() {}
@@ -111,8 +115,12 @@ dependencies {
 //	implementation "org.joml:joml:1.10.5"
 
 	for (File fl : new File("lib").listFiles()) {
-		implementation files(fl)
+		if (fl.name.contains("sources") || fl.name.contains("javadoc"))
+			implementation files(fl)
+		else extraLibs files(fl)
 	}
+
+	configurations.implementation.extendsFrom(configurations.extraLibs)
 
 
 //	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
@@ -141,9 +149,16 @@ tasks.withType(JavaCompile) {
 	options.release.set 9
 }
 
+tasks.withType(Jar.class).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 jar {
 	from("LICENSE") {
 		rename { "${it}_${archivesBaseName}" }
+	}
+	from {
+		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
 	}
 }
 

@@ -79,7 +79,7 @@ public class MenuWorld {
 			list = GL11.glGenLists(1);
 			GL11.glNewList(list, 4864);
 			tessellator.startDrawingQuads();
-			tessellator.setTranslation(0, -1, 0);
+			tessellator.setTranslation(0, -31, 0);
 			tessellator.setColorOpaque(1, 1, 1);
 			
 			for (int x = -30; x <= 30; x++) {
@@ -90,7 +90,7 @@ public class MenuWorld {
 						
 						Block blk = Block.getBlock(id);
 						BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
-						model.render(blk, x, y, z);
+						model.render(blk, x, y + 30, z);
 					}
 				}
 			}

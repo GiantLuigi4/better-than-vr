@@ -10,6 +10,7 @@ import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.openvr.Device;
 import tfc.btvr.lwjgl3.openvr.DeviceType;
 import tfc.btvr.util.gestures.Gesture;
+import tfc.btvr.util.gestures.GestureControllers;
 
 public class AttackGesture extends Gesture {
 	boolean intersects(Entity entity, double[] coord, double[] look, Minecraft mc, double len) {
@@ -28,7 +29,7 @@ public class AttackGesture extends Gesture {
 	}
 	
 	@Override
-	public void recognize(Minecraft mc, double avgMot, double avgAng, Device dev, DeviceType type, HmdMatrix34 prevMatrix, HmdMatrix34 prevRel) {
+	public void recognize(GestureControllers controller, Minecraft mc, double avgMot, double avgAng, Device dev, DeviceType type, HmdMatrix34 prevMatrix, HmdMatrix34 prevRel) {
 		if (avgMot < 0.15) return;
 		if (avgAng < 0.1) return;
 		
@@ -43,9 +44,15 @@ public class AttackGesture extends Gesture {
 		for (Entity entity : mc.theWorld.getLoadedEntityList().toArray(new Entity[0])) {
 			if (entity == mc.thePlayer) continue;
 			
+			// TODO: force hand damage for off-hand
 			if (intersects(entity, coord, trace, mc, len) && !intersects(entity, coordOld, traceOld, mc, len)) {
 				mc.playerController.attackEntity(mc.thePlayer, entity);
 			}
 		}
+	}
+	
+	@Override
+	public void recognize(Minecraft mc, double avgMot, double avgAng, Device dev, DeviceType type, HmdMatrix34 prevMatrix, HmdMatrix34 prevRel) {
+		// no-op
 	}
 }

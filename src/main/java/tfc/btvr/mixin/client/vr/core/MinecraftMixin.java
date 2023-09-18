@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.itf.VRController;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.Eye;
@@ -126,6 +127,8 @@ public abstract class MinecraftMixin {
 	
 	@ModifyVariable(argsOnly = true, ordinal = 0, at = @At("HEAD"), method = "mineBlocks")
 	public boolean isOn(boolean value) {
-		return value || VRControllerInput.getInput("gameplay", "Attack");
+		value = value || VRControllerInput.getInput("gameplay", "Attack");
+		if (value) ((VRController) playerController).better_than_vr$cancelMine();
+		return value;
 	}
 }

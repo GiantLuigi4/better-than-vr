@@ -21,9 +21,12 @@ public class GestureControllers {
 		MAIN_HAND = new GestureController(Config.INTERACTION_HAND.getType());
 		OFF_HAND = new GestureController(Config.INTERACTION_HAND.getType() == DeviceType.RIGHT_HAND ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND);
 		
-		MAIN_HAND.addGesture(new MiningGesture());
 		MAIN_HAND.addGesture(new EatingGesture());
 		MAIN_HAND.addGesture(new AttackGesture());
+		MAIN_HAND.addGesture(new MiningGesture());
+		
+		OFF_HAND.addGesture(new AttackGesture());
+		OFF_HAND.addGesture(new MiningGesture());
 	}
 	
 	public static GestureController getHeadController() {
