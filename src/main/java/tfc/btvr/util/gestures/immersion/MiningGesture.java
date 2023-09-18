@@ -66,6 +66,7 @@ public class MiningGesture extends Gesture {
 			((VRController) mc.playerController).better_than_vr$activateVRMining(result);
 			
 			// TODO: this logic is painful (physically)
+			// TODO: this logic seems to like to hit extra times
 			for (int i = 0; i < 3; i++) {
 				if (((VRController) mc.playerController).better_than_vr$isMining()) {
 					if (mc.thePlayer.gamemode.doBlockBreakingAnim) {
