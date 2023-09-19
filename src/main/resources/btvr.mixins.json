@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "tfc.btvr.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_9",
   "mixins": [
   ],
   "client": [

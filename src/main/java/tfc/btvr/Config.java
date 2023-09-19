@@ -120,8 +120,8 @@ public class Config {
 		}
 	}
 	
-	public static final HandOption MOTION_HAND = new HandOption("motion_hand", Hand.RIGHT);
-	public static final HandOption TRACE_HAND = new HandOption("trace_hand", Hand.LEFT);
+	public static final HandOption MOTION_HAND = new HandOption("motion_hand", Hand.LEFT);
+	public static final HandOption TRACE_HAND = new HandOption("trace_hand", Hand.RIGHT);
 	public static final HandOption INTERACTION_HAND = new HandOption("interaction_hand", Hand.MAIN);
 	
 	public static final BooleanOption HYBRID_MODE = new BooleanOption("flat_ui", true);

@@ -1,25 +1,27 @@
 package tfc.btvr.lwjgl3;
 
 import net.fabricmc.loader.api.FabricLoader;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
-import org.lwjgl.openvr.VRActiveActionSet;
 import org.lwjgl.openvr.VRInput;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
 
 public class BTVRSetup {
 	public static final int token;
 	
+	public static final Logger LOGGER = LoggerFactory.getLogger("nr::init");
+	
 	static {
-		String pth = System.getProperty("org.lwjgl.librarypath");
+//		String pth = System.getProperty("org.lwjgl.librarypath");
+		LOGGER.info("Load VR");
 		Library.initialize();
 		VR.getLibrary(); // load the library, just to not mess up LWJGL2
 		if (checkVR()) {
@@ -30,7 +32,9 @@ public class BTVRSetup {
 		} else {
 			token = 0;
 		}
+		LOGGER.info("VR Loaded, token = " + token);
 		
+		LOGGER.info("Writing actions");
 		try {
 			File fl = new File(FabricLoader.getInstance().getGameDir() + "/vr/actions.json");
 			if (!fl.exists()) {
@@ -60,14 +64,15 @@ public class BTVRSetup {
 			throw new RuntimeException(err);
 		}
 		
+		LOGGER.info("Loading actions");
+		
 		int err = VRInput.VRInput_SetActionManifestPath(FabricLoader.getInstance().getGameDir().toAbsolutePath() + "/vr/actions.json");
 		if (err != 0) {
 			System.out.println("Actions setup with error: " + err);
 		}
 		
-		System.setProperty("org.lwjgl.librarypath", pth);
-		
-		Runtime.getRuntime().addShutdownHook(new Thread(VR::VR_ShutdownInternal));
+//		System.setProperty("org.lwjgl.librarypath", pth);
+//		Runtime.getRuntime().addShutdownHook(new Thread(VR::VR_ShutdownInternal));
 	}
 	
 	public static boolean checkVR() {

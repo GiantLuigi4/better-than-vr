@@ -3,7 +3,6 @@ package tfc.btvr.mixin.client.vr.core;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.OpenGLHelper;
 import net.minecraft.client.render.shader.Shaders;
-import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -58,7 +57,7 @@ public class GLHelperMixin {
 			VRRenderManager.init(w, h);
 		}
 		
-		int vao = ARBVertexArrayObject.glGenVertexArrays();
-		ARBVertexArrayObject.glBindVertexArray(vao);
+//		int vao = ARBVertexArrayObject.glGenVertexArrays();
+//		ARBVertexArrayObject.glBindVertexArray(vao);
 	}
 }
