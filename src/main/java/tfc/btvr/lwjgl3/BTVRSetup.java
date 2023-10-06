@@ -4,10 +4,12 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRInput;
+import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tfc.btvr.lwjgl3.oculus.ovr.OVRCompositor;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,7 +77,25 @@ public class BTVRSetup {
 //		Runtime.getRuntime().addShutdownHook(new Thread(VR::VR_ShutdownInternal));
 	}
 	
-	public static boolean checkVR() {
+	protected static boolean checkSteamVR() {
 		return VR.VR_IsRuntimeInstalled() && VR.VR_IsHmdPresent();
+	}
+	
+	protected static boolean checkOculusVR() {
+		// TODO: automate this?
+		//       as in, actually check if OVR is installed?
+		return VRManager.getActiveMode() == VRMode.OCULUS_VR;
+	}
+	
+	public static boolean checkVR() {
+		return checkSteamVR() || checkOculusVR();
+	}
+	
+	public static void getSize(IntBuffer w, IntBuffer h) {
+		if (checkSteamVR()) {
+			VRSystem.VRSystem_GetRecommendedRenderTargetSize(w, h);
+		} else if (checkOculusVR()) {
+			OVRCompositor.checkEyeSize(w, h);
+		}
 	}
 }

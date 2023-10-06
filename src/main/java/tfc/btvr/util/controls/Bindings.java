@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiInventoryCreative;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
 import tfc.btvr.Config;
-import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
 import tfc.btvr.util.ScreenUtil;
 
@@ -72,8 +72,8 @@ public class Bindings {
 	
 	public static void renderTick(Minecraft mc) {
 		if (mc.currentScreen != null) {
-			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, true, VRControllerInput.getInput("gameplay", "UseItem"));
-			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, false, VRControllerInput.getInput("gameplay", "Attack"));
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, true, SVRControllerInput.getInput("gameplay", "UseItem"));
+			ScreenUtil.click(Mouse.getX(), Mouse.getY(), mc.currentScreen, false, SVRControllerInput.getInput("gameplay", "Attack"));
 		} else {
 			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, true, false);
 			ScreenUtil.click(Mouse.getX(), Mouse.getY(), null, false, false);

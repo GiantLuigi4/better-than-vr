@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.lwjgl3.VRHelper;
-import tfc.btvr.lwjgl3.openvr.Device;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.MathHelper;
 
 @Mixin(value = EntityCamera.class, remap = false)
@@ -23,7 +23,7 @@ public class CameraMixin {
 	
 	@Inject(at = @At("TAIL"), method = "tick")
 	public void postTick(CallbackInfo ci) {
-		double[] pTarget = VRHelper.getTraceVector(Device.HEAD);
+		double[] pTarget = VRHelper.getTraceVector(SDevice.HEAD);
 		double d0 = pTarget[0];
 		double d1 = pTarget[1];
 		double d2 = pTarget[2];

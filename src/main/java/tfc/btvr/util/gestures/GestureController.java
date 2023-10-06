@@ -3,8 +3,8 @@ package tfc.btvr.util.gestures;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.lwjgl3.VRHelper;
-import tfc.btvr.lwjgl3.openvr.Device;
-import tfc.btvr.lwjgl3.openvr.DeviceType;
+import tfc.btvr.lwjgl3.generic.DeviceType;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class GestureController {
 	HmdMatrix34 prevRel;
 	
 	public void tick(Minecraft mc) {
-		Device dev = Device.getDeviceForRole(device);
+		SDevice dev = SDevice.getDeviceForRole(device);
 		
 		HmdMatrix34 matr = dev.getTrueMatrix();
 		HmdMatrix34 rel = dev.getMatrix();

@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import static tfc.btvr.lwjgl3.VRManager.genErrorMap;
 
-public class VRControllerInput {
+public class SVRControllerInput {
 	private static final HashMap<Integer, String> INPUT_ERRORS = genErrorMap("EVRInputError_VRInputError_");
 	
 	private static final HashMap<String, Long> inputs = new HashMap<>();

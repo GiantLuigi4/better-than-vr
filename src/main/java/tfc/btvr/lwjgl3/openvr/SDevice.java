@@ -5,21 +5,34 @@ import org.lwjgl.openvr.*;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
+import tfc.btvr.lwjgl3.generic.Device;
+import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.math.MatrixHelper;
 
-public class Device {
+public class SDevice extends Device {
 	int index;
 	
-	public static final Device HEAD = new Device(0);
+	public static final SDevice HEAD = new SDevice(0);
 	
-	public Device(int index) {
+	public SDevice(int index) {
 		this.index = index;
 	}
 	
-	public static Device getDeviceForRole(DeviceType role) {
-		if (role.getID() == Integer.MAX_VALUE) return HEAD;
+	public static SDevice getDeviceForRole(DeviceType role) {
+		if (role == DeviceType.HEAD) return HEAD;
 		
-		return new Device(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(role.getID()));
+		switch (role) {
+			case LEFT_HAND:
+				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_LeftHand));
+			case RIGHT_HAND:
+				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_RightHand));
+			case TREADMILL:
+				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_Treadmill));
+			case INVALID:
+				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_Invalid));
+			default:
+				throw new RuntimeException("Unsupported device type " + role);
+		}
 	}
 	
 	private final HmdMatrix34 matr = HmdMatrix34.calloc();
@@ -33,7 +46,7 @@ public class Device {
 		// TODO: 4 frame window?
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
 		
-		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(),  p0.mDeviceToAbsoluteTracking(), 0.5);
+		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), 0.5);
 		HmdMatrix34 cursed = HmdMatrix34.calloc();
 		for (int i = 0; i < cursedMatr.length; i++)
 			cursed.m(i, (float) cursedMatr[i]);
@@ -48,7 +61,7 @@ public class Device {
 		// TODO: 4 frame window?
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
 		
-		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(),  p0.mDeviceToAbsoluteTracking(), 0.5);
+		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), 0.5);
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		if (mc.thePlayer != null) {
 			double pct = VRRenderManager.getPct();

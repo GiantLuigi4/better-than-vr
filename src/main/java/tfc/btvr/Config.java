@@ -1,7 +1,7 @@
 package tfc.btvr;
 
-import tfc.btvr.lwjgl3.openvr.Device;
-import tfc.btvr.lwjgl3.openvr.DeviceType;
+import tfc.btvr.lwjgl3.generic.DeviceType;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 import turniplabs.halplibe.util.ConfigHandler;
 
 import java.util.ArrayList;
@@ -51,14 +51,14 @@ public class Config {
 			}
 		}
 		
-		public Device get() {
+		public SDevice get() {
 			switch (value) {
 				case LEFT:
-					return Device.getDeviceForRole(DeviceType.LEFT_HAND);
+					return SDevice.getDeviceForRole(DeviceType.LEFT_HAND);
 				case RIGHT:
-					return Device.getDeviceForRole(DeviceType.RIGHT_HAND);
+					return SDevice.getDeviceForRole(DeviceType.RIGHT_HAND);
 				default:
-					return Device.getDeviceForRole(Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND);
+					return SDevice.getDeviceForRole(Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND);
 			}
 		}
 		

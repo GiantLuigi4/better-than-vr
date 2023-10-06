@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.VRHelper;
-import tfc.btvr.lwjgl3.openvr.Device;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 
 @Mixin(value = GuiScreen.class, remap = false)
 public class ScreenMixin implements VRScreenData {
@@ -32,7 +32,7 @@ public class ScreenMixin implements VRScreenData {
 			return;
 		}
 		
-		Device HEAD = new Device(0);
+		SDevice HEAD = new SDevice(0);
 		
 		double[] vec = new double[]{0, 0, 1};
 		VRHelper.orientVector(HEAD, vec);

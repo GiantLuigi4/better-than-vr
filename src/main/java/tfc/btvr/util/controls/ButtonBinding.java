@@ -1,6 +1,6 @@
 package tfc.btvr.util.controls;
 
-import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 
 public class ButtonBinding extends VRBinding {
 	boolean isPressed = false;
@@ -29,7 +29,7 @@ public class ButtonBinding extends VRBinding {
 	// currently, I only need rising, but in the future I might need more
 	@SuppressWarnings("ConstantValue") // leaving this as is 'cuz it improves readability, I think
 	public void tick() {
-		boolean pressed = VRControllerInput.getInput(group, name);
+		boolean pressed = SVRControllerInput.getInput(group, name);
 		
 		if (pressed && !isPressed) rising.run();
 		else if (pressed && isPressed) active.run();

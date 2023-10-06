@@ -18,8 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRController;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
-import tfc.btvr.lwjgl3.openvr.Eye;
-import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.lwjgl3.openvr.SEye;
+import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
@@ -69,8 +69,8 @@ public abstract class MinecraftMixin {
 		// draw left
 		if (!rrw || alt) {
 			VRRenderManager.start(0);
-			resolution.width = Eye.getActiveEye().width;
-			resolution.height = Eye.getActiveEye().height;
+			resolution.width = SEye.getActiveEye().width;
+			resolution.height = SEye.getActiveEye().height;
 			
 			this.render.beginRenderGame(this.timer.partialTicks);
 			
@@ -89,8 +89,8 @@ public abstract class MinecraftMixin {
 		if (!rrw || !alt) {
 			// draw right
 			VRRenderManager.start(1);
-			resolution.width = Eye.getActiveEye().width;
-			resolution.height = Eye.getActiveEye().height;
+			resolution.width = SEye.getActiveEye().width;
+			resolution.height = SEye.getActiveEye().height;
 			
 			this.render.beginRenderGame(this.timer.partialTicks);
 			GL11.glEnable(3008);
@@ -127,7 +127,7 @@ public abstract class MinecraftMixin {
 	
 	@ModifyVariable(argsOnly = true, ordinal = 0, at = @At("HEAD"), method = "mineBlocks")
 	public boolean isOn(boolean value) {
-		value = value || VRControllerInput.getInput("gameplay", "Attack");
+		value = value || SVRControllerInput.getInput("gameplay", "Attack");
 		if (value) ((VRController) playerController).better_than_vr$cancelMine();
 		return value;
 	}

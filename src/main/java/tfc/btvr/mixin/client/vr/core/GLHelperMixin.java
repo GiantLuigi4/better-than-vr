@@ -6,7 +6,6 @@ import net.minecraft.client.render.shader.Shaders;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
-import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -51,13 +50,10 @@ public class GLHelperMixin {
 			MemoryStack ms = MemoryStack.stackPush();
 			IntBuffer w = ms.mallocInt(1);
 			IntBuffer h = ms.mallocInt(1);
-			VRSystem.VRSystem_GetRecommendedRenderTargetSize(w, h);
+			BTVRSetup.getSize(w, h);
 			ms.pop();
 
 			VRRenderManager.init(w, h);
 		}
-		
-//		int vao = ARBVertexArrayObject.glGenVertexArrays();
-//		ARBVertexArrayObject.glBindVertexArray(vao);
 	}
 }

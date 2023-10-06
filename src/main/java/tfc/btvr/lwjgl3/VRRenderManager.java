@@ -8,7 +8,9 @@ import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRCompositor;
 import tfc.btvr.Config;
-import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.lwjgl3.generic.Eye;
+import tfc.btvr.lwjgl3.oculus.ovr.OVREye;
+import tfc.btvr.lwjgl3.openvr.SEye;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -19,8 +21,14 @@ public class VRRenderManager {
 	
 	
 	public static void init(IntBuffer w, IntBuffer h) {
-		leftEye = new Eye(0, w, h);
-		rightEye = new Eye(1, w, h);
+		switch (VRManager.getActiveMode()) {
+			case STEAM_VR:
+				leftEye = new SEye(0, w.get(0), h.get(0));
+				rightEye = new SEye(1, w.get(0), h.get(0));
+			case OCULUS_VR:
+				leftEye = new OVREye(0, w.get(0), h.get(0));
+				rightEye = new OVREye(1, w.get(0), h.get(0));
+		}
 	}
 	
 	public static void frameFinished(boolean reducedWork, boolean left) {

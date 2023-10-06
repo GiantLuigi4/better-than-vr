@@ -29,9 +29,9 @@ import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
-import tfc.btvr.lwjgl3.openvr.Device;
-import tfc.btvr.lwjgl3.openvr.DeviceType;
-import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.lwjgl3.generic.DeviceType;
+import tfc.btvr.lwjgl3.generic.Eye;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.VecMath;
 
 import java.nio.FloatBuffer;
@@ -78,7 +78,7 @@ public class VRCamera {
 		GL11.glMatrixMode(5888);
 		GL11.glLoadIdentity();
 		
-		Device head = Device.HEAD;
+		SDevice head = SDevice.HEAD;
 		
 		if (active != null) {
 			HmdMatrix34 matr32 = Eye.getTranslationMatrix(id);
@@ -150,7 +150,7 @@ public class VRCamera {
 		renderPlayer(false, thePlayer, renderPartialTicks, renderGlobal);
 	}
 	
-	public static void handMatrix(EntityPlayer player, double pct, boolean left, Device hand) {
+	public static void handMatrix(EntityPlayer player, double pct, boolean left, SDevice hand) {
 		HmdMatrix34 matr = hand.getMatrix();
 		float[] data = new float[]{
 				matr.m(0), matr.m(4), matr.m(8), 0,
@@ -229,8 +229,8 @@ public class VRCamera {
 	}
 	
 	public static void renderPlayer(boolean menu, EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
-		Device rightHand = Device.getDeviceForRole(DeviceType.RIGHT_HAND);
-		Device leftHand = Device.getDeviceForRole(DeviceType.LEFT_HAND);
+		SDevice rightHand = SDevice.getDeviceForRole(DeviceType.RIGHT_HAND);
+		SDevice leftHand = SDevice.getDeviceForRole(DeviceType.LEFT_HAND);
 		
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		ICamera camera = mc.activeCamera;

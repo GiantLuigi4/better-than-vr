@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.Config;
 import tfc.btvr.VRCamera;
 import tfc.btvr.lwjgl3.VRRenderManager;
-import tfc.btvr.lwjgl3.openvr.Eye;
+import tfc.btvr.lwjgl3.generic.Eye;
+import tfc.btvr.lwjgl3.openvr.SEye;
 import tfc.btvr.menu.MenuWorld;
 
 @Mixin(value = WorldRenderer.class, remap = false)
@@ -79,7 +80,7 @@ public abstract class WorldRendererMixin {
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
 		// UIs are drawn specially for VR
-		if (Eye.getActiveEye() != null) {
+		if (SEye.getActiveEye() != null) {
 			ci.cancel();
 		} else {
 			VRRenderManager.grabUI(false);
@@ -95,7 +96,7 @@ public abstract class WorldRendererMixin {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.BEFORE), method = "updateCameraAndRender", cancellable = true)
 	public void preRenderOverlay(float renderPartialTicks, CallbackInfo ci) {
 		// UIs are drawn specially for VR
-		if (Eye.getActiveEye() != null) {
+		if (SEye.getActiveEye() != null) {
 			ci.cancel();
 		}
 //		else {

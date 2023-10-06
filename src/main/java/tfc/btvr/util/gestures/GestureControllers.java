@@ -1,7 +1,7 @@
 package tfc.btvr.util.gestures;
 
 import tfc.btvr.Config;
-import tfc.btvr.lwjgl3.openvr.DeviceType;
+import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.util.gestures.immersion.AttackGesture;
 import tfc.btvr.util.gestures.immersion.EatingGesture;
 import tfc.btvr.util.gestures.immersion.MiningGesture;

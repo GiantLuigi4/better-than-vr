@@ -3,7 +3,7 @@ package tfc.btvr.lwjgl3;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.HmdMatrix34;
 import tfc.btvr.Config;
-import tfc.btvr.lwjgl3.openvr.Device;
+import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.MatrixHelper;
 import tfc.btvr.math.VecMath;
 
@@ -24,12 +24,12 @@ public class VRHelper {
 		return res;
 	}
 	
-	public static double[] getTraceVector(Device device) {
+	public static double[] getTraceVector(SDevice device) {
 		HmdMatrix34 matr = device.getMatrix();
 		return getTraceVector(matr);
 	}
 	
-	public static void orientVector(Device device, double[] vector) {
+	public static void orientVector(SDevice device, double[] vector) {
 		HmdMatrix34 matr = device.getMatrix();
 		MatrixHelper.mulMatr(
 				vector[0], vector[1], vector[2],
@@ -72,14 +72,14 @@ public class VRHelper {
 		};
 	}
 	
-	public static double[] playerRelative(Device device) {
+	public static double[] playerRelative(SDevice device) {
 		return playerRelative(device.getTrueMatrix());
 	}
 	
 	public static double[] mergeMot(float[] computer, float[] vr) {
 		double[] res = new double[]{computer[0], 0, computer[1]};
 		VRHelper.orientVector(
-				new Device(0),
+				new SDevice(0),
 				res
 		);
 		res[1] = 0;

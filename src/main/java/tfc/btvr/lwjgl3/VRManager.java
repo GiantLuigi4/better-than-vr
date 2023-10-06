@@ -2,8 +2,8 @@ package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
-import tfc.btvr.lwjgl3.openvr.Device;
-import tfc.btvr.lwjgl3.openvr.VRControllerInput;
+import tfc.btvr.lwjgl3.openvr.SDevice;
+import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.math.VecMath;
 import tfc.btvr.util.controls.Bindings;
 import tfc.btvr.util.gestures.GestureControllers;
@@ -40,7 +40,7 @@ public class VRManager {
 	public static void tick() {
 		VRCompositor.VRCompositor_WaitGetPoses(buffer, null);
 		
-		VRControllerInput.tick();
+		SVRControllerInput.tick();
 		
 		while (true) {
 			VREvent ev = VREvent.calloc();
@@ -49,11 +49,6 @@ public class VRManager {
 				inStandby = false;
 			else if (ev.eventType() == 106)
 				inStandby = true;
-
-//			String type = EV_TYPES.get(ev.eventType());
-//			if (type != null && !type.equals("None")) {
-//				System.out.println(EV_TYPES.get(ev.eventType()));
-//			}
 			
 			if (!v)
 				break;
@@ -78,7 +73,7 @@ public class VRManager {
 		Bindings.postTick(mc);
 		
 		// lol I should clean this up
-		Device head = Device.HEAD;
+		SDevice head = SDevice.HEAD;
 		HmdMatrix34 matr34 = head.getTrueMatrix();
 		
 		double[] pos = VRHelper.getPosition(matr34);
@@ -99,8 +94,16 @@ public class VRManager {
 		dx = res[0];
 		dz = res[1];
 		
-		mc.thePlayer.move(dx, mc.thePlayer.yd, dz);
+		boolean c = mc.thePlayer.collision;
+		boolean hc = mc.thePlayer.horizontalCollision;
+		boolean vc = mc.thePlayer.verticalCollision;
+		
+		mc.thePlayer.move(dx, 0, dz);
 		mc.thePlayer.y = y;
+		
+		mc.thePlayer.collision = c;
+		mc.thePlayer.horizontalCollision = hc;
+		mc.thePlayer.verticalCollision = vc;
 		
 		mc.thePlayer.xo = mc.thePlayer.xOld -= (x - mc.thePlayer.x);
 		mc.thePlayer.zo = mc.thePlayer.zOld -= (z - mc.thePlayer.z);
@@ -110,12 +113,18 @@ public class VRManager {
 	}
 	
 	public static float[] getVRMotion() {
-		float[] m = VRControllerInput.getJoystick("gameplay", "Move");
+		float[] m = SVRControllerInput.getJoystick("gameplay", "Move");
 		m[1] = -m[1];
 		return m;
 	}
 	
 	public static TrackedDevicePose getPose(int index) {
 		return buffer.get(index);
+	}
+	
+	private static VRMode activeMode;
+	
+	public static VRMode getActiveMode() {
+		return activeMode;
 	}
 }
