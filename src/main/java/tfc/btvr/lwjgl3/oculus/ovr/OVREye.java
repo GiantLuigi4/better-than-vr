@@ -2,14 +2,11 @@ package tfc.btvr.lwjgl3.oculus.ovr;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.openvr.Texture;
-import org.lwjgl.openvr.VR;
 import tfc.btvr.lwjgl3.generic.Eye;
 
 import java.nio.ByteBuffer;
 
 public class OVREye extends Eye {
-	Texture texture;
 	int fboId;
 	int rboId;
 	int texId;
@@ -18,7 +15,6 @@ public class OVREye extends Eye {
 		GL11.glDeleteTextures(texId);
 		GL30.glDeleteFramebuffers(fboId);
 		GL30.glDeleteRenderbuffers(rboId);
-		texture.close();
 	}
 	
 	public OVREye(int id, int w, int h) {
@@ -45,9 +41,6 @@ public class OVREye extends Eye {
 			GL11.glClearColor(1, 1, 1, 1f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		}
-		
-		texture = Texture.create();
-		texture.set(texId, VR.ETextureType_TextureType_OpenGL, VR.EColorSpace_ColorSpace_Gamma);
 	}
 	
 	@Override
@@ -57,6 +50,6 @@ public class OVREye extends Eye {
 	
 	@Override
 	public void submit() {
-	
+//		OVRCompositor.submit(id, fboId);
 	}
 }

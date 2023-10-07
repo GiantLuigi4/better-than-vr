@@ -2,18 +2,38 @@ package tfc.btvr.lwjgl3.oculus.ovr;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.ovr.OVR;
-import org.lwjgl.ovr.OVRGraphicsLuid;
-import org.lwjgl.ovr.OVRTrackingState;
+import org.lwjgl.ovr.*;
+import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OVRSession {
 	public static final PointerBuffer session;
 	public static final OVRGraphicsLuid luid;
 	protected static final OVRTrackingState trackingState;
 	
+	public static final Logger LOGGER = LoggerFactory.getLogger("nr::ovr");
+	
+	private static final OVRLogCallback callback;
+	
 	static {
-		int result = OVR.ovr_Initialize(null);
-		if (result <= 0) throw new RuntimeException("Runtime is not installed");
+		callback = OVRLogCallback.create((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message)));
+		
+		OVRInitParams params = OVRInitParams.calloc()
+				.LogCallback(callback)
+				.Flags(OVR.ovrInit_Debug);
+		int result = OVR.ovr_Initialize(params);
+		if (result <= 0) {
+			params.free();
+			
+			OVRErrorInfo info = OVRErrorInfo.malloc();
+			OVR.ovr_GetLastErrorInfo(info);
+			LOGGER.error(info.ErrorStringString());
+			info.free();
+			throw new RuntimeException("Failed to initialize OVR");
+		}
+		params.free();
+		
 		session = BufferUtils.createPointerBuffer(1);
 		luid = OVRGraphicsLuid.create();
 		
@@ -29,6 +49,14 @@ public class OVRSession {
 		if (session != null) {
 			OVR.ovr_Destroy(session.get(0));
 			OVR.ovr_Shutdown();
+			
+			trackingState.free();
+			luid.free();
+			session.free();
+			callback.free();
 		}
+	}
+	
+	public static void init() {
 	}
 }

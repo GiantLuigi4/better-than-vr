@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRController;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.openvr.SEye;
@@ -130,5 +131,10 @@ public abstract class MinecraftMixin {
 		value = value || SVRControllerInput.getInput("gameplay", "Attack");
 		if (value) ((VRController) playerController).better_than_vr$cancelMine();
 		return value;
+	}
+	
+	@Inject(at = @At("RETURN"), method = "shutdown")
+	public void postShutdown(CallbackInfo ci) {
+		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogic();
 	}
 }

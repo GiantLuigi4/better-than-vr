@@ -97,6 +97,7 @@ public class VRManager {
 		boolean c = mc.thePlayer.collision;
 		boolean hc = mc.thePlayer.horizontalCollision;
 		boolean vc = mc.thePlayer.verticalCollision;
+		boolean oog = mc.thePlayer.onGround;
 		
 		mc.thePlayer.move(dx, 0, dz);
 		mc.thePlayer.y = y;
@@ -104,6 +105,7 @@ public class VRManager {
 		mc.thePlayer.collision = c;
 		mc.thePlayer.horizontalCollision = hc;
 		mc.thePlayer.verticalCollision = vc;
+		mc.thePlayer.onGround = oog;
 		
 		mc.thePlayer.xo = mc.thePlayer.xOld -= (x - mc.thePlayer.x);
 		mc.thePlayer.zo = mc.thePlayer.zOld -= (z - mc.thePlayer.z);
@@ -122,7 +124,7 @@ public class VRManager {
 		return buffer.get(index);
 	}
 	
-	private static VRMode activeMode;
+	private static VRMode activeMode = BTVRSetup.getDefaultMode();
 	
 	public static VRMode getActiveMode() {
 		return activeMode;

@@ -7,8 +7,10 @@ import net.minecraft.client.render.Texture;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRCompositor;
+import org.lwjgl.ovr.OVR;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.generic.Eye;
+import tfc.btvr.lwjgl3.oculus.ovr.OVRCompositor;
 import tfc.btvr.lwjgl3.oculus.ovr.OVREye;
 import tfc.btvr.lwjgl3.openvr.SEye;
 
@@ -25,9 +27,13 @@ public class VRRenderManager {
 			case STEAM_VR:
 				leftEye = new SEye(0, w.get(0), h.get(0));
 				rightEye = new SEye(1, w.get(0), h.get(0));
+				break;
 			case OCULUS_VR:
+				OVRCompositor.checkEyeSize(OVR.ovrEye_Left, w, h);
 				leftEye = new OVREye(0, w.get(0), h.get(0));
+				OVRCompositor.checkEyeSize(OVR.ovrEye_Right, w, h);
 				rightEye = new OVREye(1, w.get(0), h.get(0));
+				break;
 		}
 	}
 	
