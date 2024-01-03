@@ -5,8 +5,6 @@ import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRInput;
 import org.lwjgl.openvr.VRSystem;
-import org.lwjgl.ovr.OVRDetectResult;
-import org.lwjgl.ovr.OVRUtil;
 import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -92,17 +90,19 @@ public class BTVRSetup {
 		else if (checkOculusVR())
 			return VRMode.OCULUS_VR;
 		
-		return VRMode.NONE;
+		return VRMode.STEAM_VR;
 	}
 	
 	protected static boolean checkSteamVR() {
 		return VR.VR_IsRuntimeInstalled() && VR.VR_IsHmdPresent();
+//		return false;
 	}
 	
 	protected static boolean checkOculusVR() {
-		OVRDetectResult result = OVRDetectResult.calloc();
-		OVRUtil.ovr_Detect(0, result);
-		return result.IsOculusServiceRunning();
+		return false;
+//		OVRDetectResult result = OVRDetectResult.calloc();
+//		OVRUtil.ovr_Detect(0, result);
+//		return result.IsOculusServiceRunning();
 	}
 	
 	public static boolean checkVR() {

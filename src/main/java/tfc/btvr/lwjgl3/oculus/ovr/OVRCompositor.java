@@ -25,6 +25,6 @@ public class OVRCompositor {
 		);
 		
 		w.put(0, sizei0.w());
-		h.put(1, sizei0.h());
+		h.put(0, sizei0.h());
 	}
 }

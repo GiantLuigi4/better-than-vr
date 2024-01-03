@@ -21,9 +21,9 @@ public class MiningGesture extends Gesture {
 						coord[2] + mc.thePlayer.z
 				),
 				Vec3d.createVector(
-						coord[0] + mc.thePlayer.x + look[0],
-						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1],
-						coord[2] + mc.thePlayer.z + look[2]
+						coord[0] + mc.thePlayer.x + look[0] * len,
+						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
+						coord[2] + mc.thePlayer.z + look[2] * len
 				)
 		);
 	}
@@ -36,9 +36,9 @@ public class MiningGesture extends Gesture {
 						coord[2] + mc.thePlayer.z
 				),
 				Vec3d.createVector(
-						coord[0] + mc.thePlayer.x + look[0],
-						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1],
-						coord[2] + mc.thePlayer.z + look[2]
+						coord[0] + mc.thePlayer.x + look[0] * len,
+						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
+						coord[2] + mc.thePlayer.z + look[2] * len
 				)
 		) != null;
 	}
@@ -62,6 +62,8 @@ public class MiningGesture extends Gesture {
 						!inBlock(coordOld, traceOld, mc, len)
 		) {
 			HitResult result = traceBlock(coord, trace, mc, len);
+			
+			if (result == null) return;
 			
 			((VRController) mc.playerController).better_than_vr$activateVRMining(result);
 			

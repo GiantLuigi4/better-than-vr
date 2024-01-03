@@ -4,6 +4,9 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_9",
   "mixins": [
+    "common.PlayerMixin",
+    "common.detect.ModDetectionServer",
+    "common.detect.NetLoginHandlerMixin"
   ],
   "client": [
     "client.vr.core.GLHelperMixin",
@@ -15,6 +18,8 @@
     "client.vr.model.WorldRendererMixin",
     "client.vr.motion.EntityMixin",
     "client.vr.motion.KeyboardInputMixin",
+    "client.vr.mp.EntityPlayerSPMixin",
+    "client.vr.mp.ModDetectionMixin",
     "client.vr.safety.CameraMixin",
     "client.vr.safety.EntityMixin",
     "client.vr.safety.WorldSelectionMixin",

@@ -20,9 +20,9 @@ public class EatingGesture extends Gesture {
 						coord[2]
 				),
 				Vec3d.createVector(
-						coord[0] + look[0],
-						coord[1]  - mc.thePlayer.getHeadHeight() + look[1],
-						coord[2]  + look[2]
+						coord[0] + look[0] * len,
+						coord[1]  - mc.thePlayer.getHeadHeight() + look[1] * len,
+						coord[2]  + look[2] * len
 				)
 		) != null;
 	}

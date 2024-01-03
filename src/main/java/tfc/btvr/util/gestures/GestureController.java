@@ -44,7 +44,7 @@ public class GestureController {
 		avgAng += Math.sqrt(cVec[0] * cVec[0] + cVec[1] * cVec[1] + cVec[2] * cVec[2]);
 		avgAng /= 2;
 		
-		for (Gesture gesture : gestures) gesture.recognize(mc, avgMot, avgAng, dev, device, prevMatr, prevRel);
+		for (Gesture gesture : gestures) gesture.recognize(this, mc, avgMot, avgAng, dev, device, prevMatr, prevRel);
 		
 		prevMatr = matr;
 		prevRel = rel;

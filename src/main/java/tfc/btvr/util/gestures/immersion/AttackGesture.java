@@ -10,7 +10,7 @@ import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.util.gestures.Gesture;
-import tfc.btvr.util.gestures.GestureControllers;
+import tfc.btvr.util.gestures.GestureController;
 
 public class AttackGesture extends Gesture {
 	boolean intersects(Entity entity, double[] coord, double[] look, Minecraft mc, double len) {
@@ -21,17 +21,17 @@ public class AttackGesture extends Gesture {
 						coord[2] + mc.thePlayer.z
 				),
 				Vec3d.createVector(
-						coord[0] + mc.thePlayer.x + look[0],
-						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1],
-						coord[2] + mc.thePlayer.z + look[2]
+						coord[0] + mc.thePlayer.x + look[0] * len,
+						coord[1] + mc.thePlayer.bb.minY - mc.thePlayer.getHeadHeight() + look[1] * len,
+						coord[2] + mc.thePlayer.z + look[2] * len
 				)
 		) != null;
 	}
 	
 	@Override
-	public void recognize(GestureControllers controller, Minecraft mc, double avgMot, double avgAng, SDevice dev, DeviceType type, HmdMatrix34 prevMatrix, HmdMatrix34 prevRel) {
-		if (avgMot < 0.15) return;
-		if (avgAng < 0.1) return;
+	public void recognize(GestureController controller, Minecraft mc, double avgMot, double avgAng, SDevice dev, DeviceType type, HmdMatrix34 prevMatrix, HmdMatrix34 prevRel) {
+		if (avgMot < 0.115) return;
+		if (avgAng < 0.05) return;
 		
 		ItemStack stack = mc.thePlayer.getHeldItem();
 		boolean isSword = stack != null && stack.getItem() instanceof ItemToolSword;
@@ -41,6 +41,7 @@ public class AttackGesture extends Gesture {
 		double[] trace = VRHelper.getTraceVector(dev.getMatrix());
 		double[] coordOld = VRHelper.playerRelative(prevMatrix);
 		double[] traceOld = VRHelper.getTraceVector(prevRel);
+		
 		for (Entity entity : mc.theWorld.getLoadedEntityList().toArray(new Entity[0])) {
 			if (entity == mc.thePlayer) continue;
 			

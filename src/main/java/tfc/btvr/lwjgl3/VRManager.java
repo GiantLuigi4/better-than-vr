@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 public class VRManager {
 	public static double ox, oz;
+	public static double yAddRot, oYAddRot;
 	
 	private static TrackedDevicePose.Buffer buffer = TrackedDevicePose.calloc(VR.k_unMaxTrackedDeviceCount);
 	
@@ -70,6 +71,8 @@ public class VRManager {
 	}
 	
 	public static void postTick(Minecraft mc) {
+		oYAddRot = yAddRot;
+	
 		Bindings.postTick(mc);
 		
 		// lol I should clean this up

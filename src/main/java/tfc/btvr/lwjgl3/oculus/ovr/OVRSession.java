@@ -1,6 +1,5 @@
 package tfc.btvr.lwjgl3.oculus.ovr;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.ovr.*;
 import org.lwjgl.system.MemoryUtil;
@@ -17,14 +16,21 @@ public class OVRSession {
 	private static final OVRLogCallback callback;
 	
 	static {
-		callback = OVRLogCallback.create((userData, level, message) -> System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message)));
-		
 		OVRInitParams params = OVRInitParams.calloc()
-				.LogCallback(callback)
-				.Flags(OVR.ovrInit_Debug);
+				.LogCallback(callback = new OVRLogCallback() {
+					@Override
+					public void invoke(long userData, int level, long message) {
+						System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message));
+					}
+				})
+				.Flags(OVR.ovrInit_Debug | OVR.ovrInit_FocusAware)
+				;
+		
+//		System.out.println(params.LogCallback());
 		int result = OVR.ovr_Initialize(params);
-		if (result <= 0) {
-			params.free();
+//		int result = OVR.ovr_Initialize(null);
+		if (result != OVRErrorCode.ovrSuccess) {
+//			params.free();
 			
 			OVRErrorInfo info = OVRErrorInfo.malloc();
 			OVR.ovr_GetLastErrorInfo(info);
@@ -32,12 +38,17 @@ public class OVRSession {
 			info.free();
 			throw new RuntimeException("Failed to initialize OVR");
 		}
-		params.free();
+//		params.free();
 		
-		session = BufferUtils.createPointerBuffer(1);
+		session = MemoryUtil.memAllocPointer(1);
 		luid = OVRGraphicsLuid.create();
 		
-		if (OVR.ovr_Create(session, luid) != 0) {
+		if ((result = OVR.ovr_Create(session, luid)) != 0) {
+			OVRErrorInfo info = OVRErrorInfo.malloc();
+			OVR.ovr_GetLastErrorInfo(info);
+			LOGGER.error(info.ErrorStringString());
+			info.free();
+			
 			System.err.println("Couldn't create OVR!");
 			System.exit(-1);
 		}
