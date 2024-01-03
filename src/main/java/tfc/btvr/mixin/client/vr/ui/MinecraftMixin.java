@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRRenderManager;
 
 @Mixin(value = Minecraft.class, remap = false)
@@ -43,6 +44,8 @@ public class MinecraftMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;beginRenderGame(F)V", shift = At.Shift.BEFORE), method = "run")
 	public void preRender(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 //		VRRenderManager.grabUI(false);
 //
 //		int width = resolution.scaledWidth;

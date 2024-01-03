@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tfc.btvr.itf.OSlider;
+import tfc.btvr.lwjgl3.BTVRSetup;
 
 @Mixin(value = EntityCamera.class, remap = false)
 public class CameraMixin {
@@ -16,6 +17,8 @@ public class CameraMixin {
 	
 	@Inject(at = @At("RETURN"), method = "getY", cancellable = true)
 	public void modulateY(float renderPartialTicks, CallbackInfoReturnable<Double> cir) {
+		if (!BTVRSetup.checkVR()) return;
+
 		cir.setReturnValue(
 				cir.getReturnValueD() +
 						entity.ySlideOffset * renderPartialTicks +

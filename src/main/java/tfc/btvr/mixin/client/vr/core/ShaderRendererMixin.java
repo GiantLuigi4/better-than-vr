@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SEye;
 
@@ -16,6 +17,8 @@ import java.io.PrintStream;
 public class ShaderRendererMixin {
 	@Inject(at = @At("HEAD"), method = "setupFramebuffer")
 	public void preSetupFBO(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (SEye.getActiveEye() != null) {
 			Eye active = Eye.getActiveEye();
 			

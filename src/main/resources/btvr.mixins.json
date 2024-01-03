@@ -4,9 +4,11 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_9",
   "mixins": [
-    "common.PlayerMixin",
     "common.detect.ModDetectionServer",
-    "common.detect.NetLoginHandlerMixin"
+    "common.detect.NetLoginHandlerMixin",
+    "common.handle.ServerNetHandlerMixin",
+    "common.tracking.MPPlayerMixin",
+    "common.tracking.PlayerMixin"
   ],
   "client": [
     "client.vr.core.GLHelperMixin",
@@ -19,7 +21,9 @@
     "client.vr.motion.EntityMixin",
     "client.vr.motion.KeyboardInputMixin",
     "client.vr.mp.EntityPlayerSPMixin",
+    "client.vr.mp.MinecraftMixin",
     "client.vr.mp.ModDetectionMixin",
+    "client.vr.mp.NetClientHandlerMixin",
     "client.vr.safety.CameraMixin",
     "client.vr.safety.EntityMixin",
     "client.vr.safety.WorldSelectionMixin",

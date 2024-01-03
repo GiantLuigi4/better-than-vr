@@ -1,5 +1,7 @@
 package tfc.btvr;
 
+import tfc.btvr.lwjgl3.BTVRSetup;
+import tfc.btvr.lwjgl3.VRMode;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import turniplabs.halplibe.util.ConfigHandler;
@@ -9,6 +11,7 @@ import java.util.Properties;
 
 public class Config {
 	private static final ArrayList<Option> ALL_OPTIONS = new ArrayList<>();
+	
 	private static abstract class Option {
 		
 		protected abstract void write(Properties properties);
@@ -97,6 +100,39 @@ public class Config {
 		}
 	}
 	
+	public static class ModeOption extends Option {
+		String name;
+		VRMode value;
+		
+		public ModeOption(String name, VRMode value) {
+			this.name = name;
+			this.value = value;
+			ALL_OPTIONS.add(this);
+		}
+		
+		protected void write(Properties properties) {
+			properties.put(name, value.cfgName());
+		}
+		
+		protected void read(ConfigHandler properties) {
+			switch (properties.getString(name)) {
+				case "steam":
+					value = VRMode.STEAM_VR;
+					break;
+				case "oculus":
+					value = VRMode.OCULUS_VR;
+					break;
+				case "pancake":
+					value = VRMode.NONE;
+					break;
+			}
+		}
+		
+		public VRMode get() {
+			return value;
+		}
+	}
+	
 	public static class DecimalOption extends Option {
 		String name;
 		double value;
@@ -132,6 +168,8 @@ public class Config {
 	public static final BooleanOption EXTRA_SMOOTH_ROTATION = new BooleanOption("extra_smooth_rotation", false);
 	public static final DecimalOption ROTATION_SPEED = new DecimalOption("rotation_speed", 22.5);
 	
+	public static final ModeOption MODE = new ModeOption("mode", BTVRSetup.getDefaultMode());
+	
 	public static void init() {
 		Properties properties = new Properties();
 		
@@ -148,6 +186,8 @@ public class Config {
 		ROTATION_SPEED.write(properties);
 		
 		LEFT_HANDED.write(properties);
+		
+		MODE.write(properties);
 		
 		ConfigHandler hndlr = new ConfigHandler("btvr", properties);
 		hndlr.loadConfig();

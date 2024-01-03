@@ -48,6 +48,8 @@ public abstract class MinecraftMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;endRenderGame(F)V", shift = At.Shift.AFTER), method = "run")
 	public void postRender(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		VRRenderManager.blitUI();
 	}
 	
@@ -55,6 +57,8 @@ public abstract class MinecraftMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;beginRenderGame(F)V", shift = At.Shift.BEFORE), method = "run")
 	public void preRender(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		VRManager.tick();
 		
 		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering, this.timer.partialTicks);
@@ -118,16 +122,22 @@ public abstract class MinecraftMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V"), method = "runTick")
 	public void preTick(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		VRManager.tickGame((Minecraft) (Object) this);
 	}
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/core/world/World;updateEntities()V", shift = At.Shift.AFTER), method = "runTick")
 	public void postTick(CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		VRManager.postTick((Minecraft) (Object) this);
 	}
 	
 	@ModifyVariable(argsOnly = true, ordinal = 0, at = @At("HEAD"), method = "mineBlocks")
 	public boolean isOn(boolean value) {
+		if (!BTVRSetup.checkVR()) return value;
+		
 		value = value || SVRControllerInput.getInput("gameplay", "Attack");
 		if (value) ((VRController) playerController).better_than_vr$cancelMine();
 		return value;
@@ -135,6 +145,8 @@ public abstract class MinecraftMixin {
 	
 	@Inject(at = @At("RETURN"), method = "shutdown")
 	public void postShutdown(CallbackInfo ci) {
-		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogic();
+		if (!BTVRSetup.checkVR()) return;
+		
+		VRManager.shutdown();
 	}
 }

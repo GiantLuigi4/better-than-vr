@@ -1,8 +1,8 @@
 package tfc.btvr.mp.packets;
 
 import net.minecraft.core.net.handler.NetHandler;
+import tfc.btvr.mp.BaosWrapper;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public abstract class VRPacket {
 	
 	public abstract void readPacketData(DataInputStream dataInputStream) throws IOException;
 	
-	public abstract void writePacketData(ByteArrayOutputStream baos) throws IOException;
+	public abstract void writePacketData(BaosWrapper baos) throws IOException;
 	
 	private final int id;
 	

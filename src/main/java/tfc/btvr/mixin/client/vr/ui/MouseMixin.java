@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tfc.btvr.itf.VRScreenData;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.util.ScreenUtil;
 
@@ -48,6 +49,8 @@ public abstract class MouseMixin {
 	// TODO: WorldSelectScreen checks that the mouse is pressed using the isButtonDown method
 	@Inject(at = @At("HEAD"), method = "next", cancellable = true)
 	private static void prePollEvent(CallbackInfoReturnable<Boolean> cir) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		ScreenUtil.Button[] sbuttons = new ScreenUtil.Button[]{
 				ScreenUtil.left, ScreenUtil.right
 		};
@@ -71,6 +74,8 @@ public abstract class MouseMixin {
 	
 	@Inject(at = @At("HEAD"), method = "getEventX", cancellable = true)
 	private static void preGetEvX(CallbackInfoReturnable<Integer> cir) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		ScreenUtil.Button[] sbuttons = new ScreenUtil.Button[]{
 				ScreenUtil.left, ScreenUtil.right
 		};
@@ -83,6 +88,8 @@ public abstract class MouseMixin {
 	
 	@Inject(at = @At("HEAD"), method = "getEventY", cancellable = true)
 	private static void preGetEvY(CallbackInfoReturnable<Integer> cir) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		ScreenUtil.Button[] sbuttons = new ScreenUtil.Button[]{
 				ScreenUtil.left, ScreenUtil.right
 		};
@@ -95,6 +102,8 @@ public abstract class MouseMixin {
 	
 	@Inject(at = @At("HEAD"), method = "isButtonDown", cancellable = true)
 	private static void preCheckMouse(int btn, CallbackInfoReturnable<Boolean> cir) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (btn == 0) {
 			if (ScreenUtil.left.down)
 				cir.setReturnValue(true);
@@ -106,6 +115,8 @@ public abstract class MouseMixin {
 	
 	@Inject(at = @At("HEAD"), method = "getX", cancellable = true)
 	private static void preGetX(CallbackInfoReturnable<Integer> cir) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (!VRManager.inStandby) {
 			Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 			GuiScreen scrn = mc.currentScreen;
@@ -123,6 +134,8 @@ public abstract class MouseMixin {
 	
 	@Inject(at = @At("HEAD"), method = "getY", cancellable = true)
 	private static void preGetY(CallbackInfoReturnable<Integer> cir) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (!VRManager.inStandby) {
 			Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 			GuiScreen scrn = mc.currentScreen;

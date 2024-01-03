@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRScreenData;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 
@@ -32,27 +33,34 @@ public class ScreenMixin implements VRScreenData {
 			return;
 		}
 		
-		SDevice HEAD = new SDevice(0);
-		
-		double[] vec = new double[]{0, 0, 1};
-		VRHelper.orientVector(HEAD, vec);
-		
-		double angle = Math.atan2(vec[0], vec[2]);
-		rotation = angle;
-		
-		double[] crd = VRHelper.playerRelative(HEAD);
-		if (mc.thePlayer != null) {
-			myPos = new double[]{
-					crd[0] + mc.thePlayer.x,
-					crd[1] + mc.thePlayer.bb.minY,
-					crd[2] + mc.thePlayer.z
-			};
+		if (BTVRSetup.checkVR()) {
+			SDevice HEAD = new SDevice(0);
+			
+			double[] vec = new double[]{0, 0, 1};
+			VRHelper.orientVector(HEAD, vec);
+			
+			double angle = Math.atan2(vec[0], vec[2]);
+			rotation = angle;
+			
+			double[] crd = VRHelper.playerRelative(HEAD);
+			if (mc.thePlayer != null) {
+				myPos = new double[]{
+						crd[0] + mc.thePlayer.x,
+						crd[1] + mc.thePlayer.bb.minY,
+						crd[2] + mc.thePlayer.z
+				};
+			} else {
+				myPos = new double[]{0, 2, 0};
+				rotation = 0;
+			}
+			
+			offset = 3;
 		} else {
 			myPos = new double[]{0, 2, 0};
 			rotation = 0;
+			
+			offset = 3;
 		}
-		
-		offset = 3;
 	}
 	
 	@Override

@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiInventoryCreative;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
 import tfc.btvr.Config;
-import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
 import tfc.btvr.util.ScreenUtil;
@@ -62,11 +61,11 @@ public class Bindings {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
 		if (Config.SMOOTH_ROTATION.get()) {
-			VRManager.yAddRot += (float) ((Config.ROTATION_SPEED.get() / 4) * x);
+			mc.thePlayer.yRot += (float) ((Config.ROTATION_SPEED.get() / 4) * x);
 		} else {
 			boolean rotating = x != 0;
 			if (rotating && !rotateActive)
-				VRManager.yAddRot += (float) (Config.ROTATION_SPEED.get() * Math.signum(x));
+				mc.thePlayer.yRot += (float) (Config.ROTATION_SPEED.get() * Math.signum(x));
 			rotateActive = rotating;
 		}
 	});

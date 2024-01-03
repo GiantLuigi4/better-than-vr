@@ -9,6 +9,7 @@ import org.lwjgl.system.Library;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.oculus.ovr.OVRSession;
 
 import java.io.File;
@@ -25,6 +26,8 @@ public class BTVRSetup {
 		LOGGER.info("Load VR");
 		Library.initialize();
 		
+		Config.init();
+
 		if (VRManager.getActiveMode() == VRMode.STEAM_VR) {
 			LOGGER.info("Steam VR Selected");
 			
@@ -106,7 +109,7 @@ public class BTVRSetup {
 	}
 	
 	public static boolean checkVR() {
-		return checkSteamVR() || checkOculusVR();
+		return VRManager.getActiveMode() != VRMode.NONE;
 	}
 	
 	public static void getSize(IntBuffer w, IntBuffer h) {

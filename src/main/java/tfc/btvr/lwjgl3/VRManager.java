@@ -2,6 +2,7 @@ package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
+import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.math.VecMath;
@@ -13,7 +14,6 @@ import java.util.HashMap;
 
 public class VRManager {
 	public static double ox, oz;
-	public static double yAddRot, oYAddRot;
 	
 	private static TrackedDevicePose.Buffer buffer = TrackedDevicePose.calloc(VR.k_unMaxTrackedDeviceCount);
 	
@@ -71,8 +71,6 @@ public class VRManager {
 	}
 	
 	public static void postTick(Minecraft mc) {
-		oYAddRot = yAddRot;
-	
 		Bindings.postTick(mc);
 		
 		// lol I should clean this up
@@ -112,9 +110,18 @@ public class VRManager {
 		
 		mc.thePlayer.xo = mc.thePlayer.xOld -= (x - mc.thePlayer.x);
 		mc.thePlayer.zo = mc.thePlayer.zOld -= (z - mc.thePlayer.z);
-
+		
 		ox = tx;
 		oz = tz;
+
+//		double d0 = look[0];
+//		double d1 = look[1];
+//		double d2 = look[2];
+//		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+//		float xR = (float) (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
+//		float yR = (float) (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
+//
+//		cam.setRotation(yR, xR);
 	}
 	
 	public static float[] getVRMotion() {
@@ -127,9 +134,14 @@ public class VRManager {
 		return buffer.get(index);
 	}
 	
-	private static VRMode activeMode = BTVRSetup.getDefaultMode();
+	private static VRMode activeMode = Config.MODE.get();
 	
 	public static VRMode getActiveMode() {
 		return activeMode;
+	}
+	
+	public static void shutdown() {
+		activeMode = VRMode.NONE;
+		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogic();
 	}
 }

@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.math.VecMath;
@@ -29,6 +30,8 @@ public class EntityMixin {
 	
 	@Inject(at = @At("HEAD"), method = "moveRelative", cancellable = true)
 	public void preMove(float f, float f1, float f2, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (isSinglePlayer) {
 			
 			float[] m = new float[]{-f, -f1};

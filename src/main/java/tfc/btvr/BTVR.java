@@ -10,8 +10,6 @@ import java.lang.reflect.Method;
 public class BTVR implements ModInitializer {
 	@Override
 	public void onInitialize() {
-		Config.init();
-		
 		try {
 			Method m = Packet.class.getDeclaredMethod("addIdClassMapping", int.class, boolean.class, boolean.class, Class.class);
 			m.setAccessible(true);

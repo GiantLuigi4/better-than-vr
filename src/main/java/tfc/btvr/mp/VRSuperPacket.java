@@ -19,16 +19,22 @@ public class VRSuperPacket extends Packet {
 		this.packet = packet;
 		data = new ByteArrayOutputStream();
 		try {
-			packet.writePacketData(data);
+			packet.writePacketData(new BaosWrapper(data));
 		} catch (IOException err) {
 			this.err = err;
 		}
+	}
+	
+	public VRSuperPacket() {
 	}
 	
 	@Override
 	public void readPacketData(DataInputStream dataInputStream) throws IOException {
 		byte id = dataInputStream.readByte();
 		this.packet = VRPacket.decode(id, dataInputStream);
+		
+		data = new ByteArrayOutputStream();
+		packet.writePacketData(new BaosWrapper(data));
 	}
 	
 	@Override

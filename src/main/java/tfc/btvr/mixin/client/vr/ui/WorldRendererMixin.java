@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.Config;
 import tfc.btvr.VRCamera;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SEye;
@@ -79,6 +80,8 @@ public abstract class WorldRendererMixin {
 	
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		// UIs are drawn specially for VR
 		if (SEye.getActiveEye() != null) {
 			ci.cancel();
@@ -90,6 +93,8 @@ public abstract class WorldRendererMixin {
 	
 	@Inject(at = @At("RETURN"), method = "updateCameraAndRender")
 	public void postRenderWorld(float renderPartialTicks, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		VRRenderManager.releaseUI();
 	}
 	
@@ -112,12 +117,16 @@ public abstract class WorldRendererMixin {
 	
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "setupPlayerCamera")
 	public void conditionallyRenderItem(ItemRenderer instance, float r) {
+		if (BTVRSetup.checkVR()) return;
+
 		// don't draw this in VR
-//		instance.renderItemInFirstPerson(r);
+		instance.renderItemInFirstPerson(r);
 	}
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderGlobal;renderEntities(Lnet/minecraft/client/render/camera/ICamera;F)V", shift = At.Shift.AFTER), method = "renderWorld")
 	public void postRenderEnts(float renderPartialTicks, long updateRenderersUntil, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDepthMask(true);
 		if (mc.currentScreen == null) return;
@@ -128,6 +137,8 @@ public abstract class WorldRendererMixin {
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
 	public void preRender(float renderPartialTicks, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		if (mc.currentScreen == null) return;
 		Eye eye = Eye.getActiveEye();
 		// no point in drawing it if it won't be seen

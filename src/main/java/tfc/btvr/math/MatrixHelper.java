@@ -125,4 +125,29 @@ public class MatrixHelper {
 				Math.cos(angle / 2),
 		};
 	}
+	
+	public static Matrix4f toMat4(HmdMatrix34 matrix) {
+		Matrix4f matr = new Matrix4f();
+		matr.m00 = matrix.m(0);
+		matr.m01 = matrix.m(1);
+		matr.m02 = matrix.m(2);
+		matr.m03 = matrix.m(3);
+		
+		matr.m10 = matrix.m(4);
+		matr.m11 = matrix.m(5);
+		matr.m12 = matrix.m(6);
+		matr.m13 = matrix.m(7);
+		
+		matr.m20 = matrix.m(8);
+		matr.m21 = matrix.m(9);
+		matr.m22 = matrix.m(10);
+		matr.m23 = matrix.m(11);
+		
+//		matr.m30 = matrix.m(12);
+//		matr.m31 = matrix.m(13);
+//		matr.m32 = matrix.m(14);
+//		matr.m33 = matrix.m(15);
+		
+		return matr;
+	}
 }

@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
+import tfc.btvr.lwjgl3.BTVRSetup;
 
 import java.nio.FloatBuffer;
 
@@ -33,11 +34,15 @@ public class WorldRendererMixin {
 	
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/camera/ICamera;applyGlTransformations()V"), method = "orientCamera")
 	public void postSetupTransform(ICamera instance) {
+		if (!BTVRSetup.checkVR()) return;
+	
 		VRCamera.apply(pct, instance, farPlaneDistance);
 	}
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/camera/ICamera;applyGlTransformations()V", shift = At.Shift.AFTER), method = "orientCamera", cancellable = true)
 	public void postSetupTransform(float renderPartialTicks, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+
 //		if (Eye.getActiveEye() != null) {
 		ci.cancel();
 //		}
