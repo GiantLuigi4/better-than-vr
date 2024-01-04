@@ -10,7 +10,6 @@ import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.LivingRenderer;
 import net.minecraft.client.render.entity.PlayerRenderer;
-import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.HitResult;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.EntityLiving;
@@ -33,6 +32,7 @@ import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.VecMath;
+import tfc.btvr.model.VRModel;
 
 import java.nio.FloatBuffer;
 
@@ -107,51 +107,27 @@ public class VRCamera {
 		
 		if (instance != null && mc.thePlayer != null) {
 			GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
-			GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
 			
 			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
 			GL11.glTranslated(0, -mc.thePlayer.getHeadHeight(), 0);
 		}
 	}
 	
-	private static Cube leftArm = new Cube(40, 16, 64, 64);
-	private static Cube rightArm = new Cube(32, 48, 64, 64);
+	public static final VRModel normal = new VRModel();
 	
-	static {
-		leftArm.mirror = true;
-		leftArm.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0, true);
-		
-		rightArm.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0, true);
-	}
+	private static float armScl = 1 / 32f;
 	
-	private static double armScl = 1 / 32d;
-	
-	protected static void draw(Cube cube) {
-		float rpX = cube.rotationPointX;
-		float rpY = cube.rotationPointY;
-		float rpZ = cube.rotationPointZ;
-		float rX = cube.rotateAngleX;
-		float rY = cube.rotateAngleY;
-		float rZ = cube.rotateAngleZ;
-		
-		cube.setRotationPoint(0, 0, 0);
-		cube.setRotationAngle(0, 0, 0);
-		boolean show = cube.showModel;
-		
-		cube.showModel = true;
-		cube.render((float) armScl);
-		
-		cube.showModel = show;
-		cube.setRotationPoint(rpX, rpY, rpZ);
-		cube.setRotationAngle(rX, rY, rZ);
+	public static void draw(VRModel model, EntityPlayer player, boolean left, float scale) {
+		model.draw(player, left, scale);
 	}
 	
 	public static void renderPlayer(EntityPlayer thePlayer, float renderPartialTicks, RenderGlobal renderGlobal) {
 		renderPlayer(false, thePlayer, renderPartialTicks, renderGlobal);
 	}
 	
-	public static void handMatrix(EntityPlayer player, double pct, boolean left, SDevice hand) {
-		HmdMatrix34 matr = hand.getMatrix();
+	public static void handMatrix(EntityPlayer player, double pct, boolean left, SDevice device) {
+		HmdMatrix34 matr = device.getMatrix();
 		float[] data = new float[]{
 				matr.m(0), matr.m(4), matr.m(8), 0,
 				matr.m(1), matr.m(5), matr.m(9), 0,
@@ -162,6 +138,11 @@ public class VRCamera {
 		buffer.flip();
 		
 		GL11.glMultMatrix(buffer);
+		
+		handMatrix(player, pct, left);
+	}
+	
+	public static void handMatrix(EntityPlayer player, double pct, boolean left) {
 		GL11.glScaled(left ? 1 : -1, -1, -1);
 		GL11.glRotatef(90, 1, 0, 0);
 		GL11.glRotatef(180, 0, 1, 0);
@@ -235,6 +216,9 @@ public class VRCamera {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		ICamera camera = mc.activeCamera;
 		
+		if (camera != null && camera.showPlayer())
+			return;
+		
 		if (thePlayer != null) {
 			EntityRenderDispatcher dispatcher = EntityRenderDispatcher.instance;
 			if (dispatcher.renderEngine == null) dispatcher.renderEngine = mc.renderEngine;
@@ -256,9 +240,9 @@ public class VRCamera {
 		
 		GL11.glPushMatrix();
 		if (!menu && camera != null) {
-			GL11.glRotated(-mc.thePlayer.yRot, 0, 1, 0);
+			GL11.glRotated(-VRManager.getRotation(1), 0, 1, 0);
 			GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
-			GL11.glRotated(mc.thePlayer.yRot, 0, 1, 0);
+			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
 			
 			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
 			
@@ -270,14 +254,14 @@ public class VRCamera {
 		// right hand
 		GL11.glPushMatrix();
 		handMatrix(thePlayer, renderPartialTicks, false, rightHand);
-		draw(rightArm);
+		draw(normal, thePlayer, false, armScl);
 //		draw(mdl.bipedRightArmOverlay);
 		GL11.glPopMatrix();
 		
 		// left hand
 		GL11.glPushMatrix();
 		handMatrix(thePlayer, renderPartialTicks, true, leftHand);
-		draw(leftArm);
+		draw(normal, thePlayer, true, armScl);
 //		draw(mdl.bipedLeftArmOverlay);
 		GL11.glPopMatrix();
 		

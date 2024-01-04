@@ -123,8 +123,8 @@ public class BTVRSetup {
 		}
 	}
 	
-	public static void whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogic() {
-		switch (VRManager.getActiveMode()) {
+	public static void whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogicToAvoidCreatingProblemsAndDeadlocksLol(VRMode closing) {
+		switch (closing) {
 			case STEAM_VR:
 				VR.VR_ShutdownInternal();
 				break;

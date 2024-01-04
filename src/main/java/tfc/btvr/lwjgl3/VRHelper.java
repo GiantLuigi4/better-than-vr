@@ -53,7 +53,7 @@ public class VRHelper {
 			double pct = VRRenderManager.getPct();
 			if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
 			
-			double delt = mc.thePlayer.yRot * pct + (1 - pct) * mc.thePlayer.yRotO;
+			double delt = VRManager.getRotation(pct);
 			
 			cursedMatr = MatrixHelper.mul(
 					cursedMatr, MatrixHelper.quatToMat(

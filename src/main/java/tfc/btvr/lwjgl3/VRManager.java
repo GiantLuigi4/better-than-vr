@@ -5,6 +5,7 @@ import org.lwjgl.openvr.*;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
+import tfc.btvr.math.MathHelper;
 import tfc.btvr.math.VecMath;
 import tfc.btvr.util.controls.Bindings;
 import tfc.btvr.util.gestures.GestureControllers;
@@ -70,7 +71,11 @@ public class VRManager {
 		}
 	}
 	
+	public static float yAddRot, oYAddRot;
+
 	public static void postTick(Minecraft mc) {
+		oYAddRot = yAddRot;
+		
 		Bindings.postTick(mc);
 		
 		// lol I should clean this up
@@ -91,7 +96,7 @@ public class VRManager {
 		double dx = (tx - ox);
 		double dz = (tz - oz);
 		
-		double[] res = VecMath.rotate(new double[]{dx, dz}, Math.toRadians(mc.thePlayer.yRot));
+		double[] res = VecMath.rotate(new double[]{dx, dz}, Math.toRadians(VRManager.getRotation(1)));
 		dx = res[0];
 		dz = res[1];
 		
@@ -114,14 +119,14 @@ public class VRManager {
 		ox = tx;
 		oz = tz;
 
-//		double d0 = look[0];
-//		double d1 = look[1];
-//		double d2 = look[2];
-//		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-//		float xR = (float) (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
-//		float yR = (float) (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
-//
-//		cam.setRotation(yR, xR);
+		double d0 = look[0];
+		double d1 = look[1];
+		double d2 = look[2];
+		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
+		float xR = (float) (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
+		float yR = (float) (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
+
+		mc.thePlayer.setRot(yR, xR);
 	}
 	
 	public static float[] getVRMotion() {
@@ -141,7 +146,12 @@ public class VRManager {
 	}
 	
 	public static void shutdown() {
+		VRMode close = activeMode;
 		activeMode = VRMode.NONE;
-		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogic();
+		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogicToAvoidCreatingProblemsAndDeadlocksLol(close);
+	}
+	
+	public static float getRotation(double pct) {
+		return (float) (yAddRot * pct + (1 - pct) * oYAddRot);
 	}
 }

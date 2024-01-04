@@ -4,6 +4,7 @@
   "package": "tfc.btvr.mixin",
   "compatibilityLevel": "JAVA_9",
   "mixins": [
+    "client.pancake.PlayerEntityRendererMixin",
     "common.detect.ModDetectionServer",
     "common.detect.NetLoginHandlerMixin",
     "common.handle.ServerNetHandlerMixin",
