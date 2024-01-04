@@ -79,7 +79,7 @@ public class VRHelper {
 	public static double[] mergeMot(float[] computer, float[] vr) {
 		double[] res = new double[]{computer[0], 0, computer[1]};
 		VRHelper.orientVector(
-				new SDevice(0),
+				SDevice.HEAD,
 				res
 		);
 		res[1] = 0;

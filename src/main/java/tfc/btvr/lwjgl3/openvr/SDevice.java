@@ -12,10 +12,22 @@ import tfc.btvr.math.MatrixHelper;
 public class SDevice extends Device {
 	int index;
 	
-	public static final SDevice HEAD = new SDevice(0);
+	public static final SDevice HEAD = new SDevice(0, false);
+	public static final SDevice LEFT_HAND = new SDevice(VR.ETrackedControllerRole_TrackedControllerRole_LeftHand, true);
+	public static final SDevice RIGHT_HAND = new SDevice(VR.ETrackedControllerRole_TrackedControllerRole_RightHand, true);
 	
-	public SDevice(int index) {
-		this.index = index;
+	VRControllerState state = VRControllerState.calloc();
+	
+	int role = -1;
+	
+	public SDevice(int index, boolean isRole) {
+		if (isRole) {
+			this.role = index;
+			int cachedIndex = VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(index);
+			this.index = cachedIndex;
+		} else {
+			this.index = index;
+		}
 	}
 	
 	public static SDevice getDeviceForRole(DeviceType role) {
@@ -23,16 +35,21 @@ public class SDevice extends Device {
 		
 		switch (role) {
 			case LEFT_HAND:
-				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_LeftHand));
+				return LEFT_HAND;
 			case RIGHT_HAND:
-				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_RightHand));
+				return RIGHT_HAND;
 			case TREADMILL:
-				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_Treadmill));
+				return new SDevice(VR.ETrackedControllerRole_TrackedControllerRole_Treadmill, true);
 			case INVALID:
-				return new SDevice(VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(VR.ETrackedControllerRole_TrackedControllerRole_Invalid));
+				return new SDevice(VR.ETrackedControllerRole_TrackedControllerRole_Invalid, true);
 			default:
 				throw new RuntimeException("Unsupported device type " + role);
 		}
+	}
+	
+	public void tick() {
+		if (role != -1)
+			index = VRSystem.VRSystem_GetControllerRoleForTrackedDeviceIndex(role);
 	}
 	
 	private final HmdMatrix34 matr = HmdMatrix34.calloc();
@@ -78,15 +95,13 @@ public class SDevice extends Device {
 					)
 			);
 		}
+		
 		HmdMatrix34 cursed = HmdMatrix34.calloc();
 		for (int i = 0; i < cursedMatr.length; i++)
 			cursed.m(i, (float) cursedMatr[i]);
 		
 		return cursed;
-//		return pose.mDeviceToAbsoluteTracking();
 	}
-	
-	VRControllerState state = VRControllerState.calloc();
 	
 	@Override
 	protected void finalize() throws Throwable {

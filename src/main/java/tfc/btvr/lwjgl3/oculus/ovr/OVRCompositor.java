@@ -19,12 +19,15 @@ public class OVRCompositor {
 		OVRSizei sizei0 = OVRSizei.calloc();
 		
 		OVR.ovr_GetFovTextureSize(
-				OVRSession.session.get(0),
+				OVRSession.getSession().get(0),
 				eye, port,
 				1, sizei0
 		);
 		
 		w.put(0, sizei0.w());
 		h.put(0, sizei0.h());
+		
+		sizei0.free();
+		port.free();
 	}
 }

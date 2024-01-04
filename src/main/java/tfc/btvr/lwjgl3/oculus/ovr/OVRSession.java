@@ -7,49 +7,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OVRSession {
-	public static final PointerBuffer session;
-	public static final OVRGraphicsLuid luid;
-	protected static final OVRTrackingState trackingState;
+	private static PointerBuffer session;
+	private static OVRGraphicsLuid luid;
+	private static OVRTrackingState trackingState;
+	private static OVRLogCallback callback;
+	private static OVRInitParams params;
 	
-	public static final Logger LOGGER = LoggerFactory.getLogger("nr::ovr");
+	public static final Logger LOGGER = LoggerFactory.getLogger("nr::init::ovr");
 	
-	private static final OVRLogCallback callback;
-	
-	static {
-		OVRInitParams params = OVRInitParams.calloc()
+	public static void setup() {
+		params = OVRInitParams.calloc()
 				.LogCallback(callback = new OVRLogCallback() {
 					@Override
 					public void invoke(long userData, int level, long message) {
-						System.out.println("LibOVR [" + level + "] " + MemoryUtil.memASCII(message));
+						LOGGER.debug("LibOVR [" + level + "] " + MemoryUtil.memASCII(message));
 					}
 				})
-				.Flags(OVR.ovrInit_Debug | OVR.ovrInit_FocusAware)
-				;
+				.Flags(OVR.ovrInit_Debug | OVR.ovrInit_FocusAware);
 		
-//		System.out.println(params.LogCallback());
-		int result = OVR.ovr_Initialize(params);
-//		int result = OVR.ovr_Initialize(null);
-		if (result != OVRErrorCode.ovrSuccess) {
-//			params.free();
-			
+		if (OVR.ovr_Initialize(params) != OVRErrorCode.ovrSuccess) {
 			OVRErrorInfo info = OVRErrorInfo.malloc();
 			OVR.ovr_GetLastErrorInfo(info);
 			LOGGER.error(info.ErrorStringString());
 			info.free();
-			throw new RuntimeException("Failed to initialize OVR");
+			LOGGER.error("Failed to initialize OVR");
+			System.exit(-1);
 		}
-//		params.free();
 		
 		session = MemoryUtil.memAllocPointer(1);
 		luid = OVRGraphicsLuid.create();
 		
-		if ((result = OVR.ovr_Create(session, luid)) != 0) {
+		if (OVR.ovr_Create(session, luid) != 0) {
 			OVRErrorInfo info = OVRErrorInfo.malloc();
 			OVR.ovr_GetLastErrorInfo(info);
 			LOGGER.error(info.ErrorStringString());
 			info.free();
 			
-			System.err.println("Couldn't create OVR!");
+			LOGGER.error("Couldn't create OVR!");
 			System.exit(-1);
 		}
 		
@@ -64,10 +58,13 @@ public class OVRSession {
 			trackingState.free();
 			luid.free();
 			session.free();
-			callback.free();
+			
+			if (callback != null) callback.free();
+			if (params != null) params.free();
 		}
 	}
 	
-	public static void init() {
+	public static PointerBuffer getSession() {
+		return session;
 	}
 }

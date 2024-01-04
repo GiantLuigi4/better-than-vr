@@ -1,25 +1,17 @@
 package tfc.btvr.lwjgl3;
 
-import net.fabricmc.loader.api.FabricLoader;
-import org.lwjgl.openvr.OpenVR;
 import org.lwjgl.openvr.VR;
-import org.lwjgl.openvr.VRInput;
 import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.system.Library;
-import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.oculus.ovr.OVRSession;
+import tfc.btvr.lwjgl3.openvr.OpenVRSession;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.nio.IntBuffer;
 
 public class BTVRSetup {
-	public static final int token;
-	
 	public static final Logger LOGGER = LoggerFactory.getLogger("nr::init");
 	
 	static {
@@ -30,60 +22,10 @@ public class BTVRSetup {
 
 		if (VRManager.getActiveMode() == VRMode.STEAM_VR) {
 			LOGGER.info("Steam VR Selected");
-			
-			VR.getLibrary(); // load the library, just to not mess up LWJGL2
-			if (checkVR()) {
-				MemoryStack stack = MemoryStack.stackPush();
-				IntBuffer peError = stack.mallocInt(1);
-				token = VR.VR_InitInternal(peError, VR.EVRApplicationType_VRApplication_Scene);
-				OpenVR.create(token);
-			} else {
-				token = 0;
-			}
-			LOGGER.info("VR Loaded, token = " + token);
-			
-			LOGGER.info("Writing actions");
-			try {
-				File fl = new File(FabricLoader.getInstance().getGameDir() + "/vr/actions.json");
-				if (!fl.exists()) {
-					InputStream is = BTVRSetup.class.getClassLoader().getResourceAsStream("btvr/actions.json");
-					fl.getParentFile().mkdirs();
-					FileOutputStream fos = new FileOutputStream(fl);
-					fos.write(is.readAllBytes());
-					fos.flush();
-					fos.close();
-					is.close();
-				}
-			} catch (Throwable err) {
-				throw new RuntimeException(err);
-			}
-			try {
-				File fl = new File(FabricLoader.getInstance().getGameDir() + "/vr/bindings/oculus_touch.json");
-				if (!fl.exists()) {
-					InputStream is = BTVRSetup.class.getClassLoader().getResourceAsStream("btvr/bindings/oculus_touch.json");
-					fl.getParentFile().mkdirs();
-					FileOutputStream fos = new FileOutputStream(fl);
-					fos.write(is.readAllBytes());
-					fos.flush();
-					fos.close();
-					is.close();
-				}
-			} catch (Throwable err) {
-				throw new RuntimeException(err);
-			}
-			
-			LOGGER.info("Loading actions");
-			
-			int err = VRInput.VRInput_SetActionManifestPath(FabricLoader.getInstance().getGameDir().toAbsolutePath() + "/vr/actions.json");
-			if (err != 0) {
-				System.out.println("Actions setup with error: " + err);
-			}
+			OpenVRSession.setup();
 		} else if (VRManager.getActiveMode() == VRMode.OCULUS_VR) {
 			LOGGER.info("Oculus VR Selected");
-			OVRSession.init();
-			token = -1;
-		} else {
-			token = -1;
+			OVRSession.setup();
 		}
 	}
 	
@@ -126,7 +68,7 @@ public class BTVRSetup {
 	public static void whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogicToAvoidCreatingProblemsAndDeadlocksLol(VRMode closing) {
 		switch (closing) {
 			case STEAM_VR:
-				VR.VR_ShutdownInternal();
+				OpenVRSession.end();
 				break;
 			case OCULUS_VR:
 				OVRSession.end();

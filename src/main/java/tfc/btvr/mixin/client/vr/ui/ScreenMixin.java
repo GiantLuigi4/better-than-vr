@@ -34,7 +34,7 @@ public class ScreenMixin implements VRScreenData {
 		}
 		
 		if (BTVRSetup.checkVR()) {
-			SDevice HEAD = new SDevice(0);
+			SDevice HEAD = SDevice.HEAD;
 			
 			double[] vec = new double[]{0, 0, 1};
 			VRHelper.orientVector(HEAD, vec);

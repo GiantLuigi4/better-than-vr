@@ -16,7 +16,7 @@ public class VRModel {
 		
 		// TODO: check
 		leftArmOverlay = new Cube(48, 48, 64, 64);
-		leftArmOverlay.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, true);
+		leftArmOverlay.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0.25F, true);
 		leftArmOverlay.setRotationPoint(5.0F, 2.0F, 0.0F);
 		
 		rightArm = new Cube(32, 48, 64, 64);
@@ -24,7 +24,7 @@ public class VRModel {
 		
 		// TODO: check
 		rightArmOverlay = new Cube(40, 32, 64, 64);
-		rightArmOverlay.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, 0.25F, true);
+		rightArmOverlay.addBox(-2.0F, -6.0F, -2.0F, 4, 12, 4, 0.25F, true);
 		rightArmOverlay.setRotationPoint(-5.0F, 2.0F, 10.0F);
 	}
 	

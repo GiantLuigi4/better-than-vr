@@ -3,6 +3,8 @@ package tfc.btvr.lwjgl3;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
 import tfc.btvr.Config;
+import tfc.btvr.lwjgl3.generic.Device;
+import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.math.MathHelper;
@@ -41,6 +43,9 @@ public class VRManager {
 	
 	public static void tick() {
 		VRCompositor.VRCompositor_WaitGetPoses(buffer, null);
+		for (DeviceType value : DeviceType.values()) {
+			Device.getDeviceForRole(value).tick();
+		}
 		
 		SVRControllerInput.tick();
 		

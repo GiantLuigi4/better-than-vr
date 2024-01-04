@@ -33,7 +33,6 @@ public abstract class Eye {
 	public abstract int fboId();
 	
 	// steamvr
-	
 	private static final HmdMatrix44 svrProjection = HmdMatrix44.calloc();
 	private static final HmdMatrix34 svrTranslation = HmdMatrix34.calloc();
 	
