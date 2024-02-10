@@ -6,8 +6,10 @@ package tfc.btvr.math;
 //import org.joml.Vector3f;
 //import java.nio.FloatBuffer;
 
+import net.minecraft.core.util.helper.MathHelper;
 import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Quaternion;
 
 public class MatrixHelper {
 	public static void mulMatr(
@@ -31,12 +33,78 @@ public class MatrixHelper {
 		return d;
 	}
 	
+	protected static float _copysign(float to, float from) {
+		if (from == 0) return 0;
+		return Math.signum(from) * to;
+	}
+	
+	public static Quaternion rotation(HmdMatrix34 matr) {
+		// (Alternative method on https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/)
+		
+		Quaternion quaternion = new Quaternion();
+		
+		quaternion.w = (float) Math.sqrt(Math.max(0, 1 + matr.m(0) + matr.m(5) + matr.m(10))) / 2;
+		quaternion.x = (float) Math.sqrt(Math.max(0, 1 + matr.m(0) - matr.m(5) - matr.m(10))) / 2;
+		quaternion.y = (float) Math.sqrt(Math.max(0, 1 - matr.m(0) + matr.m(5) - matr.m(10))) / 2;
+		quaternion.z = (float) Math.sqrt(Math.max(0, 1 - matr.m(0) - matr.m(5) + matr.m(10))) / 2;
+		
+		quaternion.x = _copysign(quaternion.x, matr.m(9) - matr.m(6));
+		quaternion.y = _copysign(quaternion.y, matr.m(2) - matr.m(8));
+		quaternion.z = _copysign(quaternion.z, matr.m(4) - matr.m(1));
+		
+		return quaternion.normalise(quaternion);
+	}
+	
+	public static HmdMatrix34 rotation(Quaternion q, HmdMatrix34 dst) {
+		// https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
+		
+		double sqw = q.w * q.w;
+		double sqx = q.x * q.x;
+		double sqy = q.y * q.y;
+		double sqz = q.z * q.z;
+		
+		// invs (inverse square length) is only required if quaternion is not already normalised
+		double invs = 1 / (sqx + sqy + sqz + sqw);
+		dst.m(0, (float) ((sqx - sqy - sqz + sqw) * invs)); // since sqw + sqx + sqy + sqz =1/invs*invs
+		dst.m(5, (float) ((-sqx + sqy - sqz + sqw) * invs));
+		dst.m(10, (float) ((-sqx - sqy + sqz + sqw) * invs));
+		
+		double tmp1 = q.x * q.y;
+		double tmp2 = q.z * q.w;
+		dst.m(4, (float) (2.0 * (tmp1 + tmp2) * invs));
+		dst.m(1, (float) (2.0 * (tmp1 - tmp2) * invs));
+		
+		tmp1 = q.x * q.z;
+		tmp2 = q.y * q.w;
+		dst.m(8, (float) (2.0 * (tmp1 - tmp2) * invs));
+		dst.m(2, (float) (2.0 * (tmp1 + tmp2) * invs));
+		tmp1 = q.y * q.z;
+		tmp2 = q.x * q.w;
+		dst.m(9, (float) (2.0 * (tmp1 + tmp2) * invs));
+		dst.m(6, (float) (2.0 * (tmp1 - tmp2) * invs));
+		
+		return dst;
+	}
+	
 	public static double[] interpMatrix(HmdMatrix34 src, HmdMatrix34 dst, double delta) {
-		// TODO: https://docs.google.com/viewer?url=http://www.cs.wisc.edu/graphics/Courses/838-s2002/Papers/polar-decomp.pdf ?
-		// https://github.com/WebKit/webkit/blob/main/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp
+		Quaternion left = rotation(src);
+		Quaternion right = rotation(dst);
+		
+		left.set(
+				tfc.btvr.math.MathHelper.lerpQuat(left.x, right.x, (float) delta),
+				tfc.btvr.math.MathHelper.lerpQuat(left.y, right.y, (float) delta),
+				tfc.btvr.math.MathHelper.lerpQuat(left.z, right.z, (float) delta),
+				tfc.btvr.math.MathHelper.lerpQuat(left.w, right.w, (float) delta)
+		);
+		
+		rotation(left, dst);
+		dst.m(3, MathHelper.lerp(src.m(3), dst.m(3), (float) delta));
+		dst.m(7, MathHelper.lerp(src.m(7), dst.m(7), (float) delta));
+		dst.m(11, MathHelper.lerp(src.m(11), dst.m(11), (float) delta));
+		
 		double[] d = new double[4 * 3];
 		for (int i = 0; i < d.length; i++) {
-			d[i] = src.m(i) * (1 - delta) + dst.m(i) * delta;
+			d[i] = dst.m(i);
 		}
 		
 		return d;
@@ -142,7 +210,7 @@ public class MatrixHelper {
 		matr.m21 = matrix.m(9);
 		matr.m22 = matrix.m(10);
 		matr.m23 = matrix.m(11);
-		
+
 //		matr.m30 = matrix.m(12);
 //		matr.m31 = matrix.m(13);
 //		matr.m32 = matrix.m(14);

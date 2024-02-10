@@ -15,9 +15,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
 import tfc.btvr.itf.VRPlayerAttachments;
-import tfc.btvr.lwjgl3.VRManager;
+import tfc.btvr.math.LwjglMatrixHelper;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 @Mixin(value = PlayerRenderer.class, remap = false)
 public abstract class PlayerEntityRendererMixin {
@@ -54,8 +55,6 @@ public abstract class PlayerEntityRendererMixin {
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 2 / 8f, 0);
-		if (left)
-			GL11.glTranslated(-1 / 8f, 0, 0);
 		GL11.glMultMatrix(buffer);
 		VRCamera.handMatrix(
 				entity,
@@ -64,7 +63,6 @@ public abstract class PlayerEntityRendererMixin {
 		);
 		GL11.glTranslated(0, 2 / 8f, 0);
 		
-		GL11.glScalef(2, 2, 2);
 		call.run();
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -93,42 +91,46 @@ public abstract class PlayerEntityRendererMixin {
 		
 		if (attachments.better_than_vr$enabled()) {
 			GL11.glPushMatrix();
-
-//			float f = entity.prevRenderYawOffset + (entity.renderYawOffset - entity.prevRenderYawOffset) * renderPartialTicks;
 			
 			this.translateModel(entity, x, y, z);
-			GL11.glRotated(-VRManager.getRotation(1), 0, 1, 0);
-			GL11.glTranslated(-VRManager.ox, -entity.heightOffset + entity.getHeadHeight(), -VRManager.oz);
-			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
-
-//			float f3 = ((float) entity.tickCount + renderPartialTicks);
-//			this.rotateModel(entity, f3, f, renderPartialTicks);
-//			GL11.glRotatef(-(180.0F - f), 0.0F, 1.0F, 0.0F);
+			GL11.glRotated(-attachments.better_than_vr$getRotation(renderPartialTicks), 0, 1, 0);
+			GL11.glTranslated(-attachments.better_than_vr$getOffsetX(renderPartialTicks), 0, -attachments.better_than_vr$getOffsetZ(renderPartialTicks));
+			GL11.glRotated(attachments.better_than_vr$getRotation(renderPartialTicks), 0, 1, 0);
+			GL11.glTranslated(0, -entity.heightOffset + entity.getHeadHeight(), 0);
+			
 			this.loadEntityTexture(entity);
 			
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			
 			draw(
-					attachments.better_than_vr$getMatrix(1),
+					LwjglMatrixHelper.interpMatrix(
+							attachments.better_than_vr$getOldMatrix(1),
+							attachments.better_than_vr$getMatrix(1),
+							renderPartialTicks
+					),
 					entity, renderPartialTicks,
 					true, () -> {
 						VRCamera.draw(
 								VRCamera.normal,
 								entity,
 								true,
-								1 / 8f
+								1 / 16f
 						);
 					}
 			);
 			draw(
-					attachments.better_than_vr$getMatrix(2),
+					LwjglMatrixHelper.interpMatrix(
+							attachments.better_than_vr$getOldMatrix(2),
+							attachments.better_than_vr$getMatrix(2),
+							renderPartialTicks
+					),
 					entity, renderPartialTicks,
 					false, () -> {
 						VRCamera.draw(
 								VRCamera.normal,
 								entity,
 								false,
-								1 / 8f
+								1 / 16f
 						);
 					}
 			);
@@ -147,6 +149,8 @@ public abstract class PlayerEntityRendererMixin {
 			}
 			
 			GL11.glPopMatrix();
+		} else {
+			Arrays.fill(showVs, true);
 		}
 	}
 }

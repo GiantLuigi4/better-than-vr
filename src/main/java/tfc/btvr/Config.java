@@ -122,7 +122,7 @@ public class Config {
 				case "oculus":
 					value = VRMode.OCULUS_VR;
 					break;
-				case "pancake":
+				case "off":
 					value = VRMode.NONE;
 					break;
 			}

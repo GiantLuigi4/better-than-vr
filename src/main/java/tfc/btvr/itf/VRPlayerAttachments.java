@@ -10,5 +10,13 @@ public interface VRPlayerAttachments {
 	
 	Matrix4f better_than_vr$getMatrix(int device);
 	
+	Matrix4f better_than_vr$getOldMatrix(int device);
+	
 	void better_than_vr$handleMatricies(MatricesPacket packet);
+	
+	float better_than_vr$getOffsetX(float pct);
+	
+	float better_than_vr$getOffsetZ(float pct);
+	
+	float better_than_vr$getRotation(float pct);
 }

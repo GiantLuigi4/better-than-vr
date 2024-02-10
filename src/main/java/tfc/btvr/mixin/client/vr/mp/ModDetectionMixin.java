@@ -9,11 +9,13 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.MPManager;
 
 @Mixin(value = NetClientHandler.class, remap = false)
 public abstract class ModDetectionMixin {
-	@Shadow public abstract void addToSendQueue(Packet packet);
+	@Shadow
+	public abstract void addToSendQueue(Packet packet);
 	
 	@Inject(at = @At("RETURN"), method = "<init>")
 	public void postInit(Minecraft minecraft, String s, int i, CallbackInfo ci) {
@@ -22,6 +24,8 @@ public abstract class ModDetectionMixin {
 	
 	@Inject(at = @At("HEAD"), method = "handleChat")
 	public void onReceiveChat(Packet3Chat packet3chat, CallbackInfo ci) {
+		if (!BTVRSetup.checkVR()) return;
+		
 		if (packet3chat.message.equals(
 				MPManager.ackServerMsg
 		)) {

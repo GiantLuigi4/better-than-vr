@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.itf.VRPlayerAttachments;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.MPManager;
+import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.MatrixHelper;
@@ -48,6 +49,26 @@ public class EntityPlayerSPMixin implements VRPlayerAttachments {
 	}
 	
 	@Override
+	public Matrix4f better_than_vr$getOldMatrix(int device) {
+		return better_than_vr$getMatrix(device);
+	}
+	
+	@Override
 	public void better_than_vr$handleMatricies(MatricesPacket packet) {
+	}
+	
+	@Override
+	public float better_than_vr$getOffsetX(float pct) {
+		return (float) VRManager.ox;
+	}
+	
+	@Override
+	public float better_than_vr$getOffsetZ(float pct) {
+		return (float) VRManager.oz;
+	}
+	
+	@Override
+	public float better_than_vr$getRotation(float pct) {
+		return VRManager.getRotation(pct);
 	}
 }

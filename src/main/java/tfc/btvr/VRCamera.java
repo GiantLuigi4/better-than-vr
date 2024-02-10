@@ -216,7 +216,7 @@ public class VRCamera {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		ICamera camera = mc.activeCamera;
 		
-		if (camera != null && camera.showPlayer())
+		if (mc.theWorld != null && camera != null && camera.showPlayer())
 			return;
 		
 		if (thePlayer != null) {

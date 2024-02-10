@@ -77,7 +77,7 @@ public class VRManager {
 	}
 	
 	public static float yAddRot, oYAddRot;
-
+	
 	public static void postTick(Minecraft mc) {
 		oYAddRot = yAddRot;
 		
@@ -123,15 +123,15 @@ public class VRManager {
 		
 		ox = tx;
 		oz = tz;
-
+		
 		double d0 = look[0];
 		double d1 = look[1];
 		double d2 = look[2];
 		double d3 = Math.sqrt(d0 * d0 + d2 * d2);
 		float xR = (float) (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
 		float yR = (float) (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
-
-		mc.thePlayer.setRot(yR, xR);
+		
+		mc.thePlayer.setRot(yR + getRotation(1), xR);
 	}
 	
 	public static float[] getVRMotion() {

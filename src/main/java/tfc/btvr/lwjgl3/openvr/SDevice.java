@@ -59,11 +59,14 @@ public class SDevice extends Device {
 	public HmdMatrix34 getTrueMatrix() {
 		TrackedDevicePose pose = VRManager.getPose(index);
 		
+		double pct = VRRenderManager.getPct();
+		if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
+		
 		TrackedDevicePose p0 = TrackedDevicePose.calloc();
 		// TODO: 4 frame window?
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
 		
-		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), 0.5);
+		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), pct);
 		HmdMatrix34 cursed = HmdMatrix34.calloc();
 		for (int i = 0; i < cursedMatr.length; i++)
 			cursed.m(i, (float) cursedMatr[i]);
@@ -74,16 +77,16 @@ public class SDevice extends Device {
 	public HmdMatrix34 getMatrix() {
 		TrackedDevicePose pose = VRManager.getPose(index);
 		
+		double pct = VRRenderManager.getPct();
+		if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
+		
 		TrackedDevicePose p0 = TrackedDevicePose.calloc();
 		// TODO: 4 frame window?
 		VRCompositor.VRCompositor_GetLastPoseForTrackedDeviceIndex(index, p0, null);
 		
-		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), 0.5);
+		double[] cursedMatr = MatrixHelper.interpMatrix(pose.mDeviceToAbsoluteTracking(), p0.mDeviceToAbsoluteTracking(), pct);
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		if (mc.thePlayer != null) {
-			double pct = VRRenderManager.getPct();
-			if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
-			
 			double delt = VRManager.getRotation(pct);
 			
 			cursedMatr = MatrixHelper.mul(

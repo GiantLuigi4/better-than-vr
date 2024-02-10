@@ -31,7 +31,7 @@ public class EntityMixin {
 	@Inject(at = @At("HEAD"), method = "moveRelative", cancellable = true)
 	public void preMove(float f, float f1, float f2, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
-	
+		
 		if (isSinglePlayer) {
 			
 			float[] m = new float[]{-f, -f1};

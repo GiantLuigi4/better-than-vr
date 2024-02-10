@@ -2,6 +2,7 @@ package tfc.btvr.model;
 
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.player.EntityPlayer;
+import org.lwjgl.opengl.GL11;
 
 public class VRModel {
 	protected Cube leftArm;
@@ -29,23 +30,11 @@ public class VRModel {
 	}
 	
 	protected void drawCube(Cube cube, float scale) {
-		float rpX = cube.rotationPointX;
-		float rpY = cube.rotationPointY;
-		float rpZ = cube.rotationPointZ;
-		float rX = cube.rotateAngleX;
-		float rY = cube.rotateAngleY;
-		float rZ = cube.rotateAngleZ;
-		
-		cube.setRotationPoint(0, 0, 0);
-		cube.setRotationAngle(0, 0, 0);
-		boolean show = cube.showModel;
-		
 		cube.showModel = true;
-		cube.render((float) scale);
-		
-		cube.showModel = show;
-		cube.setRotationPoint(rpX, rpY, rpZ);
-		cube.setRotationAngle(rX, rY, rZ);
+		GL11.glPushMatrix();
+		GL11.glScalef(scale, scale, scale);
+		cube.render(1);
+		GL11.glPopMatrix();
 	}
 	
 	public void draw(EntityPlayer player, boolean left, float scale) {
