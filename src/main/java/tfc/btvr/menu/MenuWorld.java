@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.client.render.Lighting;
 import net.minecraft.client.render.RenderBlocks;
+import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.block.model.BlockModel;
 import net.minecraft.client.render.block.model.BlockModelDispatcher;
@@ -15,17 +16,20 @@ import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Random;
+
 public class MenuWorld {
-	World dummy = new World(
+	public final World dummy = new World(
 			new MenuWorldSaveHandler(), "renderWorld",
 			0, Dimension.overworld, new WorldTypeMenu("empty.lol")
 	);
-	RenderBlocks blocks = new RenderBlocks(dummy, dummy);
+	public final RenderBlocks blocks = new RenderBlocks(dummy, dummy);
 	public final EntityPlayer myPlayer;
 	
 	public MenuWorld(Minecraft mc) {
 		myPlayer = new EntityPlayerSP(mc, dummy, mc.session, 0);
 		dummy.entityJoinedWorld(myPlayer);
+		dummy.setWorldTime(new Random().nextLong());
 	}
 	
 	public static MenuWorld select(Minecraft mc) {
@@ -43,6 +47,13 @@ public class MenuWorld {
 			}
 		}
 		
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				wrld.dummy.setBlock(x, 30, y, Block.slabStonePolished.id);
+				wrld.dummy.setBlockMetadata(x, 30, y, 1);
+			}
+		}
+		
 		for (int x = -32; x <= 32; x++) {
 			for (int y = -32; y <= 32; y++) {
 				for (int z = -32; z <= 32; z++) {
@@ -54,6 +65,9 @@ public class MenuWorld {
 				}
 			}
 		}
+		
+		RenderGlobal renderglobal = mc.renderGlobal;
+		renderglobal.changeWorld(wrld.dummy);
 		
 		return wrld;
 	}
@@ -103,5 +117,9 @@ public class MenuWorld {
 		}
 		
 		Lighting.enableLight();
+	}
+	
+	public void delete() {
+		GL11.glDeleteLists(list, 1);
 	}
 }

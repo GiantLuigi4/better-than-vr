@@ -63,7 +63,7 @@ public abstract class MinecraftMixin {
 		
 		VRRenderManager.startFrame(resolution, (float) gameSettings.renderScale.value.scale, gameSettings.renderScale.value.useLinearFiltering, this.timer.partialTicks);
 		
-		if (VRManager.inStandby) return; // no reason to render VR if the player's not in VR yet
+//		if (VRManager.inStandby) return; // no reason to render VR if the player's not in VR yet
 		
 		int rx = resolution.width;
 		int ry = resolution.height;
