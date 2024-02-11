@@ -365,6 +365,7 @@ public class VRCamera {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		VRRenderManager.bindGUI();
 //		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		Tessellator.instance.startDrawingQuads();
@@ -373,6 +374,7 @@ public class VRCamera {
 		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.maxY, 0, 0, 1);
 		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.maxY, 0, 1, 1);
 		Tessellator.instance.draw();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		
 		Vec3d pos;

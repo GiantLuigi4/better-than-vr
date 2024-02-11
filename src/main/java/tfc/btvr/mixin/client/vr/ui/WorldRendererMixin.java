@@ -182,7 +182,7 @@ public abstract class WorldRendererMixin {
 		
 		updateRenderer();
 		
-		farPlaneDistance = 60f;
+		farPlaneDistance = menuWorld.sz - 2;
 		
 		updateFogColor(0);
 		setupFog(-1, 0);

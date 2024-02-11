@@ -42,7 +42,7 @@ public class MenuWorld {
 						(is.read());
 	}
 	
-	int sz;
+	public int sz;
 	
 	protected static String chooseRow() throws IOException {
 		InputStream is = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/worlds.csv");
