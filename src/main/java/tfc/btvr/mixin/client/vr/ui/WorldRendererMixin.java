@@ -85,11 +85,14 @@ public abstract class WorldRendererMixin {
 	@Shadow
 	private long prevFrameTime;
 	
-	@Shadow protected abstract void updateFogColor(float renderPartialTicks);
+	@Shadow
+	protected abstract void updateFogColor(float renderPartialTicks);
 	
-	@Shadow protected abstract void setupFog(int i, float renderPartialTicks);
+	@Shadow
+	protected abstract void setupFog(int i, float renderPartialTicks);
 	
-	@Shadow public abstract void updateRenderer();
+	@Shadow
+	public abstract void updateRenderer();
 	
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
@@ -164,7 +167,7 @@ public abstract class WorldRendererMixin {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		VRCamera.apply(renderPartialTicks, null, 128);
 		
-		if (((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() == null)
+		if (menuWorld == null || ((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() != menuWorld.dummy)
 			menuWorld = null;
 		if (menuWorld == null) menuWorld = MenuWorld.select(mc);
 		
@@ -179,16 +182,14 @@ public abstract class WorldRendererMixin {
 		
 		updateRenderer();
 		
-		farPlaneDistance = 20f;
+		farPlaneDistance = 60f;
 		
 		updateFogColor(0);
 		setupFog(-1, 0);
 		renderglobal.drawSky(0);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 		this.setupFog(0, 0);
 		GL11.glEnable(2912);
 		Lighting.disable();
-		GL11.glColor3f(1, 1, 1f);
 		
 		mc.activeCamera = tmpC;
 		mc.theWorld = tmp;

@@ -45,6 +45,10 @@ public class OpenVRSession {
 			MemoryStack stack = MemoryStack.stackPush();
 			IntBuffer peError = stack.mallocInt(1);
 			token = VR.VR_InitInternal(peError, VR.EVRApplicationType_VRApplication_Scene);
+			while (token == 0) {
+//				VR.VR_ShutdownInternal();
+				token = VR.VR_InitInternal(peError, VR.EVRApplicationType_VRApplication_Scene);
+			}
 			OpenVR.create(token);
 		} else {
 			LOGGER.error("OpenVR is not installed");
@@ -84,6 +88,12 @@ public class OpenVRSession {
 				LOGGER.info("" + role);
 				int cls = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, VR.ETrackedDeviceProperty_Prop_DeviceClass_Int32, error);
 				LOGGER.info("" + cls);
+				int prior = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, VR.ETrackedDeviceProperty_Prop_ControllerHandSelectionPriority_Int32, error);
+				LOGGER.info("" + prior);
+				String typ = VRSystem.VRSystem_GetStringTrackedDeviceProperty(i, VR.ETrackedDeviceProperty_Prop_RegisteredDeviceType_String, error);
+				LOGGER.info(typ);
+				String typ1 = VRSystem.VRSystem_GetStringTrackedDeviceProperty(i, VR.ETrackedDeviceProperty_Prop_ExpectedControllerType_String, error);
+				LOGGER.info(typ1);
 			}
 		}
 	}

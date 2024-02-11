@@ -16,7 +16,9 @@ import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Random;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 public class MenuWorld {
 	public final World dummy = new World(
@@ -29,38 +31,104 @@ public class MenuWorld {
 	public MenuWorld(Minecraft mc) {
 		myPlayer = new EntityPlayerSP(mc, dummy, mc.session, 0);
 		dummy.entityJoinedWorld(myPlayer);
-		dummy.setWorldTime(new Random().nextLong());
+		dummy.setWorldTime(0);
+	}
+	
+	protected static int readInt(InputStream is) throws IOException {
+		return
+				(is.read() << 24) |
+						(is.read() << 16) |
+						(is.read() << 8) |
+						(is.read());
+	}
+	
+	int sz;
+	
+	protected static String chooseRow() throws IOException {
+		InputStream is = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/worlds.csv");
+		byte[] data = is.readAllBytes();
+		try {
+			is.close();
+		} catch (Throwable err) {
+		}
+		String dat = new String(data);
+		String[] lines = dat.split("\n");
+		
+		while (true) {
+			double v = Math.random() * (lines.length - 1) + 1;
+			int i = (int) v;
+			String ln = lines[i];
+			// TODO: better solution: for now it doesn't matter, since I haven't formatted the file at all
+			if (ln.startsWith("#") || ln.isEmpty()) continue;
+			
+			String[] splat = ln.split(",");
+			// TODO: return a world info instead of a string
+			return splat[2].trim();
+		}
 	}
 	
 	public static MenuWorld select(Minecraft mc) {
 		MenuWorld wrld = new MenuWorld(mc);
-		for (int x = -2; x <= 2; x++) {
-			for (int z = -2; z <= 2; z++) {
+		for (int x = -4; x <= 4; x++) {
+			for (int z = -4; z <= 4; z++) {
 				wrld.dummy.getChunkProvider().prepareChunk(x, z);
 				wrld.dummy.getChunkProvider().populate(wrld.dummy.getChunkProvider(), x, z);
 			}
 		}
 		
-		for (int x = -30; x <= 30; x++) {
-			for (int z = -30; z <= 30; z++) {
-				wrld.dummy.setBlock(x, 30, z, Block.grass.id);
+		try {
+			String txt = chooseRow();
+			
+			InputStream fis = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/" + txt);
+			GZIPInputStream gzis = new GZIPInputStream(fis);
+			
+			int size = readInt(gzis);
+			wrld.sz = size;
+			
+			for (int x = -size; x <= size; x++) {
+				for (int y = -size; y <= size; y++) {
+					for (int z = -size; z <= size; z++) {
+						int id = readInt(gzis);
+						int meta = (byte) gzis.read();
+						wrld.dummy.setBlock(x, y + size, z, id);
+						wrld.dummy.setBlockMetadata(x, y + size, z, meta);
+					}
+				}
 			}
+			
+			gzis.close();
+			try {
+				fis.close();
+			} catch (Throwable err) {
+			}
+		} catch (Throwable err) {
 		}
+
+//		for (int x = -30; x <= 30; x++) {
+//			for (int z = -30; z <= 30; z++) {
+//				wrld.dummy.setBlock(x, 30, z, Block.grass.id);
+//			}
+//		}
 		
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
-				wrld.dummy.setBlock(x, 30, y, Block.slabStonePolished.id);
-				wrld.dummy.setBlockMetadata(x, 30, y, 1);
+				wrld.dummy.setBlock(x, wrld.sz - 2, y, Block.slabStonePolished.id);
+				wrld.dummy.setBlockMetadata(x, wrld.sz - 2, y, 1);
+				
+				wrld.dummy.setBlock(x, wrld.sz - 1, y, 0);
+				wrld.dummy.setBlockMetadata(x, wrld.sz - 1, y, 0);
+				wrld.dummy.setBlock(x, wrld.sz, y, 0);
+				wrld.dummy.setBlockMetadata(x, wrld.sz, y, 0);
 			}
 		}
 		
-		for (int x = -32; x <= 32; x++) {
-			for (int y = -32; y <= 32; y++) {
-				for (int z = -32; z <= 32; z++) {
-					int id = wrld.dummy.getBlockId(x, y + 30, z);
-					if (id == 0) {
-						wrld.dummy.setLightValue(LightLayer.Block, x, y, z, 15);
-						wrld.dummy.setLightValue(LightLayer.Sky, x, y, z, 15);
+		for (int x = -wrld.sz; x <= wrld.sz; x++) {
+			for (int y = -wrld.sz; y <= wrld.sz; y++) {
+				for (int z = -wrld.sz; z <= wrld.sz; z++) {
+					Block id = wrld.dummy.getBlock(x, y + wrld.sz, z);
+					if (id == null || !id.blocksLight()) {
+						wrld.dummy.setLightValue(LightLayer.Block, x, y + wrld.sz, z, 15);
+						wrld.dummy.setLightValue(LightLayer.Sky, x, y + wrld.sz, z, 15);
 					}
 				}
 			}
@@ -77,7 +145,7 @@ public class MenuWorld {
 	public void draw(float renderPartialTicks, Minecraft mc) {
 		BlockModelRenderBlocks.setRenderBlocks(blocks);
 		Tessellator tessellator = Tessellator.instance;
-
+		
 		mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/terrain.png"));
 		Lighting.disable();
 		GL11.glBlendFunc(770, 771);
@@ -89,22 +157,25 @@ public class MenuWorld {
 			GL11.glShadeModel(7424);
 		}
 		
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		
 		if (list == 0) {
 			list = GL11.glGenLists(1);
 			GL11.glNewList(list, 4864);
 			tessellator.startDrawingQuads();
-			tessellator.setTranslation(0, -31, 0);
+			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
 			tessellator.setColorOpaque(1, 1, 1);
 			
-			for (int x = -30; x <= 30; x++) {
-				for (int y = -30; y <= 30; y++) {
-					for (int z = -30; z <= 30; z++) {
-						int id = dummy.getBlockId(x, y + 30, z);
+			for (int x = -sz; x <= sz; x++) {
+				for (int y = -sz; y <= sz; y++) {
+					for (int z = -sz; z <= sz; z++) {
+						int id = dummy.getBlockId(x, y + sz, z);
 						if (id == 0) continue;
 						
 						Block blk = Block.getBlock(id);
 						BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
-						model.render(blk, x, y + 30, z);
+						model.render(blk, x, y + sz, z);
 					}
 				}
 			}
