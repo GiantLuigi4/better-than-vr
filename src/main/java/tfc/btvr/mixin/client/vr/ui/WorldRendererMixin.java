@@ -146,7 +146,7 @@ public abstract class WorldRendererMixin {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDepthMask(true);
 		if (mc.currentScreen == null) return;
-		VRCamera.drawUI(mc, renderPartialTicks);
+		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == menuWorld.dummy);
 	}
 	
 	MenuWorld menuWorld;
@@ -198,7 +198,7 @@ public abstract class WorldRendererMixin {
 		menuWorld.draw(renderPartialTicks, mc);
 		
 		VRCamera.renderPlayer(true, menuWorld.myPlayer, renderPartialTicks, mc.renderGlobal);
-		VRCamera.drawUI(mc, renderPartialTicks);
+		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == menuWorld.dummy);
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}

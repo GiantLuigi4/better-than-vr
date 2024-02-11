@@ -333,7 +333,7 @@ public class VRCamera {
 		return Vec3d.createVector(coord0[0] + coord[0], coord0[1] + coord[1], coord0[2] + coord[2]);
 	}
 	
-	public static void drawUI(Minecraft mc, float renderPartialTicks) {
+	public static void drawUI(Minecraft mc, float renderPartialTicks, boolean menuWorld) {
 		VRScreenData data = (VRScreenData) mc.currentScreen;
 		if (data == null) return;
 		
