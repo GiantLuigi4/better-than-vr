@@ -2,6 +2,7 @@ package tfc.btvr.mixin.client.vr.core;
 
 import net.minecraft.client.GameResolution;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.Renderer;
@@ -46,14 +47,20 @@ public abstract class MinecraftMixin {
 	@Final
 	public GameResolution resolution;
 	
+	@Shadow
+	public GuiScreen currentScreen;
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;endRenderGame(F)V", shift = At.Shift.AFTER), method = "run")
 	public void postRender(CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
 		
-		VRRenderManager.blitUI();
+		if (currentScreen != null)
+			VRRenderManager.blitUI();
 	}
 	
 	boolean alt = false;
+	
+	
 	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Renderer;beginRenderGame(F)V", shift = At.Shift.BEFORE), method = "run")
 	public void preRender(CallbackInfo ci) {
@@ -67,7 +74,7 @@ public abstract class MinecraftMixin {
 		
 		int rx = resolution.width;
 		int ry = resolution.height;
-		
+
 //		boolean rrw = VRSystem.VRSystem_ShouldApplicationReduceRenderingWork();
 		boolean rrw = false;
 		
@@ -81,9 +88,9 @@ public abstract class MinecraftMixin {
 			
 			GL11.glEnable(3008);
 			if (!this.skipRenderWorld) {
-				if (this.playerController != null) {
-					this.playerController.setPartialTime(this.timer.partialTicks);
-				}
+//				if (this.playerController != null) {
+//					this.playerController.setPartialTime(this.timer.partialTicks);
+//				}
 				
 				this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
 			}
@@ -100,9 +107,9 @@ public abstract class MinecraftMixin {
 			this.render.beginRenderGame(this.timer.partialTicks);
 			GL11.glEnable(3008);
 			if (!this.skipRenderWorld) {
-				if (this.playerController != null) {
-					this.playerController.setPartialTime(this.timer.partialTicks);
-				}
+//				if (this.playerController != null) {
+//					this.playerController.setPartialTime(this.timer.partialTicks);
+//				}
 				
 				this.worldRenderer.updateCameraAndRender(this.timer.partialTicks);
 			}

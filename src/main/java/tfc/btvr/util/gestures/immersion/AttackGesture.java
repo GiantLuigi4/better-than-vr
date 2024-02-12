@@ -47,7 +47,7 @@ public class AttackGesture extends Gesture {
 			
 			// TODO: force hand damage for off-hand
 			if (intersects(entity, coord, trace, mc, len) && !intersects(entity, coordOld, traceOld, mc, len)) {
-				mc.playerController.attackEntity(mc.thePlayer, entity);
+				mc.playerController.attack(mc.thePlayer, entity);
 			}
 		}
 	}

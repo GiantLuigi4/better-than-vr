@@ -7,4 +7,5 @@ public interface VRController {
 	HitResult better_than_vr$getResult();
 	void better_than_vr$cancelMine();
 	boolean better_than_vr$isMining();
+	void better_than_vr$stopMining();
 }

@@ -60,7 +60,7 @@ public class EatingGesture extends Gesture {
 				intersects(box, coord, trace, mc, 0.25) &&
 				intersects(box, coordOld, traceOld, mc, 0.25)
 		) {
-			mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack);
+			mc.playerController.useItem(mc.thePlayer, mc.theWorld, stack);
 		}
 	}
 }

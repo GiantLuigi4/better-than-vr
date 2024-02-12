@@ -70,7 +70,7 @@ public class MPPlayerMixin implements VRPlayerAttachments {
 		// client might not send the right id, so recreate the packet
 		VRSuperPacket packet1 = new VRSuperPacket(new MatricesPacket((EntityPlayer) (Object) this));
 		for (EntityPlayerMP playerEntity : this.mcServer
-				.configManager
+				.playerList
 				.playerEntities
 		) {
 			if (playerEntity == (Object) this) continue;

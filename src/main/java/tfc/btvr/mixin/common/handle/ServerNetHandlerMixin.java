@@ -29,7 +29,7 @@ public class ServerNetHandlerMixin implements NetHandlerAccessor {
 	
 	@Override
 	public Entity better_than_vr$getEntity(int id) {
-		WorldServer worldserver = this.mcServer.getWorldManager(this.playerEntity.dimension);
+		WorldServer worldserver = this.mcServer.getDimensionWorld(this.playerEntity.dimension);
 		return worldserver.func_6158_a(id);
 	}
 }

@@ -1,18 +1,18 @@
 package tfc.btvr.mixin.client.vr.ui;
 
-import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.option.ImmersiveModeOption;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tfc.btvr.lwjgl3.BTVRSetup;
 
-@Mixin(value = GuiIngame.class, remap = false)
+@Mixin(value = ImmersiveModeOption.class, remap = false)
 public class GUIIngameMixin {
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/ImmersiveModeOption;drawCrosshair()Z"), method = "renderGameOverlay")
-	public boolean redir(ImmersiveModeOption instance) {
-		if (!BTVRSetup.checkVR()) return instance.drawCrosshair();
+	@Inject(at = @At("HEAD"), method = "drawCrosshair", cancellable = true)
+	public void redir(CallbackInfoReturnable<Boolean> cir) {
+		if (!BTVRSetup.checkVR()) return;
 		
-		return false;
+		cir.setReturnValue(false);
 	}
 }

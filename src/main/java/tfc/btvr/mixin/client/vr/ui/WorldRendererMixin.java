@@ -2,10 +2,7 @@ package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
-import net.minecraft.client.render.ItemRenderer;
-import net.minecraft.client.render.Lighting;
-import net.minecraft.client.render.RenderGlobal;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.camera.EntityCameraFirstPerson;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.core.world.World;
@@ -86,13 +83,10 @@ public abstract class WorldRendererMixin {
 	private long prevFrameTime;
 	
 	@Shadow
-	protected abstract void updateFogColor(float renderPartialTicks);
-	
-	@Shadow
-	protected abstract void setupFog(int i, float renderPartialTicks);
-	
-	@Shadow
 	public abstract void updateRenderer();
+	
+	@Shadow
+	private FogManager fogManager;
 	
 	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 2), method = "updateCameraAndRender", cancellable = true)
 	public void preGetCurrentScreen(float renderPartialTicks, CallbackInfo ci) {
@@ -146,7 +140,7 @@ public abstract class WorldRendererMixin {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDepthMask(true);
 		if (mc.currentScreen == null) return;
-		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == menuWorld.dummy);
+		VRCamera.drawUI(mc, renderPartialTicks, menuWorld != null && mc.theWorld == menuWorld.dummy);
 	}
 	
 	MenuWorld menuWorld;
@@ -154,6 +148,12 @@ public abstract class WorldRendererMixin {
 	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
 	public void preRender(float renderPartialTicks, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
+		if (menuWorld == null && mc.theWorld != null) return;
+		if (menuWorld != null && mc.theWorld != null) {
+			menuWorld.delete();
+			menuWorld = null;
+			return;
+		}
 		
 		if (mc.currentScreen == null) return;
 		Eye eye = Eye.getActiveEye();
@@ -167,8 +167,11 @@ public abstract class WorldRendererMixin {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		VRCamera.apply(renderPartialTicks, null, 128);
 		
-		if (menuWorld == null || ((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() != menuWorld.dummy)
+		if (menuWorld == null || ((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() != menuWorld.dummy) {
+			if (menuWorld != null)
+				menuWorld.delete();
 			menuWorld = null;
+		}
 		if (menuWorld == null) menuWorld = MenuWorld.select(mc);
 		
 		RenderGlobal renderglobal = mc.renderGlobal;
@@ -184,10 +187,10 @@ public abstract class WorldRendererMixin {
 		
 		farPlaneDistance = menuWorld.sz - 2;
 		
-		updateFogColor(0);
-		setupFog(-1, 0);
+		fogManager.updateFogColor(0);
+		fogManager.setupFog(-1, farPlaneDistance, 0);
 		renderglobal.drawSky(0);
-		this.setupFog(0, 0);
+		fogManager.setupFog(0, farPlaneDistance, 0);
 		GL11.glEnable(2912);
 		Lighting.disable();
 		

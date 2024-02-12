@@ -14,7 +14,7 @@ import tfc.btvr.itf.VRController;
 
 @Mixin(value = PlayerController.class, remap = false)
 public class PlayerControllerMixin implements VRController {
-	@Inject(at = @At("HEAD"), method = "dontMine", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "stopDestroyBlock", cancellable = true)
 	public void preCancelMining(boolean leftClickDown, CallbackInfo ci) {
 		if (vrMiningTicks > 0) {
 			vrMiningTicks--;
@@ -55,5 +55,10 @@ public class PlayerControllerMixin implements VRController {
 	@Override
 	public boolean better_than_vr$isMining() {
 		return vrMiningTicks > 0;
+	}
+	
+	@Override
+	public void better_than_vr$stopMining() {
+		vrMiningTicks = 0;
 	}
 }

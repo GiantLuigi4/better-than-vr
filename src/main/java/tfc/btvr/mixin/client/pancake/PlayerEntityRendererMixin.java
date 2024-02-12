@@ -75,7 +75,7 @@ public abstract class PlayerEntityRendererMixin {
 	
 	boolean[] showVs = new boolean[4];
 	
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;doRenderLiving(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V", shift = At.Shift.AFTER), method = "renderPlayer")
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;render(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V", shift = At.Shift.AFTER), method = "renderPlayer")
 	public void postDoRenderLiving(EntityPlayer entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
 		modelBipedMain.bipedLeftArm.showModel = showVs[0];
 		modelBipedMain.bipedRightArm.showModel = showVs[1];
@@ -85,7 +85,7 @@ public abstract class PlayerEntityRendererMixin {
 		}
 	}
 	
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;doRenderLiving(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V"), method = "renderPlayer")
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingRenderer;render(Lnet/minecraft/core/entity/EntityLiving;DDDFF)V"), method = "renderPlayer")
 	public void doRenderLiving(EntityPlayer entity, double x, double y, double z, float yaw, float renderPartialTicks, CallbackInfo ci) {
 		VRPlayerAttachments attachments = (VRPlayerAttachments) entity;
 		

@@ -71,8 +71,8 @@ public class MiningGesture extends Gesture {
 			// TODO: this logic seems to like to hit extra times
 			for (int i = 0; i < 3; i++) {
 				if (((VRController) mc.playerController).better_than_vr$isMining()) {
-					if (mc.thePlayer.gamemode.doBlockBreakingAnim) {
-						mc.playerController.mine(
+					if (mc.thePlayer.gamemode.doBlockBreakingAnim()) {
+						mc.playerController.continueDestroyBlock(
 								result.x, result.y, result.z,
 								result.side
 						);
@@ -81,6 +81,7 @@ public class MiningGesture extends Gesture {
 								result.x, result.y, result.z,
 								result.side, mc.thePlayer
 						);
+							((VRController) mc.playerController).better_than_vr$stopMining();
 					}
 				}
 			}

@@ -42,6 +42,7 @@ public class VRRenderManager {
 			leftEye.submit();
 			rightEye.submit();
 			VRCompositor.VRCompositor_PostPresentHandoff();
+//			VRCompositor.VRCompositor_ClearLastSubmittedFrame();
 		}
 	}
 	
