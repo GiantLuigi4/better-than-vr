@@ -1,16 +1,58 @@
 package tfc.btvr;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.options.components.OptionsCategory;
+import net.minecraft.client.gui.options.data.OptionsPage;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRMode;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
+import tfc.btvr.util.config.BooleanOptionElement;
+import tfc.btvr.util.config.DecimalOptionComponent;
+import tfc.btvr.util.config.EnumOptionComponent;
 import turniplabs.halplibe.util.ConfigHandler;
 
 import java.util.ArrayList;
 import java.util.Properties;
 
+import static net.minecraft.client.gui.options.data.OptionsPages.register;
+
 public class Config {
 	private static final ArrayList<Option> ALL_OPTIONS = new ArrayList<>();
+	
+	private static OptionsPage VR = null;
+	
+	protected static void update(Object oldV, Object newV) {
+		if (oldV != newV && !oldV.equals(newV))
+			write().writeDefaultConfig();
+	}
+	
+	public static OptionsPage getVRPage() {
+		if (VR == null) {
+			VR = new OptionsPage("btvr.gui.options.page.vr.title");
+			VR.withComponent(
+					new OptionsCategory("btvr.gui.options.page.vr.category.hands")
+							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.hand.", "btvr.gui.options.page.vr.motion_hand", (v) -> update(MOTION_HAND.value, MOTION_HAND.value = v), () -> MOTION_HAND.value, Hand.values(), MOTION_HAND.def))
+							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.hand.", "btvr.gui.options.page.vr.trace_hand", (v) -> update(TRACE_HAND.value, TRACE_HAND.value = v), () -> TRACE_HAND.value, Hand.values(), TRACE_HAND.def))
+							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.hand.", "btvr.gui.options.page.vr.interaction_hand", (v) -> update(INTERACTION_HAND.value, INTERACTION_HAND.value = v), () -> INTERACTION_HAND.value, Hand.values(), INTERACTION_HAND.def))
+							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.left_handed", (v) -> update(LEFT_HANDED.value, LEFT_HANDED.value = v), LEFT_HANDED::get, LEFT_HANDED.def))
+			);
+			VR.withComponent(
+					new OptionsCategory("btvr.gui.options.page.vr.category.general")
+							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.mode.", "btvr.gui.options.page.vr.vr_mode", (v) -> update(MODE.value, MODE.value = v), () -> MODE.value, VRMode.values(), VRMode.NONE))
+							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.hybrid_mode", (v) -> update(HYBRID_MODE.value, HYBRID_MODE.value = v), HYBRID_MODE::get, HYBRID_MODE.def))
+			);
+			VR.withComponent(
+					new OptionsCategory("btvr.gui.options.page.vr.category.rotation")
+							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.smooth_rotation", (v) -> update(SMOOTH_ROTATION.value, SMOOTH_ROTATION.value = v), SMOOTH_ROTATION::get, SMOOTH_ROTATION.def))
+							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.extra_smooth_rotation", (v) -> update(EXTRA_SMOOTH_ROTATION.value, EXTRA_SMOOTH_ROTATION.value = v), EXTRA_SMOOTH_ROTATION::get, EXTRA_SMOOTH_ROTATION.def))
+							.withComponent(new DecimalOptionComponent(0, 90, "btvr.gui.options.page.vr.extra_smooth_rotation", (v) -> update(ROTATION_SPEED.value, ROTATION_SPEED.value = Math.round(v * 900) / 10d), () -> (ROTATION_SPEED.get() / 90f), (ROTATION_SPEED.def / 90f), ""))
+			);
+			register(VR);
+		}
+		VR.initComponents(Minecraft.getMinecraft(Minecraft.class));
+		return VR;
+	}
 	
 	private static abstract class Option {
 		
@@ -20,15 +62,17 @@ public class Config {
 	}
 	
 	enum Hand {
-		LEFT, RIGHT, MAIN
+		LEFT, OFF, MAIN, RIGHT
 	}
 	
 	public static class HandOption extends Option {
 		String name;
+		Hand def;
 		Hand value;
 		
 		public HandOption(String name, Hand defaultV) {
 			this.name = name;
+			this.def = defaultV;
 			this.value = defaultV;
 			ALL_OPTIONS.add(this);
 		}
@@ -45,6 +89,9 @@ public class Config {
 				case "right":
 					value = Hand.RIGHT;
 					break;
+				case "off":
+					value = Hand.OFF;
+					break;
 //				case "main":
 //					value = Hand.MAIN;
 //					break;
@@ -60,6 +107,8 @@ public class Config {
 					return SDevice.getDeviceForRole(DeviceType.LEFT_HAND);
 				case RIGHT:
 					return SDevice.getDeviceForRole(DeviceType.RIGHT_HAND);
+				case OFF:
+					return SDevice.getDeviceForRole(Config.LEFT_HANDED.get() ? DeviceType.RIGHT_HAND : DeviceType.LEFT_HAND);
 				default:
 					return SDevice.getDeviceForRole(Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND);
 			}
@@ -71,6 +120,8 @@ public class Config {
 					return DeviceType.LEFT_HAND;
 				case RIGHT:
 					return DeviceType.RIGHT_HAND;
+				case OFF:
+					return Config.LEFT_HANDED.get() ? DeviceType.RIGHT_HAND : DeviceType.LEFT_HAND;
 				default:
 					return Config.LEFT_HANDED.get() ? DeviceType.LEFT_HAND : DeviceType.RIGHT_HAND;
 			}
@@ -79,10 +130,12 @@ public class Config {
 	
 	public static class BooleanOption extends Option {
 		String name;
+		boolean def;
 		boolean value;
 		
 		public BooleanOption(String name, boolean value) {
 			this.name = name;
+			this.def = value;
 			this.value = value;
 			ALL_OPTIONS.add(this);
 		}
@@ -136,9 +189,11 @@ public class Config {
 	public static class DecimalOption extends Option {
 		String name;
 		double value;
+		double def;
 		
 		public DecimalOption(String name, double value) {
 			this.name = name;
+			this.def = value;
 			this.value = value;
 			ALL_OPTIONS.add(this);
 		}
@@ -170,7 +225,7 @@ public class Config {
 	
 	public static final ModeOption MODE = new ModeOption("mode", BTVRSetup.getDefaultMode());
 	
-	public static void init() {
+	public static ConfigHandler write() {
 		Properties properties = new Properties();
 		
 		MOTION_HAND.write(properties);
@@ -189,7 +244,11 @@ public class Config {
 		
 		MODE.write(properties);
 		
-		ConfigHandler hndlr = new ConfigHandler("btvr", properties);
+		return new ConfigHandler("btvr", properties);
+	}
+	
+	public static void init() {
+		ConfigHandler hndlr = write();
 		hndlr.loadConfig();
 		
 		for (Option allOption : ALL_OPTIONS) allOption.read(hndlr);

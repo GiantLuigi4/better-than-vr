@@ -1,0 +1,36 @@
+btvr.gui.options.page.vr.title=VR
+
+
+
+
+btvr.gui.options.page.vr.category.hands=Handedness Options
+
+btvr.gui.options.page.vr.motion_hand=Motion Hand
+btvr.gui.options.page.vr.trace_hand=Trace Hand
+btvr.gui.options.page.vr.interaction_hand=Interaction Hand
+btvr.gui.options.page.vr.left_handed=Left Handed
+
+btvr.gui.option.page.vr.value.hand.left=LEFT
+btvr.gui.option.page.vr.value.hand.right=RIGHT
+btvr.gui.option.page.vr.value.hand.off=OFF HAND
+btvr.gui.option.page.vr.value.hand.main=MAIN HAND
+
+
+
+
+btvr.gui.options.page.vr.category.general=General Options
+
+btvr.gui.options.page.vr.hybrid_mode=Hybrid Mode
+
+btvr.gui.options.page.vr.vr_mode=VR Mode
+btvr.gui.option.page.vr.value.mode.none=NONE
+btvr.gui.option.page.vr.value.mode.oculus_vr=OVR (NYI)
+btvr.gui.option.page.vr.value.mode.steam_vr=OpenVR
+
+
+
+
+btvr.gui.options.page.vr.category.rotation=Rotation Options
+
+btvr.gui.options.page.vr.smooth_rotation=Smooth Rotation
+btvr.gui.options.page.vr.extra_smooth_rotation=Extra Smooth Rotation

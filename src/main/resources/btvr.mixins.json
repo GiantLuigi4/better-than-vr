@@ -12,6 +12,7 @@
     "common.tracking.PlayerMixin"
   ],
   "client": [
+    "client.OptionMenuMixin",
     "client.RenderGlobalAccessor",
     "client.vr.core.GLHelperMixin",
     "client.vr.core.MinecraftMixin",
