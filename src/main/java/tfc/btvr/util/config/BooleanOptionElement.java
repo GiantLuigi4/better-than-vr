@@ -14,7 +14,7 @@ public class BooleanOptionElement extends ButtonComponent {
 	Consumer<Boolean> setter;
 	Supplier<Boolean> current;
 	Boolean def;
-	private final GuiSwitchButton button;
+	protected final GuiSwitchButton button;
 	
 	public BooleanOptionElement(String valueKey, String translationKey, Consumer<Boolean> setter, Supplier<Boolean> current, Boolean def) {
 		super(translationKey);

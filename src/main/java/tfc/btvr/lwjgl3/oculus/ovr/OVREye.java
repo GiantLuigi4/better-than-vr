@@ -52,4 +52,9 @@ public class OVREye extends Eye {
 	public void submit() {
 //		OVRCompositor.submit(id, fboId);
 	}
+	
+	@Override
+	public void delete() {
+		throw new RuntimeException("NYI");
+	}
 }

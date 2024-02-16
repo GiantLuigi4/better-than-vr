@@ -61,4 +61,6 @@ public abstract class Eye {
 		}
 		return svrTranslation;
 	}
+	
+	public abstract void delete();
 }

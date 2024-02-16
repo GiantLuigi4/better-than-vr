@@ -2,6 +2,7 @@ package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
+import org.lwjgl.system.MemoryStack;
 import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.generic.Device;
 import tfc.btvr.lwjgl3.generic.DeviceType;
@@ -13,6 +14,7 @@ import tfc.btvr.util.controls.Bindings;
 import tfc.btvr.util.gestures.GestureControllers;
 
 import java.lang.reflect.Field;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 
 public class VRManager {
@@ -154,9 +156,24 @@ public class VRManager {
 		VRMode close = activeMode;
 		activeMode = VRMode.NONE;
 		BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogicToAvoidCreatingProblemsAndDeadlocksLol(close);
+		VRRenderManager.close();
 	}
 	
 	public static float getRotation(double pct) {
 		return (float) (yAddRot * pct + (1 - pct) * oYAddRot);
+	}
+	
+	public static void setMode(VRMode value) {
+		activeMode = value;
+		BTVRSetup.setup();
+		if (BTVRSetup.checkVR()) {
+			MemoryStack ms = MemoryStack.stackPush();
+			IntBuffer w = ms.mallocInt(1);
+			IntBuffer h = ms.mallocInt(1);
+			BTVRSetup.getSize(w, h);
+			ms.pop();
+			
+			VRRenderManager.init(w, h);
+		}
 	}
 }

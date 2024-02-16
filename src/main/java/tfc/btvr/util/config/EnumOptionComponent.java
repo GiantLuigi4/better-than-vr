@@ -11,7 +11,7 @@ public class EnumOptionComponent<T extends Enum<?>> extends ButtonComponent {
 	Supplier<T> current;
 	T[] values;
 	T def;
-	private final MultiStateButton button;
+	protected final MultiStateButton button;
 	String valueKey;
 	
 	public EnumOptionComponent(String valueKey, String translationKey, Consumer<T> setter, Supplier<T> current, T[] values, T def) {

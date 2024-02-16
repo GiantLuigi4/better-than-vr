@@ -4,9 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.gui.options.data.OptionsPage;
 import tfc.btvr.lwjgl3.BTVRSetup;
+import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRMode;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
+import tfc.btvr.util.config.ApplyableEnumOptionComponent;
 import tfc.btvr.util.config.BooleanOptionElement;
 import tfc.btvr.util.config.DecimalOptionComponent;
 import tfc.btvr.util.config.EnumOptionComponent;
@@ -39,7 +41,13 @@ public class Config {
 			);
 			VR.withComponent(
 					new OptionsCategory("btvr.gui.options.page.vr.category.general")
-							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.mode.", "btvr.gui.options.page.vr.vr_mode", (v) -> update(MODE.value, MODE.value = v), () -> MODE.value, VRMode.values(), VRMode.NONE))
+							.withComponent(new ApplyableEnumOptionComponent<>("btvr.gui.option.page.vr.value.mode.", "btvr.gui.options.page.vr.vr_mode", (v) -> update(MODE.value, MODE.value = v), () -> MODE.value, VRMode.values(), VRMode.NONE, () -> {
+//								BTVRSetup.whenTheGameHasBeenRequestedToShutdownIShouldAlsoShutdownTheSteamVRAndOVRLogicToAvoidCreatingProblemsAndDeadlocksLol(
+//										VRManager.getActiveMode()
+//								);
+								VRManager.shutdown();
+								VRManager.setMode(MODE.value);
+							}))
 							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.hybrid_mode", (v) -> update(HYBRID_MODE.value, HYBRID_MODE.value = v), HYBRID_MODE::get, HYBRID_MODE.def))
 			);
 			VR.withComponent(

@@ -197,4 +197,11 @@ public class VRRenderManager {
 		tessellator.draw();
 		GL11.glDisable(GL11.GL_BLEND);
 	}
+	
+	public static void close() {
+		if (leftEye != null) leftEye.delete();
+		if (rightEye != null) rightEye.delete();
+		leftEye = null;
+		rightEye = null;
+	}
 }

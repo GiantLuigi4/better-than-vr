@@ -35,46 +35,55 @@ public class MultiStateButton extends GuiButton {
 					&& mouseY >= this.yPosition
 					&& mouseX < this.xPosition + this.width
 					&& mouseY < this.yPosition + this.height;
-			int i = this.getButtonState(flag);
-			int j = ((this.width / states) * state);
+			int hoverState = this.getButtonState(flag);
+			double sliderPosition = ((this.width / (double) states) * state);
+			
 			GL11.glBindTexture(3553, mc.renderEngine.getTexture("/gui/gui.png"));
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int div = states * 2;
+			
+			// compensate for integer operations
+			double dset = ((this.width / (double) states) * states);
+			int eoset = (((int) dset) + (this.width / div));
+			if (eoset != width) {
+				eoset -= width;
+				sliderPosition += ((double) eoset / div) * (state / (double) states);
+			}
 			
 			this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46, this.width / 2, this.height);
 			this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46, this.width / 2, this.height);
 			
 			this.drawTexturedModalRect(
-					this.xPosition + j,
+					(int) (this.xPosition + sliderPosition),
 					this.yPosition,
 					0,
-					46 + i * 20,
+					46 + hoverState * 20,
 					this.width / div,
 					this.height
 			);
 			this.drawTexturedModalRect(
-					this.xPosition + this.width / div + j,
+					(int) (this.xPosition + this.width / div + sliderPosition),
 					this.yPosition,
 					200 - this.width / div,
-					46 + i * 20,
+					46 + hoverState * 20,
 					this.width / div,
 					this.height
 			);
 			
 			this.mouseDragged(mc, mouseX, mouseY);
-			int k;
-			switch (i) {
+			int fontColor;
+			switch (hoverState) {
 				case 0:
-					k = 10526880;
+					fontColor = 10526880;
 					break;
 				case 1:
-					k = 14737632;
+					fontColor = 14737632;
 					break;
 				default:
-					k = 16777120;
+					fontColor = 16777120;
 			}
 			
-			this.drawStringCentered(fontrenderer, this.displayString, this.xPosition + j + this.width / div, this.yPosition + (this.height - 8) / 2, k);
+			this.drawStringCentered(fontrenderer, this.displayString, (int) (this.xPosition + sliderPosition + this.width / (double) div), this.yPosition + (this.height - 8) / 2, fontColor);
 		}
 	}
 	

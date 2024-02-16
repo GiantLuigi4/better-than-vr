@@ -15,7 +15,7 @@ import java.nio.IntBuffer;
 public class BTVRSetup {
 	public static final Logger LOGGER = LoggerFactory.getLogger("nr::init");
 	
-	static {
+	public static void setup() {
 		LOGGER.info("Load VR");
 		
 		String pth = System.getProperty("org.lwjgl.librarypath");
@@ -25,8 +25,6 @@ public class BTVRSetup {
 		// done here because doing it while the game's running may lead to problems
 		if (OSInfo.supportsSteamVR()) VR.getLibrary();
 		if (OSInfo.supportsOVR()) OVR.ovr_GetVersionString();
-		
-		Config.init();
 		
 		if (VRManager.getActiveMode() == VRMode.STEAM_VR) {
 			LOGGER.info("Steam VR Selected");
@@ -38,6 +36,11 @@ public class BTVRSetup {
 		if (pth != null)
 			System.setProperty("org.lwjgl.librarypath", pth);
 		else LOGGER.info("org.lwjgl.librarypath was null");
+	}
+	
+	static {
+		Config.init();
+		setup();
 	}
 	
 	public static VRMode getDefaultMode() {

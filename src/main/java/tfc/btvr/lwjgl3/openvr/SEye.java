@@ -79,4 +79,12 @@ public class SEye extends Eye {
 	public int fboId() {
 		return fboId;
 	}
+	
+	@Override
+	public void delete() {
+		GL11.glDeleteTextures(texId);
+		GL30.glDeleteFramebuffers(fboId);
+		GL30.glDeleteRenderbuffers(rboId);
+		texture.close();
+	}
 }
