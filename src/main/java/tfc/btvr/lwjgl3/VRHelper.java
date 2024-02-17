@@ -1,11 +1,13 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.entity.player.EntityPlayer;
 import org.lwjgl.openvr.HmdMatrix34;
-import tfc.btvr.Config;
+import tfc.btvr.BTVR;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.MatrixHelper;
 import tfc.btvr.math.VecMath;
+import tfc.btvr.util.config.Config;
 
 public class VRHelper {
 	public static double[] getTraceVector(HmdMatrix34 matr) {
@@ -49,7 +51,11 @@ public class VRHelper {
 		cursedMatr[11] -= VRManager.oz;
 		
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		if (mc.thePlayer != null) {
+		EntityPlayer player = mc.thePlayer;
+		if (mc.theWorld == null)
+			player = BTVR.getMenuPlayer();
+		
+		if (player != null) {
 			double pct = VRRenderManager.getPct();
 			if (!Config.EXTRA_SMOOTH_ROTATION.get()) pct = 1;
 			

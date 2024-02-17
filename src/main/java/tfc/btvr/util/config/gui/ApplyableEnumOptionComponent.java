@@ -1,27 +1,18 @@
-package tfc.btvr.util.config;
+package tfc.btvr.util.config.gui;
 
 import net.minecraft.client.gui.GuiTexturedButton;
-import net.minecraft.core.lang.I18n;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionComponent<T> {
 	Runnable onApply;
-	protected final GuiTexturedButton apply;
 	
 	public ApplyableEnumOptionComponent(String valueKey, String translationKey, Consumer<T> setter, Supplier<T> current, T[] values, T def, Runnable onApply) {
 		super(valueKey, translationKey, setter, current, values, def);
 		
 		this.onApply = onApply;
 		button.setWidth(button.getWidth() - 50);
-		
-		this.apply = new GuiTexturedButton(
-				0, "/gui/gui.png", button.getWidth(), 0,
-				0, 86 - 40,
-				20, 20
-		);
-		apply.displayString = I18n.getInstance().translateKey("btvr.apply");
 	}
 	
 	@Override
@@ -63,6 +54,7 @@ public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionC
 		);
 		
 		int oset = relativeButtonX + button.width;
+		relativeMouseY -= relativeButtonY;
 		relativeMouseX -= oset;
 		
 		applyL.setX(x + oset);
@@ -71,7 +63,7 @@ public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionC
 		applyL.setWidth(10);
 		
 		boolean hover = false;
-		if (relativeMouseX > 0 && relativeMouseX < 20) {
+		if (relativeMouseX > 0 && relativeMouseX < 20 && relativeMouseY < 20 && relativeMouseY > 0) {
 			hover = true;
 		}
 		
@@ -82,5 +74,8 @@ public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionC
 		applyR.setHeight(20);
 		applyR.setWidth(10);
 		applyR.drawButton(mc, hover ? applyR.getX() : -1, relativeMouseY + applyR.getY());
+		
+		int k = hover ? 16777120 : 14737632;
+		applyL.drawStringCentered(mc.fontRenderer, "✔", applyL.xPosition + 10, applyL.yPosition + (applyL.height - 8) / 2, k);
 	}
 }

@@ -1,3 +1,4 @@
-# author, name, block data, (optional) world data, (optional) biome data, default block id
+# author, name, block data, (optional) world data, (optional) biome data, (optional) platform block id
 GiantLuigi4, Cliffs, laz/cliffs.dat
 GiantLuigi4, Cherry Plains, laz/cherry.dat
+GiantLuigi4, Amplitude, laz/amplitude.dat

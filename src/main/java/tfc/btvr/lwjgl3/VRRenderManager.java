@@ -8,11 +8,11 @@ import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openvr.VRCompositor;
 import org.lwjgl.ovr.OVR;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.oculus.ovr.OVRCompositor;
 import tfc.btvr.lwjgl3.oculus.ovr.OVREye;
 import tfc.btvr.lwjgl3.openvr.SEye;
+import tfc.btvr.util.config.Config;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

@@ -3,13 +3,13 @@ package tfc.btvr.lwjgl3;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.generic.Device;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.math.MathHelper;
 import tfc.btvr.math.VecMath;
+import tfc.btvr.util.config.Config;
 import tfc.btvr.util.controls.Bindings;
 import tfc.btvr.util.gestures.GestureControllers;
 

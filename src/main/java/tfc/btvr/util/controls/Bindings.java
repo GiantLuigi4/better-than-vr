@@ -7,11 +7,11 @@ import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.gui.GuiInventoryCreative;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
 import tfc.btvr.util.ScreenUtil;
+import tfc.btvr.util.config.Config;
 
 import java.util.ArrayList;
 

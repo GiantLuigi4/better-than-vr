@@ -1,36 +1,53 @@
 btvr.gui.options.page.vr.title=VR
 
 
-
-
+# HAND
 btvr.gui.options.page.vr.category.hands=Handedness Options
 
+# options
 btvr.gui.options.page.vr.motion_hand=Motion Hand
 btvr.gui.options.page.vr.trace_hand=Trace Hand
 btvr.gui.options.page.vr.interaction_hand=Interaction Hand
 btvr.gui.options.page.vr.left_handed=Left Handed
 
+# values
 btvr.gui.option.page.vr.value.hand.left=LEFT
 btvr.gui.option.page.vr.value.hand.right=RIGHT
 btvr.gui.option.page.vr.value.hand.off=OFF HAND
 btvr.gui.option.page.vr.value.hand.main=MAIN HAND
 
 
-
-
+# GENERAL
 btvr.gui.options.page.vr.category.general=General Options
 
+# options
 btvr.gui.options.page.vr.hybrid_mode=Hybrid Mode
-
 btvr.gui.options.page.vr.vr_mode=VR Mode
+
+# values
 btvr.gui.option.page.vr.value.mode.none=NONE
 btvr.gui.option.page.vr.value.mode.oculus_vr=OVR (NYI)
 btvr.gui.option.page.vr.value.mode.steam_vr=OpenVR
 
 
-
-
+# ROTATION
 btvr.gui.options.page.vr.category.rotation=Rotation Options
 
+# options
 btvr.gui.options.page.vr.smooth_rotation=Smooth Rotation
 btvr.gui.options.page.vr.extra_smooth_rotation=Extra Smooth Rotation
+
+
+# MENU WORLD
+btvr.gui.option.page.vr.category.menu_world=Menu World Options
+
+# options
+btvr.gui.options.page.vr.menu_world_mode=Menu World Selection
+btvr.gui.option.page.vr.menu_world_capture=Capture Menu World
+
+# values
+btvr.gui.option.page.vr.value.menu_world.choice=CHOSEN
+btvr.gui.option.page.vr.value.menu_world.random=RANDOM
+btvr.gui.option.page.vr.value.menu_world.flat=FLAT
+btvr.gui.option.page.vr.value.menu_world.void=VOID
+btvr.gui.option.page.vr.open_menu=Open Menu

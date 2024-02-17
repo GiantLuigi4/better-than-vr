@@ -2,12 +2,12 @@ package tfc.btvr.lwjgl3.openvr;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.openvr.*;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.generic.Device;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.math.MatrixHelper;
+import tfc.btvr.util.config.Config;
 
 public class SDevice extends Device {
 	int index;

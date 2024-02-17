@@ -2,6 +2,8 @@ package tfc.btvr.mixin.client.vr.ui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.EntityPlayerSP;
+import net.minecraft.client.input.PlayerInput;
+import net.minecraft.client.player.controller.PlayerControllerSP;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.camera.EntityCameraFirstPerson;
 import net.minecraft.client.render.camera.ICamera;
@@ -9,11 +11,11 @@ import net.minecraft.core.world.World;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tfc.btvr.Config;
 import tfc.btvr.VRCamera;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRRenderManager;
@@ -21,6 +23,10 @@ import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SEye;
 import tfc.btvr.menu.MenuWorld;
 import tfc.btvr.mixin.client.RenderGlobalAccessor;
+import tfc.btvr.util.config.Config;
+import tfc.btvr.util.config.MenuModeOption;
+
+import static tfc.btvr.BTVR.menuWorld;
 
 @Mixin(value = WorldRenderer.class, remap = false)
 public abstract class WorldRendererMixin {
@@ -143,11 +149,26 @@ public abstract class WorldRendererMixin {
 		VRCamera.drawUI(mc, renderPartialTicks, menuWorld != null && mc.theWorld == menuWorld.dummy);
 	}
 	
-	MenuWorld menuWorld;
+	@Unique
+	MenuModeOption.MenuMode last = Config.MENU_MODE.get();
 	
-	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
+	@Unique
+	long frameMS = 0;
+	
+	@Unique
+	float menuPct;
+	
+	@Inject(at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glMatrixMode(I)V", shift = At.Shift.AFTER, ordinal = 1), method = "updateCameraAndRender")
 	public void preRender(float renderPartialTicks, CallbackInfo ci) {
 		if (!BTVRSetup.checkVR()) return;
+		
+		if (last != Config.MENU_MODE.get()) {
+			last = Config.MENU_MODE.get();
+			if (menuWorld != null)
+				menuWorld.delete();
+			menuWorld = null;
+		}
+		
 		if (menuWorld == null && mc.theWorld != null) return;
 		if (menuWorld != null && mc.theWorld != null) {
 			menuWorld.delete();
@@ -163,9 +184,6 @@ public abstract class WorldRendererMixin {
 		GL11.glDepthMask(true);
 		GL11.glDepthFunc(515);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		VRCamera.apply(renderPartialTicks, null, 128);
 		
 		if (menuWorld == null || ((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() != menuWorld.dummy) {
 			if (menuWorld != null)
@@ -183,12 +201,61 @@ public abstract class WorldRendererMixin {
 		ICamera tmpC = mc.activeCamera;
 		mc.activeCamera = new EntityCameraFirstPerson(mc, menuWorld.myPlayer);
 		
-		updateRenderer();
+		// tick player motion
+		int tps = 20;
+		int rate = 1000 / tps;
+		if (Eye.getActiveEye().id == 0) {
+			menuPct = (frameMS - System.currentTimeMillis()) / (float) rate;
+			
+			if (System.currentTimeMillis() > frameMS) {
+				frameMS = System.currentTimeMillis() + rate;
+				
+				// ensure properties
+				menuWorld.myPlayer.heightOffset = 1.62F;
+				menuWorld.myPlayer.bbWidth = 0.6f;
+				menuWorld.myPlayer.bbHeight = 1.8f;
+				menuWorld.myPlayer.fallDistance = 0;
+				
+				mc.playerController = new PlayerControllerSP(mc);
+				menuWorld.myPlayer.heal(20);
+				((EntityPlayerSP) menuWorld.myPlayer).input = new PlayerInput(mc);
+				((EntityPlayerSP) menuWorld.myPlayer).input.tick(menuWorld.myPlayer);
+				menuWorld.myPlayer.tick();
+				
+				// constrain position
+				if (menuWorld.myPlayer.x > menuWorld.sz) {
+					menuWorld.myPlayer.x = menuWorld.sz;
+					menuWorld.myPlayer.setPos(menuWorld.myPlayer.x, menuWorld.myPlayer.y, menuWorld.myPlayer.z);
+				}
+				if (menuWorld.myPlayer.x < -menuWorld.sz + 1) {
+					menuWorld.myPlayer.x = -menuWorld.sz + 1;
+					menuWorld.myPlayer.setPos(menuWorld.myPlayer.x, menuWorld.myPlayer.y, menuWorld.myPlayer.z);
+				}
+				if (menuWorld.myPlayer.z > menuWorld.sz) {
+					menuWorld.myPlayer.z = menuWorld.sz;
+					menuWorld.myPlayer.setPos(menuWorld.myPlayer.x, menuWorld.myPlayer.y, menuWorld.myPlayer.z);
+				}
+				if (menuWorld.myPlayer.z < -menuWorld.sz + 1) {
+					menuWorld.myPlayer.z = -menuWorld.sz + 1;
+					menuWorld.myPlayer.setPos(menuWorld.myPlayer.x, menuWorld.myPlayer.y, menuWorld.myPlayer.z);
+				}
+				if (menuWorld.myPlayer.y < -menuWorld.sz) {
+					menuWorld.myPlayer.moveTo(0.5f, menuWorld.sz * 2, 0.5f, menuWorld.myPlayer.yRot, menuWorld.myPlayer.xRot);
+				}
+				
+				menuPct = 1;
+			}
+			
+			updateRenderer();
+		}
 		
 		farPlaneDistance = menuWorld.sz - 2;
 		
+		VRCamera.apply(menuPct, null, 128);
+		
 		fogManager.updateFogColor(0);
 		fogManager.setupFog(-1, farPlaneDistance, 0);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderglobal.drawSky(0);
 		fogManager.setupFog(0, farPlaneDistance, 0);
 		GL11.glEnable(2912);
@@ -201,7 +268,7 @@ public abstract class WorldRendererMixin {
 		menuWorld.draw(renderPartialTicks, mc);
 		
 		VRCamera.renderPlayer(true, menuWorld.myPlayer, renderPartialTicks, mc.renderGlobal);
-		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == menuWorld.dummy);
+		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}

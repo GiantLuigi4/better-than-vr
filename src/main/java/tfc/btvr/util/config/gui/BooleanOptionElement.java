@@ -1,4 +1,4 @@
-package tfc.btvr.util.config;
+package tfc.btvr.util.config.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiSwitchButton;

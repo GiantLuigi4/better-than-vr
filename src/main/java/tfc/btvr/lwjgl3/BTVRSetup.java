@@ -6,9 +6,9 @@ import org.lwjgl.ovr.OVR;
 import org.lwjgl.system.Library;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.oculus.ovr.OVRSession;
 import tfc.btvr.lwjgl3.openvr.OpenVRSession;
+import tfc.btvr.util.config.Config;
 
 import java.nio.IntBuffer;
 

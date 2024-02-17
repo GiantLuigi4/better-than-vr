@@ -6,9 +6,9 @@ import net.minecraft.core.util.phys.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import tfc.btvr.Config;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRHelper;
+import tfc.btvr.util.config.Config;
 
 @Mixin(value = WorldRenderer.class, remap = false)
 public class WorldRendererMixin {

@@ -1,4 +1,4 @@
-package tfc.btvr.util.config;
+package tfc.btvr.util.config.gui;
 
 import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.client.gui.options.components.ButtonComponent;

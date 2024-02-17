@@ -15,9 +15,11 @@ import net.minecraft.core.enums.LightLayer;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import org.lwjgl.opengl.GL11;
+import tfc.btvr.util.config.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
 public class MenuWorld {
@@ -52,19 +54,23 @@ public class MenuWorld {
 		} catch (Throwable err) {
 		}
 		String dat = new String(data);
-		String[] lines = dat.split("\n");
+		String[] lns = dat.split("\n");
 		
-		while (true) {
-			double v = Math.random() * (lines.length - 1) + 1;
-			int i = (int) v;
-			String ln = lines[i];
-			// TODO: better solution: for now it doesn't matter, since I haven't formatted the file at all
-			if (ln.startsWith("#") || ln.isEmpty()) continue;
+		ArrayList<String> lines = new ArrayList<>();
+		for (String ln : lns) {
+			ln = ln.trim();
+			if (ln.isEmpty() || ln.startsWith("#")) continue;
 			
-			String[] splat = ln.split(",");
-			// TODO: return a world info instead of a string
-			return splat[2].trim();
+			lines.add(ln);
 		}
+		
+		double v = Math.random() * (lines.size());
+		int i = (int) v;
+		String ln = lines.get(i);
+		
+		String[] splat = ln.split(",");
+		// TODO: return a world info instead of a string
+		return splat[2].trim();
 	}
 	
 	public static MenuWorld select(Minecraft mc) {
@@ -76,39 +82,54 @@ public class MenuWorld {
 			}
 		}
 		
-		try {
-			String txt = chooseRow();
-			
-			InputStream fis = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/" + txt);
-			GZIPInputStream gzis = new GZIPInputStream(fis);
-			
-			int size = readInt(gzis);
-			wrld.sz = size;
-			
-			for (int x = -size; x <= size; x++) {
-				for (int y = -size; y <= size; y++) {
-					for (int z = -size; z <= size; z++) {
-						int id = readInt(gzis);
-						int meta = (byte) gzis.read();
-						wrld.dummy.setBlock(x, y + size, z, id);
-						wrld.dummy.setBlockMetadata(x, y + size, z, meta);
+		switch (Config.MENU_MODE.get()) {
+			case FLAT:
+				wrld.sz = 30;
+				for (int x = -30; x <= 30; x++) {
+					for (int z = -30; z <= 30; z++) {
+						wrld.dummy.setBlock(x, 28, z, Block.grass.id);
 					}
 				}
-			}
-			
-			gzis.close();
-			try {
-				fis.close();
-			} catch (Throwable err) {
-			}
-		} catch (Throwable err) {
+				wrld.myPlayer.setPos(0.5f, 28 + 2 + 1.8, 0.5f);
+				break;
+			case VOID:
+				wrld.sz = 32;
+				wrld.myPlayer.setPos(0.5f, 30 + 2 + 1.8, 0.5f);
+				break;
+			default:
+			case RANDOM:
+				try {
+					String txt = chooseRow();
+					
+					InputStream fis = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/" + txt);
+					GZIPInputStream gzis = new GZIPInputStream(fis);
+					
+					int size = readInt(gzis);
+					wrld.sz = size;
+					
+					for (int x = -size; x <= size; x++) {
+						for (int y = -size; y <= size; y++) {
+							for (int z = -size; z <= size; z++) {
+								int id = readInt(gzis);
+								int meta = (byte) gzis.read();
+								wrld.dummy.setBlock(x, y + size, z, id);
+								wrld.dummy.setBlockMetadata(x, y + size, z, meta);
+							}
+						}
+					}
+					
+					wrld.myPlayer.setPos(0.5f, size + 1.8, 0.5f);
+					
+					gzis.close();
+					try {
+						fis.close();
+					} catch (Throwable err) {
+					}
+				} catch (Throwable err) {
+				}
+				
+				break;
 		}
-
-//		for (int x = -30; x <= 30; x++) {
-//			for (int z = -30; z <= 30; z++) {
-//				wrld.dummy.setBlock(x, 30, z, Block.grass.id);
-//			}
-//		}
 		
 		for (int x = -1; x <= 1; x++) {
 			for (int y = -1; y <= 1; y++) {
@@ -141,6 +162,7 @@ public class MenuWorld {
 	}
 	
 	int list = 0;
+	int list1 = 0;
 	
 	public void draw(float renderPartialTicks, Minecraft mc) {
 		BlockModelRenderBlocks.setRenderBlocks(blocks);
@@ -148,8 +170,6 @@ public class MenuWorld {
 		
 		mc.renderEngine.bindTexture(mc.renderEngine.getTexture("/terrain.png"));
 		Lighting.disable();
-		GL11.glBlendFunc(770, 771);
-		GL11.glEnable(3042);
 		GL11.glDisable(2884);
 		if (mc.isAmbientOcclusionEnabled()) {
 			GL11.glShadeModel(7425);
@@ -161,6 +181,7 @@ public class MenuWorld {
 		GL11.glCullFace(GL11.GL_BACK);
 		
 		if (list == 0) {
+			// pass 1
 			list = GL11.glGenLists(1);
 			GL11.glNewList(list, 4864);
 			tessellator.startDrawingQuads();
@@ -174,8 +195,10 @@ public class MenuWorld {
 						if (id == 0) continue;
 						
 						Block blk = Block.getBlock(id);
-						BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
-						model.render(blk, x, y + sz, z);
+						if (blk.getRenderBlockPass() == 0) {
+							BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
+							model.render(blk, x, y + sz, z);
+						}
 					}
 				}
 			}
@@ -183,9 +206,40 @@ public class MenuWorld {
 			tessellator.setTranslation(0.0, 0.0, 0.0);
 			tessellator.draw();
 			GL11.glEndList();
-		} else {
-			GL11.glCallList(list);
+			
+			// pass 2
+			list1 = GL11.glGenLists(1);
+			GL11.glNewList(list1, 4864);
+			tessellator.startDrawingQuads();
+			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
+			tessellator.setColorOpaque(1, 1, 1);
+			
+			for (int x = -sz; x <= sz; x++) {
+				for (int y = -sz; y <= sz; y++) {
+					for (int z = -sz; z <= sz; z++) {
+						int id = dummy.getBlockId(x, y + sz, z);
+						if (id == 0) continue;
+						
+						Block blk = Block.getBlock(id);
+						if (blk.getRenderBlockPass() == 1) {
+							BlockModel model = BlockModelDispatcher.getInstance().getDispatch(blk);
+							model.render(blk, x, y + sz, z);
+						}
+					}
+				}
+			}
+			
+			tessellator.setTranslation(0.0, 0.0, 0.0);
+			tessellator.draw();
+			GL11.glEndList();
 		}
+		
+		GL11.glDisable(3042);
+		GL11.glCallList(list);
+		GL11.glBlendFunc(770, 771);
+		GL11.glEnable(3042);
+		GL11.glCallList(list1);
+		GL11.glDisable(3042);
 		
 		Lighting.enableLight();
 	}

@@ -33,6 +33,7 @@ import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.VecMath;
 import tfc.btvr.model.VRModel;
+import tfc.btvr.util.config.Config;
 
 import java.nio.FloatBuffer;
 
@@ -105,12 +106,16 @@ public class VRCamera {
 		
 		GL11.glTranslated(matr.m(3) * -1, -matr.m(7), matr.m(11) * -1);
 		
-		if (instance != null && mc.thePlayer != null) {
+		EntityPlayer player = mc.thePlayer;
+		if (mc.theWorld == null)
+			player = BTVR.getMenuPlayer();
+		
+		if (instance != null && player != null) {
 			GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
 			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
 			
-			GL11.glTranslated(0, mc.thePlayer.heightOffset, 0);
-			GL11.glTranslated(0, -mc.thePlayer.getHeadHeight(), 0);
+			GL11.glTranslated(0, player.heightOffset, 0);
+			GL11.glTranslated(0, -player.getHeadHeight(), 0);
 		}
 	}
 	
@@ -216,6 +221,10 @@ public class VRCamera {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		ICamera camera = mc.activeCamera;
 		
+		EntityPlayer player = mc.thePlayer;
+		if (mc.theWorld == null)
+			player = BTVR.menuWorld.myPlayer;
+		
 		if (mc.theWorld != null && camera != null && camera.showPlayer())
 			return;
 		
@@ -244,7 +253,7 @@ public class VRCamera {
 			GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
 			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
 			
-			GL11.glTranslated(0, -mc.thePlayer.heightOffset + mc.thePlayer.getHeadHeight(), 0);
+			GL11.glTranslated(0, -player.heightOffset + player.getHeadHeight(), 0);
 			
 			GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
@@ -340,7 +349,11 @@ public class VRCamera {
 		Lighting.disable();
 		GL11.glPushMatrix();
 		
-		if (mc.thePlayer != null && mc.activeCamera != null) {
+		EntityPlayer player = mc.thePlayer;
+		if (mc.theWorld == null)
+			player = BTVR.menuWorld.myPlayer;
+		
+		if (player != null && mc.activeCamera != null) {
 			GL11.glTranslated(
 					-mc.activeCamera.getX(renderPartialTicks),
 					-mc.activeCamera.getY(renderPartialTicks),
@@ -365,7 +378,8 @@ public class VRCamera {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		if (!menuWorld)
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		VRRenderManager.bindGUI();
 //		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		Tessellator.instance.startDrawingQuads();
@@ -378,9 +392,9 @@ public class VRCamera {
 		
 		
 		Vec3d pos;
-		if (mc.thePlayer != null) {
+		if (player != null) {
 			pos = a(
-					new double[]{mc.thePlayer.x, mc.thePlayer.bb.minY, mc.thePlayer.z},
+					new double[]{player.x, player.bb.minY, player.z},
 					VRHelper.playerRelative(Config.TRACE_HAND.get())
 			);
 		} else {
