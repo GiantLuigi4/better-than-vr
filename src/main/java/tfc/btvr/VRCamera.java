@@ -223,7 +223,7 @@ public class VRCamera {
 		
 		EntityPlayer player = mc.thePlayer;
 		if (mc.theWorld == null)
-			player = BTVR.menuWorld.myPlayer;
+			player = BTVR.getMenuPlayer();
 		
 		if (mc.theWorld != null && camera != null && camera.showPlayer())
 			return;
@@ -351,7 +351,7 @@ public class VRCamera {
 		
 		EntityPlayer player = mc.thePlayer;
 		if (mc.theWorld == null)
-			player = BTVR.menuWorld.myPlayer;
+			player = BTVR.getMenuPlayer();
 		
 		if (player != null && mc.activeCamera != null) {
 			GL11.glTranslated(
