@@ -185,7 +185,7 @@ public class MenuWorld {
 			list = GL11.glGenLists(1);
 			GL11.glNewList(list, 4864);
 			tessellator.startDrawingQuads();
-			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
+//			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
 			tessellator.setColorOpaque(1, 1, 1);
 			
 			for (int x = -sz; x <= sz; x++) {
@@ -211,7 +211,7 @@ public class MenuWorld {
 			list1 = GL11.glGenLists(1);
 			GL11.glNewList(list1, 4864);
 			tessellator.startDrawingQuads();
-			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
+//			tessellator.setTranslation(-0.5f, -sz + 1, -0.5f);
 			tessellator.setColorOpaque(1, 1, 1);
 			
 			for (int x = -sz; x <= sz; x++) {

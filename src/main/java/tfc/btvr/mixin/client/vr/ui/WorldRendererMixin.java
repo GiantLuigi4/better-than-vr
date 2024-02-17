@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
+import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.BTVRSetup;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.generic.Eye;
@@ -199,16 +200,19 @@ public abstract class WorldRendererMixin {
 		World tmp = mc.theWorld;
 		mc.theWorld = menuWorld.dummy;
 		ICamera tmpC = mc.activeCamera;
-		mc.activeCamera = new EntityCameraFirstPerson(mc, menuWorld.myPlayer);
+		ICamera vrC = mc.activeCamera = new EntityCameraFirstPerson(mc, menuWorld.myPlayer);
 		
 		// tick player motion
 		int tps = 20;
 		int rate = 1000 / tps;
 		if (Eye.getActiveEye().id == 0) {
-			menuPct = (frameMS - System.currentTimeMillis()) / (float) rate;
+			long tm = System.currentTimeMillis();
 			
-			if (System.currentTimeMillis() > frameMS) {
-				frameMS = System.currentTimeMillis() + rate;
+			if (tm >= frameMS) {
+				frameMS = frameMS + rate;
+				if (tm >= frameMS) {
+					frameMS = tm + rate;
+				}
 				
 				// ensure properties
 				menuWorld.myPlayer.heightOffset = 1.62F;
@@ -242,9 +246,10 @@ public abstract class WorldRendererMixin {
 				if (menuWorld.myPlayer.y < -menuWorld.sz) {
 					menuWorld.myPlayer.moveTo(0.5f, menuWorld.sz * 2, 0.5f, menuWorld.myPlayer.yRot, menuWorld.myPlayer.xRot);
 				}
-				
-				menuPct = 1;
 			}
+			
+			menuPct = 1 - ((frameMS - tm) / (float) rate);
+			System.out.println(menuPct);
 			
 			updateRenderer();
 		}
@@ -252,7 +257,6 @@ public abstract class WorldRendererMixin {
 		farPlaneDistance = menuWorld.sz - 2;
 		
 		VRCamera.apply(menuPct, null, 128);
-		
 		fogManager.updateFogColor(0);
 		fogManager.setupFog(-1, farPlaneDistance, 0);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -260,14 +264,25 @@ public abstract class WorldRendererMixin {
 		fogManager.setupFog(0, farPlaneDistance, 0);
 		GL11.glEnable(2912);
 		Lighting.disable();
+		VRCamera.renderPlayer(true, menuWorld.myPlayer, menuPct, mc.renderGlobal);
+		
+		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0] = 0;
+		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] = menuWorld.sz + 1;
+		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0;
+		
+		GL11.glTranslated(0, menuWorld.myPlayer.heightOffset, 0);
+		VRCamera.drawUI(mc, menuPct, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
 		
 		mc.activeCamera = tmpC;
 		mc.theWorld = tmp;
 		mc.thePlayer = tmpP;
 		
-		VRCamera.renderPlayer(true, menuWorld.myPlayer, renderPartialTicks, mc.renderGlobal);
-		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
-		menuWorld.draw(renderPartialTicks, mc);
+		GL11.glTranslated(
+				-vrC.getX(menuPct),
+				-vrC.getY(menuPct),
+				-vrC.getZ(menuPct)
+		);
+		menuWorld.draw(menuPct, mc);
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
