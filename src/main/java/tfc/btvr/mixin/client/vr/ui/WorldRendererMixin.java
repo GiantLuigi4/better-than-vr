@@ -265,10 +265,9 @@ public abstract class WorldRendererMixin {
 		mc.theWorld = tmp;
 		mc.thePlayer = tmpP;
 		
-		menuWorld.draw(renderPartialTicks, mc);
-		
 		VRCamera.renderPlayer(true, menuWorld.myPlayer, renderPartialTicks, mc.renderGlobal);
 		VRCamera.drawUI(mc, renderPartialTicks, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
+		menuWorld.draw(renderPartialTicks, mc);
 		
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
