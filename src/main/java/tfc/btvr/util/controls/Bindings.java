@@ -5,8 +5,11 @@ import net.minecraft.client.gui.GuiContainer;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.gui.GuiInventoryCreative;
+import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
+import tfc.btvr.BTVR;
+import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.openvr.SVRControllerInput;
 import tfc.btvr.mixin.client.vr.selection.MinecraftAccessor;
@@ -22,21 +25,25 @@ public class Bindings {
 	// interaction controls
 	private static final VRBinding LEFT_CLICK = new ButtonBinding("gameplay", "Attack", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		((MinecraftAccessor) mc).invokeClickMouse(0, true, false);
+		if (mc.currentScreen == null)
+			((MinecraftAccessor) mc).invokeClickMouse(0, true, false);
 	}, null, null);
 	private static final VRBinding RIGHT_CLICK = new ButtonBinding("gameplay", "UseItem", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		((MinecraftAccessor) mc).invokeClickMouse(1, true, false);
+		if (mc.currentScreen == null)
+			((MinecraftAccessor) mc).invokeClickMouse(1, true, false);
 	}, null, null);
 	
 	// hotbar controls
 	private static final VRBinding NEXT_SLOT = new ButtonBinding("gameplay", "HotbarRight", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		mc.thePlayer.inventory.changeCurrentItem(-1);
+		if (mc.currentScreen == null)
+			mc.thePlayer.inventory.changeCurrentItem(-1);
 	}, null, null);
 	private static final VRBinding PREV_SLOT = new ButtonBinding("gameplay", "HotbarLeft", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		mc.thePlayer.inventory.changeCurrentItem(1);
+		if (mc.currentScreen == null)
+			mc.thePlayer.inventory.changeCurrentItem(1);
 	}, null, null);
 	
 	// gui controls
@@ -49,7 +56,16 @@ public class Bindings {
 	private static final VRBinding OPEN_INV = new ButtonBinding("gameplay", "OpenInventory", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
-		if (mc.currentScreen == null) {
+		EntityPlayer player = BTVR.getMenuPlayer();
+		if (player != null) {
+			player.setPos(
+					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0],
+					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] - 1 + player.heightOffset,
+					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2]
+			);
+		}
+		
+		if (mc.currentScreen == null && mc.thePlayer != null) {
 			if (mc.thePlayer.gamemode == Gamemode.creative)
 				mc.displayGuiScreen(new GuiInventoryCreative(mc.thePlayer));
 			else mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
@@ -59,8 +75,6 @@ public class Bindings {
 	private static boolean rotateActive = false;
 	// motion controls
 	private static final VRBinding ROTATE = new PositionBinding("gameplay", "Rotate", (x, y) -> {
-		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		
 		if (Config.SMOOTH_ROTATION.get()) {
 			VRManager.yAddRot += (float) ((Config.ROTATION_SPEED.get() / 4) * x);
 		} else {

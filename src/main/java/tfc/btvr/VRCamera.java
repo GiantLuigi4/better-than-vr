@@ -110,10 +110,12 @@ public class VRCamera {
 		if (mc.theWorld == null)
 			player = BTVR.getMenuPlayer();
 		
-		if (instance != null && player != null) {
+		if (player != null) {
 			GL11.glTranslated(VRManager.ox, 0, VRManager.oz);
 			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
-			
+		}
+		
+		if (instance != null && player != null) {
 			GL11.glTranslated(0, player.heightOffset, 0);
 			GL11.glTranslated(0, -player.getHeadHeight(), 0);
 		}
@@ -248,13 +250,15 @@ public class VRCamera {
 		GL11.glColor3f(brightness, brightness, brightness);
 		
 		GL11.glPushMatrix();
+		// undo vr offset to get relative to the camera
+		GL11.glRotated(-VRManager.getRotation(1), 0, 1, 0);
+		GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
+		GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
+		
 		if (!menu && camera != null) {
-			GL11.glRotated(-VRManager.getRotation(1), 0, 1, 0);
-			GL11.glTranslated(-VRManager.ox, 0, -VRManager.oz);
-			GL11.glRotated(VRManager.getRotation(1), 0, 1, 0);
-			
 			GL11.glTranslated(0, -player.heightOffset + player.getHeadHeight(), 0);
 			
+			// not entirely sure why this is necessary
 			GL11.glTranslated(-camera.getX(), -camera.getY(), -camera.getZ());
 			GL11.glTranslated(thePlayer.x, thePlayer.y, thePlayer.z);
 		}
@@ -264,14 +268,12 @@ public class VRCamera {
 		GL11.glPushMatrix();
 		handMatrix(thePlayer, renderPartialTicks, false, rightHand);
 		draw(normal, thePlayer, false, armScl);
-//		draw(mdl.bipedRightArmOverlay);
 		GL11.glPopMatrix();
 		
 		// left hand
 		GL11.glPushMatrix();
 		handMatrix(thePlayer, renderPartialTicks, true, leftHand);
 		draw(normal, thePlayer, true, armScl);
-//		draw(mdl.bipedLeftArmOverlay);
 		GL11.glPopMatrix();
 		
 		
@@ -381,7 +383,6 @@ public class VRCamera {
 		if (!menuWorld)
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		VRRenderManager.bindGUI();
-//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		Tessellator.instance.startDrawingQuads();
 		Tessellator.instance.addVertexWithUV(UIQuad.minX, UIQuad.minY, 0, 1, 0);
 		Tessellator.instance.addVertexWithUV(UIQuad.maxX, UIQuad.minY, 0, 0, 0);

@@ -1,8 +1,10 @@
 package tfc.btvr.lwjgl3;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.entity.player.EntityPlayer;
 import org.lwjgl.openvr.*;
 import org.lwjgl.system.MemoryStack;
+import tfc.btvr.BTVR;
 import tfc.btvr.lwjgl3.generic.Device;
 import tfc.btvr.lwjgl3.generic.DeviceType;
 import tfc.btvr.lwjgl3.openvr.SDevice;
@@ -83,6 +85,11 @@ public class VRManager {
 	public static void postTick(Minecraft mc) {
 		oYAddRot = yAddRot;
 		
+		EntityPlayer player = mc.thePlayer;
+		if (player == null)
+			player = BTVR.getMenuPlayer();
+		if (player == null) return;
+		
 		Bindings.postTick(mc);
 		
 		// lol I should clean this up
@@ -95,10 +102,10 @@ public class VRManager {
 		double tx = pos[0] - look[0] / 4;
 		double tz = pos[2] - look[2] / 4;
 		
-		double x = mc.thePlayer.x;
-		double z = mc.thePlayer.z;
+		double x = player.x;
+		double z = player.z;
 		
-		double y = mc.thePlayer.y;
+		double y = player.y;
 		
 		double dx = (tx - ox);
 		double dz = (tz - oz);
@@ -107,21 +114,21 @@ public class VRManager {
 		dx = res[0];
 		dz = res[1];
 		
-		boolean c = mc.thePlayer.collision;
-		boolean hc = mc.thePlayer.horizontalCollision;
-		boolean vc = mc.thePlayer.verticalCollision;
-		boolean oog = mc.thePlayer.onGround;
+		boolean c = player.collision;
+		boolean hc = player.horizontalCollision;
+		boolean vc = player.verticalCollision;
+		boolean oog = player.onGround;
 		
-		mc.thePlayer.move(dx, 0, dz);
-		mc.thePlayer.y = y;
+		player.move(dx, 0, dz);
+		player.y = y;
 		
-		mc.thePlayer.collision = c;
-		mc.thePlayer.horizontalCollision = hc;
-		mc.thePlayer.verticalCollision = vc;
-		mc.thePlayer.onGround = oog;
+		player.collision = c;
+		player.horizontalCollision = hc;
+		player.verticalCollision = vc;
+		player.onGround = oog;
 		
-		mc.thePlayer.xo = mc.thePlayer.xOld -= (x - mc.thePlayer.x);
-		mc.thePlayer.zo = mc.thePlayer.zOld -= (z - mc.thePlayer.z);
+		player.xOld = player.xo -= (x - player.x);
+		player.zOld = player.zo -= (z - player.z);
 		
 		ox = tx;
 		oz = tz;
@@ -133,7 +140,7 @@ public class VRManager {
 		float xR = (float) (MathHelper.wrapDegrees((float) (-(MathHelper.atan2(d1, d3) * (double) (180F / (float) Math.PI)))));
 		float yR = (float) (MathHelper.wrapDegrees((float) (MathHelper.atan2(d2, d0) * (double) (180F / (float) Math.PI)) - 90.0F));
 		
-		mc.thePlayer.setRot(yR + getRotation(1), xR);
+		player.setRot(yR + getRotation(1), xR);
 	}
 	
 	public static float[] getVRMotion() {

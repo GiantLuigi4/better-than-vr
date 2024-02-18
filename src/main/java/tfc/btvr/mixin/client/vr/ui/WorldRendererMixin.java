@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tfc.btvr.VRCamera;
 import tfc.btvr.itf.VRScreenData;
 import tfc.btvr.lwjgl3.BTVRSetup;
+import tfc.btvr.lwjgl3.VRManager;
 import tfc.btvr.lwjgl3.VRRenderManager;
 import tfc.btvr.lwjgl3.generic.Eye;
 import tfc.btvr.lwjgl3.openvr.SEye;
@@ -121,16 +122,7 @@ public abstract class WorldRendererMixin {
 		if (SEye.getActiveEye() != null) {
 			ci.cancel();
 		}
-//		else {
-//			VRRenderManager.grabUI(true);
-//		}
-//		GL11.glDepthMask(true);
 	}
-
-//	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(FZII)V", shift = At.Shift.AFTER), method = "updateCameraAndRender")
-//	public void postRenderOverlay(float renderPartialTicks, CallbackInfo ci) {
-//		VRRenderManager.releaseUI();
-//	}
 	
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemRenderer;renderItemInFirstPerson(F)V"), method = "setupPlayerCamera")
 	public void conditionallyRenderItem(ItemRenderer instance, float r) {
@@ -182,10 +174,6 @@ public abstract class WorldRendererMixin {
 		// no point in drawing it if it won't be seen
 		if (Config.HYBRID_MODE.get() && eye == null) return;
 		
-		GL11.glDepthMask(true);
-		GL11.glDepthFunc(515);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
 		if (menuWorld == null || ((RenderGlobalAccessor) mc.renderGlobal).getWorldObj() != menuWorld.dummy) {
 			if (menuWorld != null)
 				menuWorld.delete();
@@ -195,6 +183,7 @@ public abstract class WorldRendererMixin {
 		
 		RenderGlobal renderglobal = mc.renderGlobal;
 		
+		// backup and setup game state
 		EntityPlayerSP tmpP = mc.thePlayer;
 		mc.thePlayer = (EntityPlayerSP) menuWorld.myPlayer;
 		World tmp = mc.theWorld;
@@ -248,35 +237,49 @@ public abstract class WorldRendererMixin {
 				}
 			}
 			
+			menuWorld.myPlayer.xOld = menuWorld.myPlayer.xo;
+			menuWorld.myPlayer.yOld = menuWorld.myPlayer.yo;
+			menuWorld.myPlayer.zOld = menuWorld.myPlayer.zo;
+			
 			menuPct = 1 - ((frameMS - tm) / (float) rate);
-			System.out.println(menuPct);
+			VRManager.postTick(mc);
 			
 			updateRenderer();
 		}
 		
 		farPlaneDistance = menuWorld.sz - 2;
 		
+		// setup render state
+		GL11.glDepthMask(true);
+		GL11.glDepthFunc(515);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		VRCamera.apply(menuPct, null, 128);
+		// draw sky
 		fogManager.updateFogColor(0);
 		fogManager.setupFog(-1, farPlaneDistance, 0);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderglobal.drawSky(0);
+		// prepare render
 		fogManager.setupFog(0, farPlaneDistance, 0);
 		GL11.glEnable(2912);
 		Lighting.disable();
+		// draw player
 		VRCamera.renderPlayer(true, menuWorld.myPlayer, menuPct, mc.renderGlobal);
+		GL11.glTranslated(0, menuWorld.myPlayer.heightOffset, 0);
 		
+		// draw and position UI
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0] = 0;
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] = menuWorld.sz + 1;
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0;
 		
-		GL11.glTranslated(0, menuWorld.myPlayer.heightOffset, 0);
 		VRCamera.drawUI(mc, menuPct, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
 		
+		// reset game state
 		mc.activeCamera = tmpC;
 		mc.theWorld = tmp;
 		mc.thePlayer = tmpP;
 		
+		// draw world
 		GL11.glTranslated(
 				-vrC.getX(menuPct),
 				-vrC.getY(menuPct),

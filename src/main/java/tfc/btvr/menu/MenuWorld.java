@@ -90,11 +90,11 @@ public class MenuWorld {
 						wrld.dummy.setBlock(x, 28, z, Block.grass.id);
 					}
 				}
-				wrld.myPlayer.setPos(0.5f, 28 + 2 + 1.8, 0.5f);
+				wrld.myPlayer.setPos(0.5f, 28 + 2 + wrld.myPlayer.heightOffset - 0.99, 0.5f);
 				break;
 			case VOID:
 				wrld.sz = 32;
-				wrld.myPlayer.setPos(0.5f, 30 + 2 + 1.8, 0.5f);
+				wrld.myPlayer.setPos(0.5f, 30 + 2 + wrld.myPlayer.heightOffset - 0.99, 0.5f);
 				break;
 			default:
 			case RANDOM:
@@ -118,7 +118,7 @@ public class MenuWorld {
 						}
 					}
 					
-					wrld.myPlayer.setPos(0.5f, size + 1.8, 0.5f);
+					wrld.myPlayer.setPos(0.5f, size + wrld.myPlayer.heightOffset - 0.99, 0.5f);
 					
 					gzis.close();
 					try {

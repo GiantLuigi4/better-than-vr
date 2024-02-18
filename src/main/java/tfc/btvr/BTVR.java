@@ -27,9 +27,8 @@ public class BTVR implements ModInitializer {
 	}
 	
 	public static EntityPlayer getMenuPlayer() {
-//		if (menuWorld != null)
-//			return menuWorld.myPlayer;
-//		else return null;
-		return null;
+		if (menuWorld != null)
+			return menuWorld.myPlayer;
+		else return null;
 	}
 }

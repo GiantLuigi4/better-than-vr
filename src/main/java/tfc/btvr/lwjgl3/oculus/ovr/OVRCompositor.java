@@ -1,8 +1,10 @@
 package tfc.btvr.lwjgl3.oculus.ovr;
 
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.ovr.OVR;
 import org.lwjgl.ovr.OVRFovPort;
 import org.lwjgl.ovr.OVRSizei;
+import org.lwjgl.ovr.OVRViewScaleDesc;
 
 import java.nio.IntBuffer;
 
@@ -29,5 +31,16 @@ public class OVRCompositor {
 		
 		sizei0.free();
 		port.free();
+	}
+	
+	long frame;
+	
+	public void submit(OVRViewScaleDesc viewScale, PointerBuffer layers) {
+		OVR.ovr_SubmitFrame(
+				OVRSession.getSession().get(0),
+				frame++,
+				viewScale,
+				layers
+		);
 	}
 }
