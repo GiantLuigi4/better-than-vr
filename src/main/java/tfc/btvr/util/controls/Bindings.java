@@ -1,10 +1,7 @@
 package tfc.btvr.util.controls;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiContainer;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiInventory;
-import net.minecraft.client.gui.GuiInventoryCreative;
+import net.minecraft.client.gui.*;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.player.gamemode.Gamemode;
 import org.lwjgl.input.Mouse;
@@ -50,20 +47,22 @@ public class Bindings {
 	private static final VRBinding PAUSE_GAME = new ButtonBinding("gameplay", "Pause", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
 		
+		EntityPlayer player = BTVR.getMenuPlayer();
+		if (player != null) {
+			if (mc.currentScreen instanceof GuiMainMenu) {
+				player.setPos(
+						((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0],
+						((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] - 1 - 0.99 + player.heightOffset,
+						((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2]
+				);
+			}
+		}
+		
 		if (mc.currentScreen == null) mc.displayGuiScreen(new GuiIngameMenu());
 		else mc.displayGuiScreen(null);
 	}, null, null);
 	private static final VRBinding OPEN_INV = new ButtonBinding("gameplay", "OpenInventory", () -> {
 		Minecraft mc = Minecraft.getMinecraft(Minecraft.class);
-		
-		EntityPlayer player = BTVR.getMenuPlayer();
-		if (player != null) {
-			player.setPos(
-					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0],
-					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] - 1 + player.heightOffset,
-					((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2]
-			);
-		}
 		
 		if (mc.currentScreen == null && mc.thePlayer != null) {
 			if (mc.thePlayer.gamemode == Gamemode.creative)

@@ -268,9 +268,9 @@ public abstract class WorldRendererMixin {
 		GL11.glTranslated(0, menuWorld.myPlayer.heightOffset, 0);
 		
 		// draw and position UI
-		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0] = 0;
+		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[0] = 0.5f;
 		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[1] = menuWorld.sz + 1;
-		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0;
+		((VRScreenData) mc.currentScreen).better_than_vr$getPosition()[2] = 0.5f;
 		
 		VRCamera.drawUI(mc, menuPct, mc.theWorld == null || mc.theWorld == menuWorld.dummy);
 		
