@@ -13,7 +13,7 @@ import tfc.btvr.lwjgl3.VRHelper;
 import tfc.btvr.lwjgl3.openvr.SDevice;
 
 @Mixin(value = GuiScreen.class, remap = false)
-public class ScreenMixin implements VRScreenData {
+public class VRScreenDataMixin implements VRScreenData {
 	@Unique
 	double[] myPos;
 	@Unique

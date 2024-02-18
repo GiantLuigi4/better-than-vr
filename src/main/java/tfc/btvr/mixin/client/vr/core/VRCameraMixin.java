@@ -15,7 +15,7 @@ import tfc.btvr.lwjgl3.BTVRSetup;
 import java.nio.FloatBuffer;
 
 @Mixin(value = WorldRenderer.class, remap = false)
-public class WorldRendererMixin {
+public class VRCameraMixin {
 	@Shadow
 	private float farPlaneDistance;
 	

@@ -36,14 +36,16 @@ btvr.gui.options.page.vr.category.rotation=Rotation Options
 # options
 btvr.gui.options.page.vr.smooth_rotation=Smooth Rotation
 btvr.gui.options.page.vr.extra_smooth_rotation=Extra Smooth Rotation
+btvr.gui.options.page.vr.rotation_interval=Rotation Interval
 
 
 # MENU WORLD
-btvr.gui.option.page.vr.category.menu_world=Menu World Options
+btvr.gui.options.page.vr.category.menu_world=Menu World Options
 
 # options
 btvr.gui.options.page.vr.menu_world_mode=Menu World Selection
 btvr.gui.option.page.vr.menu_world_capture=Capture Menu World
+btvr.gui.option.page.vr.menu_world_choice=Selected Menu World
 
 # values
 btvr.gui.option.page.vr.value.menu_world.choice=CHOSEN

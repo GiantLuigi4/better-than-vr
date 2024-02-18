@@ -17,7 +17,7 @@
     "client.vr.core.GLHelperMixin",
     "client.vr.core.MinecraftMixin",
     "client.vr.core.ShaderRendererMixin",
-    "client.vr.core.WorldRendererMixin",
+    "client.vr.core.VRCameraMixin",
     "client.vr.display.GL30Mixin",
     "client.vr.model.LivingRendererAccessor",
     "client.vr.model.WorldRendererMixin",
@@ -35,11 +35,11 @@
     "client.vr.tweaks.CameraMixin",
     "client.vr.tweaks.mining.PlayerControllerMixin",
     "client.vr.tweaks.mining.WorldRendererMixin",
-    "client.vr.ui.GUIIngameMixin",
+    "client.vr.ui.DisableCrosshairMixin",
     "client.vr.ui.MinecraftMixin",
     "client.vr.ui.MouseMixin",
-    "client.vr.ui.ScreenMixin",
-    "client.vr.ui.WorldRendererMixin"
+    "client.vr.ui.RenderMenuMixin",
+    "client.vr.ui.VRScreenDataMixin"
   ],
   "injectors": {
     "defaultRequire": 1

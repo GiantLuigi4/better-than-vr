@@ -31,7 +31,7 @@ import tfc.btvr.util.config.MenuModeOption;
 import static tfc.btvr.BTVR.menuWorld;
 
 @Mixin(value = WorldRenderer.class, remap = false)
-public abstract class WorldRendererMixin {
+public abstract class RenderMenuMixin {
 	@Shadow
 	private Minecraft mc;
 	

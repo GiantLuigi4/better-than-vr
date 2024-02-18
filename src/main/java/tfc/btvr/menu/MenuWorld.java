@@ -46,7 +46,7 @@ public class MenuWorld {
 	
 	public int sz;
 	
-	protected static String chooseRow() throws IOException {
+	public static ArrayList<String> listWorlds() throws IOException {
 		InputStream is = MenuWorld.class.getClassLoader().getResourceAsStream("btvr/menu/worlds.csv");
 		byte[] data = is.readAllBytes();
 		try {
@@ -63,6 +63,12 @@ public class MenuWorld {
 			
 			lines.add(ln);
 		}
+		
+		return lines;
+	}
+	
+	protected static String chooseRow() throws IOException {
+		ArrayList<String> lines = listWorlds();
 		
 		double v = Math.random() * (lines.size());
 		int i = (int) v;
@@ -162,6 +168,7 @@ public class MenuWorld {
 	}
 	
 	int list = 0;
+	
 	int list1 = 0;
 	
 	public void draw(float renderPartialTicks, Minecraft mc) {

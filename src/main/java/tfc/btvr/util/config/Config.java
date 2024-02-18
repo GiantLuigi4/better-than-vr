@@ -11,6 +11,7 @@ import tfc.btvr.util.config.gui.BooleanOptionElement;
 import tfc.btvr.util.config.gui.DecimalOptionComponent;
 import tfc.btvr.util.config.gui.EnumOptionComponent;
 import tfc.btvr.util.config.gui.menu.MenuCaptureComponent;
+import tfc.btvr.util.config.gui.menu.MenuWorldSelectionComponent;
 import turniplabs.halplibe.util.ConfigHandler;
 
 import java.util.ArrayList;
@@ -50,12 +51,13 @@ public class Config {
 					new OptionsCategory("btvr.gui.options.page.vr.category.rotation")
 							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.smooth_rotation", (v) -> update(SMOOTH_ROTATION.value, SMOOTH_ROTATION.value = v), SMOOTH_ROTATION::get, SMOOTH_ROTATION.def))
 							.withComponent(new BooleanOptionElement("options.", "btvr.gui.options.page.vr.extra_smooth_rotation", (v) -> update(EXTRA_SMOOTH_ROTATION.value, EXTRA_SMOOTH_ROTATION.value = v), EXTRA_SMOOTH_ROTATION::get, EXTRA_SMOOTH_ROTATION.def))
-							.withComponent(new DecimalOptionComponent(0, 90, "btvr.gui.options.page.vr.extra_smooth_rotation", (v) -> update(ROTATION_SPEED.value, ROTATION_SPEED.value = Math.round(v * 900) / 10d), () -> (ROTATION_SPEED.get() / 90f), (ROTATION_SPEED.def / 90f), ""))
+							.withComponent(new DecimalOptionComponent(0, 90, "btvr.gui.options.page.vr.rotation_interval", (v) -> update(ROTATION_SPEED.value, ROTATION_SPEED.value = Math.round(v * 900) / 10d), () -> (ROTATION_SPEED.get() / 90f), (ROTATION_SPEED.def / 90f), ""))
 			);
 			VR.withComponent(
 					new OptionsCategory("btvr.gui.options.page.vr.category.menu_world")
 							.withComponent(new EnumOptionComponent<>("btvr.gui.option.page.vr.value.menu_world.", "btvr.gui.options.page.vr.menu_world_mode", (v) -> update(MENU_MODE.value, MENU_MODE.value = v), () -> MENU_MODE.value, MenuModeOption.MenuMode.values(), MENU_MODE.def))
 							.withComponent(new MenuCaptureComponent("btvr.gui.option.page.vr.menu_world_capture"))
+							.withComponent(new MenuWorldSelectionComponent("btvr.gui.option.page.vr.menu_world_choice"))
 			);
 			register(VR);
 		}
