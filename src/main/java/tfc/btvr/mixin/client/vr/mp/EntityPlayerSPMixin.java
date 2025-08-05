@@ -18,7 +18,7 @@ import tfc.btvr.lwjgl3.openvr.SDevice;
 import tfc.btvr.math.MatrixHelper;
 import tfc.btvr.mp.packets.MatricesPacket;
 
-@Mixin(PlayerLocal.class)
+@Mixin(value = PlayerLocal.class, remap = false)
 public class EntityPlayerSPMixin implements VRPlayerAttachments {
 	@Inject(at = @At("TAIL"), method = "<init>")
 	public void postInit(Minecraft minecraft, World world, Session session, int i, CallbackInfo ci) {

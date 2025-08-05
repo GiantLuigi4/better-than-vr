@@ -12,7 +12,7 @@ public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionC
 		super(valueKey, translationKey, setter, current, values, def);
 		
 		this.onApply = onApply;
-		button.setWidth(button.getWidth() - 50);
+		button.setWidth(button.getWidth() - 110);
 	}
 	
 	@Override
@@ -22,8 +22,8 @@ public class ApplyableEnumOptionComponent<T extends Enum<?>> extends EnumOptionC
 			onApply.run();
 		} else {
 			setter.accept(values[v]);
-			button.setState(current.get().ordinal());
-			this.button.setText(valueKey + current.get().toString().toLowerCase());
+			setState(current.get().ordinal());
+			setText(valueKey + current.get().toString().toLowerCase());
 		}
 	}
 	

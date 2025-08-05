@@ -1,5 +1,7 @@
 package tfc.btvr.lwjgl3;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.option.enums.RenderScale;
 import org.lwjgl.openvr.VR;
 import org.lwjgl.openvr.VRSystem;
 import org.lwjgl.ovr.OVR;
@@ -36,6 +38,10 @@ public class BTVRSetup {
 		if (pth != null)
 			System.setProperty("org.lwjgl.librarypath", pth);
 		else LOGGER.info("org.lwjgl.librarypath was null");
+        if (Minecraft.getMinecraft().gameSettings.renderScale.value != RenderScale.SCALE_100) {
+            Minecraft.getMinecraft().gameSettings.renderScale.set(RenderScale.SCALE_100);
+            LOGGER.warn("BetterThanVR does not support custom render scales. Resetting to 100%.");
+        }
 	}
 	
 	static {

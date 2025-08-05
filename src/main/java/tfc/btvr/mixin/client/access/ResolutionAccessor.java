@@ -5,7 +5,7 @@ import net.minecraft.client.render.window.GameWindow;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ScaledResolution.class)
+@Mixin(value = ScaledResolution.class, remap = false)
 public interface ResolutionAccessor {
 	@Accessor("gameWindow") GameWindow getGameWindow();
 	@Accessor("scaledWidth") void setScaledWidth(int value);
